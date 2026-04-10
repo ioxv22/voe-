@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -33,6 +34,14 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+          <Script 
+            async 
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8867564621500356" 
+            crossOrigin="anonymous" 
+            strategy="afterInteractive"
+          />
+      </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
         <SecurityManager />
         <AuthProvider>
