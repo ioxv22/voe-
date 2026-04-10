@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { getImageUrl } from "@/lib/tmdb";
-import { Play, Plus, ChevronRight } from "lucide-react";
+import { Play, Plus } from "lucide-react";
 
 import Link from "next/link";
 
@@ -12,6 +12,8 @@ interface MovieCardProps {
 
 export default function MovieCard({ movie }: MovieCardProps) {
   const type = movie.media_type || (movie.title ? "movie" : "tv");
+  const posterPath = movie.poster_path || movie.backdrop_path;
+  const imageUrl = posterPath ? getImageUrl(posterPath) : null;
   
   return (
     <Link href={`/watch/${type}/${movie.id}`}>
@@ -20,12 +22,18 @@ export default function MovieCard({ movie }: MovieCardProps) {
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="relative aspect-[2/3] w-[140px] flex-shrink-0 cursor-pointer overflow-hidden rounded-md bg-[#121212] lg:w-[200px]"
       >
-        <img
-          src={getImageUrl(movie.poster_path)}
-          alt={movie.title || movie.name}
-          className="h-full w-full object-cover"
-          loading="lazy"
-        />
+        {imageUrl ? (
+            <img
+            src={imageUrl}
+            alt={movie.title || movie.name}
+            className="h-full w-full object-cover"
+            loading="lazy"
+            />
+        ) : (
+            <div className="h-full w-full flex items-center justify-center bg-gray-900 text-gray-700 text-[10px] font-bold uppercase text-center p-4">
+                {movie.title || movie.name}
+            </div>
+        )}
 
         {/* Hover Info Overlay */}
         <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black via-black/20 to-transparent p-3 opacity-0 transition-opacity duration-300 hover:opacity-100">

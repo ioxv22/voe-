@@ -1,4 +1,5 @@
-import { Send } from "lucide-react";
+import { Send, Terminal } from "lucide-react";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -12,7 +13,7 @@ export default function Footer() {
                     alt="VOZ Stream" 
                     className="h-10 w-auto object-contain brightness-110" 
                 />
-                <span className="text-xl font-black text-white">VOZ STREAM</span>
+                <span className="text-xl font-black text-white uppercase tracking-tighter">VOZ STREAM</span>
             </div>
             <p className="text-sm text-gray-500 leading-relaxed">
               Premium cinematic experience delivered directly to your screens. Built for the next generation of streamers.
@@ -21,6 +22,10 @@ export default function Footer() {
                 <a href="https://t.me/iivoz" target="_blank" className="h-10 w-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition">
                     <Send size={18} />
                 </a>
+                {/* Discrete Admin Entry */}
+                <Link href="/admin" className="h-10 w-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-800 hover:text-primary-600 hover:bg-white/10 transition group">
+                    <Terminal size={18} className="group-hover:scale-110 transition" />
+                </Link>
             </div>
           </div>
 
@@ -45,7 +50,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-white font-bold mb-6">Copyrights</h4>
+            <h4 className="text-white font-bold mb-6 font-primary">Copyrights</h4>
             <div className="space-y-4">
                 <div className="p-4 rounded-xl bg-primary-600/10 border border-primary-600/20">
                     <p className="text-xs font-bold text-primary-600 uppercase tracking-widest mb-1">Developer</p>
