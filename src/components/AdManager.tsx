@@ -20,12 +20,31 @@ export default function AdManager() {
     loadAds();
   }, []);
 
-  if (!adCode) return null;
+  // Inject Adsterra Native Banner safely
+  useEffect(() => {
+      const containerId = "container-a279fcd0ccd0a0b5b0dcace3052c9bcf";
+      const container = document.getElementById(containerId);
+      if (container && !document.getElementById("adsterra-native-script")) {
+          const script = document.createElement("script");
+          script.id = "adsterra-native-script";
+          script.async = true;
+          script.dataset.cfasync = "false";
+          script.src = "https://pl29118998.profitablecpmratenetwork.com/a279fcd0ccd0a0b5b0dcace3052c9bcf/invoke.js";
+          container.appendChild(script);
+      }
+  }, []);
 
   return (
-    <div 
-        id="voz-global-ads"
-        dangerouslySetInnerHTML={{ __html: adCode }} 
-    />
+    <div className="w-full flex flex-col items-center justify-center my-4 overflow-hidden">
+        {/* Hardcoded Adsterra Native Banner */}
+        <div id="container-a279fcd0ccd0a0b5b0dcace3052c9bcf" className="min-h-[50px] w-full flex justify-center"></div>
+
+        {adCode && (
+            <div 
+                id="voz-global-ads"
+                dangerouslySetInnerHTML={{ __html: adCode }} 
+            />
+        )}
+    </div>
   );
 }
