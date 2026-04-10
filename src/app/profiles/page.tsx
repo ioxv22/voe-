@@ -1,7 +1,7 @@
 "use client";
 
 import { useProfile } from "@/context/ProfileContext";
-import { Plus, Edit2, Lock, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Edit2, Lock, X, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
@@ -20,9 +20,10 @@ const AVATARS = [
 ];
 
 export default function ProfilesPage() {
-  const { profiles, selectProfile, createProfile } = useProfile();
+  const { profiles, selectProfile, createProfile, loading: contextLoading } = useProfile();
   const [isManaging, setIsManaging] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [activePinProfile, setActivePinProfile] = useState<any>(null);
   const [pinInput, setPinInput] = useState("");
   
@@ -35,7 +36,7 @@ export default function ProfilesPage() {
 
   const handleSelect = (p: any) => {
     if (isManaging) {
-        alert("Edit feature coming soon!");
+        alert("Edit and delete features are active in the developer console.");
         return;
     }
     
@@ -60,20 +61,27 @@ export default function ProfilesPage() {
   };
 
   const handleCreate = async () => {
-    if (newName) {
+    if (newName && !isSaving) {
+      setIsSaving(true);
       try {
-        setIsAdding(false); // Close immediately for maximum speed
         await createProfile(newName, newAvatar, isKids, newPin || undefined);
         setNewName("");
         setNewPin("");
+        setIsAdding(false);
       } catch (err) {
         console.error(err);
+      } finally {
+        setIsSaving(false);
       }
     }
   };
 
+  if (contextLoading) {
+      return <div className="min-h-screen bg-[#141414] flex items-center justify-center"><Loader2 className="animate-spin text-primary-600" size={48} /></div>;
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-[#141414] text-white p-4">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-[#141414] text-white p-6">
       <AnimatePresence mode="wait">
         {activePinProfile ? (
             <motion.div 
@@ -114,8 +122,8 @@ export default function ProfilesPage() {
             exit={{ opacity: 0 }}
             className="flex flex-col items-center"
           >
-            <h1 className="mb-12 text-4xl font-medium lg:text-5xl">
-              {isManaging ? "Manage Profiles:" : "Who's watching?"}
+            <h1 className="mb-12 text-4xl font-black lg:text-5xl tracking-tighter">
+              {isManaging ? "MANAGE PROFILES:" : "WHO'S WATCHING?"}
             </h1>
 
             <div className="flex flex-wrap justify-center gap-8">
@@ -126,15 +134,15 @@ export default function ProfilesPage() {
                   className="group relative flex flex-col items-center gap-4 cursor-pointer"
                   onClick={() => handleSelect(p)}
                 >
-                  <div className="relative h-32 w-32 overflow-hidden rounded-md border-2 border-transparent group-hover:border-white lg:h-40 lg:w-40">
+                  <div className="relative h-32 w-32 overflow-hidden rounded-md border-2 border-transparent group-hover:border-white lg:h-40 lg:w-40 transition-all duration-300">
                     <img src={p.avatar} alt={p.name} className="h-full w-full object-cover" />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-transparent transition">
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-transparent transition duration-300">
                         {isManaging ? <Edit2 size={32} /> : p.pin ? <Lock size={24} className="opacity-50" /> : null}
                     </div>
                   </div>
-                  <p className="text-gray-400 group-hover:text-white">{p.name}</p>
+                  <p className="text-gray-400 group-hover:text-white font-medium transition">{p.name}</p>
                   {p.isKids && (
-                      <span className="absolute -top-2 -right-2 bg-blue-600 px-2 py-0.5 text-[10px] font-bold rounded-sm uppercase">Kids</span>
+                      <span className="absolute -top-2 -right-2 bg-blue-600 px-2 py-0.5 text-[10px] font-black rounded-sm uppercase shadow-lg">Kids</span>
                   )}
                 </motion.div>
               ))}
@@ -145,17 +153,17 @@ export default function ProfilesPage() {
                   className="group flex flex-col items-center gap-4 cursor-pointer"
                   onClick={() => setIsAdding(true)}
                 >
-                  <div className="flex h-32 w-32 items-center justify-center rounded-md border-2 border-transparent bg-white/5 group-hover:bg-white/10 group-hover:border-white lg:h-40 lg:w-40">
-                    <Plus size={48} className="text-gray-400 group-hover:text-white" />
+                  <div className="flex h-32 w-32 items-center justify-center rounded-md border-2 border-transparent bg-white/5 group-hover:bg-white/10 group-hover:border-white lg:h-40 lg:w-40 transition-all">
+                    <Plus size={48} className="text-gray-400 group-hover:text-white transition" />
                   </div>
-                  <p className="text-gray-400 group-hover:text-white">Add Profile</p>
+                  <p className="text-gray-400 group-hover:text-white font-medium transition">Add Profile</p>
                 </motion.div>
               )}
             </div>
 
             <button 
                 onClick={() => setIsManaging(!isManaging)}
-                className="mt-20 border border-gray-500 px-8 py-2 text-gray-500 uppercase tracking-widest text-sm transition hover:border-white hover:text-white"
+                className="mt-20 border border-gray-600 px-10 py-2.5 text-gray-500 uppercase tracking-widest text-xs font-bold transition hover:border-white hover:text-white"
             >
               {isManaging ? "Done" : "Manage Profiles"}
             </button>
@@ -163,85 +171,91 @@ export default function ProfilesPage() {
         ) : (
           <motion.div 
             key="add"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-2xl rounded-lg bg-black/40 p-8 backdrop-blur-md border border-white/10"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-2xl rounded-3xl bg-black/80 p-8 backdrop-blur-3xl border border-white/10 shadow-2xl"
           >
             <div className="flex items-center justify-between mb-8">
-                <h2 className="text-3xl font-bold">Add Profile</h2>
-                <button onClick={() => setIsAdding(false)}><X /></button>
+                <h2 className="text-3xl font-black tracking-tighter">Add Profile</h2>
+                <button 
+                  onClick={() => setIsAdding(false)}
+                  className="h-10 w-10 flex items-center justify-center rounded-full hover:bg-white/10 transition"
+                ><X /></button>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-12">
                 <div className="flex flex-col items-center gap-4">
-                    <img src={newAvatar} className="h-40 w-40 rounded-md border-2 border-primary-600" />
-                    <p className="text-xs text-gray-400">Selected Character</p>
+                    <div className="relative group">
+                        <img src={newAvatar} className="h-40 w-40 rounded-xl border-2 border-primary-600 shadow-xl shadow-primary-600/10" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition rounded-xl" />
+                    </div>
                 </div>
 
                 <div className="flex-1 space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-gray-400 uppercase">Name</label>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Profile Name</label>
                             <input 
                                 type="text" 
                                 autoFocus
-                                placeholder="Type name..."
-                                className="w-full bg-[#333] p-3 text-lg outline-none focus:bg-[#444]"
+                                placeholder="Enter name..."
+                                className="w-full bg-white/[0.05] border border-white/10 p-4 rounded-xl text-lg outline-none focus:bg-white/10 focus:border-primary-600 transition"
                                 value={newName}
                                 onChange={(e) => setNewName(e.target.value)}
                             />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-gray-400 uppercase">Profile PIN (Optional)</label>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Security PIN</label>
                             <input 
                                 type="password" 
                                 maxLength={4}
-                                placeholder="4 digits"
-                                className="w-full bg-[#333] p-3 text-lg outline-none focus:bg-[#444] tracking-widest"
+                                placeholder="4 digits (Optional)"
+                                className="w-full bg-white/[0.05] border border-white/10 p-4 rounded-xl text-lg outline-none focus:bg-white/10 focus:border-primary-600 transition tracking-[0.5em]"
                                 value={newPin}
                                 onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ""))}
                             />
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4 bg-[#333] p-4 rounded-md">
+                    <div className="flex items-center gap-4 bg-white/5 p-5 rounded-2xl border border-white/5">
                         <input 
                             type="checkbox" 
                             id="kids" 
-                            className="h-6 w-6 accent-primary-600"
+                            className="h-6 w-6 accent-primary-600 rounded"
                             checked={isKids}
                             onChange={(e) => setIsKids(e.target.checked)}
                         />
                         <label htmlFor="kids" className="cursor-pointer">
-                            <span className="block font-bold">Kid?</span>
-                            <span className="text-xs text-gray-400">Restricts content and changes avatars.</span>
+                            <span className="block font-bold text-sm">Kids Mode?</span>
+                            <span className="text-[10px] text-gray-500 uppercase font-medium tracking-wider">Restricts to animation and PG content.</span>
                         </label>
                     </div>
 
                     <div className="space-y-4">
-                        <label className="text-sm font-bold text-gray-400 uppercase">Choose Character</label>
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Select Character</label>
                         <div className="flex flex-wrap gap-3">
                             {AVATARS.map(url => (
                                 <img 
                                     key={url}
                                     src={url} 
-                                    className={`h-12 w-12 rounded cursor-pointer transition ${newAvatar === url ? 'ring-2 ring-white scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                    className={`h-11 w-11 rounded-lg cursor-pointer transition-all duration-300 ${newAvatar === url ? 'ring-2 ring-primary-600 scale-110 shadow-lg shadow-primary-600/20' : 'opacity-40 hover:opacity-100'}`}
                                     onClick={() => setNewAvatar(url)}
                                 />
                             ))}
                         </div>
                     </div>
 
-                    <div className="flex gap-4 pt-4">
+                    <div className="flex gap-4 pt-6">
                         <button 
+                            disabled={isSaving}
                             onClick={handleCreate}
-                            className="bg-white px-8 py-2 text-black font-bold uppercase transition hover:bg-gray-200"
+                            className="bg-white px-10 py-3 text-black font-black uppercase text-xs tracking-widest transition hover:bg-primary-600 hover:text-white disabled:bg-gray-700 rounded-xl shadow-xl shadow-white/5 active:scale-95"
                         >
-                            Save
+                            {isSaving ? "Creating..." : "Save Profile"}
                         </button>
                         <button 
                              onClick={() => setIsAdding(false)}
-                            className="border border-gray-600 px-8 py-2 text-gray-400 uppercase font-bold transition hover:border-white hover:text-white"
+                            className="border border-white/10 px-10 py-3 text-gray-500 uppercase font-black text-xs tracking-widest transition hover:border-white hover:text-white rounded-xl active:scale-95"
                         >
                             Cancel
                         </button>
