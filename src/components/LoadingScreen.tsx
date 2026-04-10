@@ -16,7 +16,7 @@ export default function LoadingScreen() {
             className="flex flex-col items-center"
         >
             <img 
-                src="/images/logo.png" 
+                src="https://i.ibb.co/23Bkgcrx/image.png" 
                 className="h-28 w-auto object-contain mb-6" 
                 alt="VOZ"
                 style={{ filter: "drop-shadow(0 0 20px rgba(0, 200, 200, 0.4))" }}

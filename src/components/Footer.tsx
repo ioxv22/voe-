@@ -9,7 +9,7 @@ export default function Footer() {
           <div className="space-y-6">
             <div className="flex items-center gap-2">
                 <img 
-                    src="/images/logo.png" 
+                    src="https://i.ibb.co/23Bkgcrx/image.png" 
                     alt="VOZ Stream" 
                     className="h-10 w-auto object-contain" 
                 />
