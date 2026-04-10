@@ -3,7 +3,7 @@
 import Navbar from "@/components/Navbar";
 import MovieRow from "@/components/MovieRow";
 import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
-import { Star, Clock, Calendar, Play, Plus, Check } from "lucide-react";
+import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown } from "lucide-react";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useEffect, useState } from "react";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
@@ -11,6 +11,11 @@ import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
 export default function WatchPage({ params }: { params: any }) {
   const [data, setData] = useState<{item: any, similar: any} | null>(null);
   const [server, setServer] = useState("nebula");
+  const [season, setSeason] = useState(1);
+  const [episode, setEpisode] = useState(1);
+  const [episodes, setEpisodes] = useState<any[]>([]);
+  const [activeSeasonTab, setActiveSeasonTab] = useState(1);
+  
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
 
   useEffect(() => {
@@ -21,9 +26,23 @@ export default function WatchPage({ params }: { params: any }) {
           fetchTMDB(endpoints.similar(resolvedParams.type, resolvedParams.id)),
         ]);
         setData({ item: resolvedItem, similar: resolvedSimilar });
+        
+        if (resolvedParams.type === "tv") {
+            loadEpisodes(resolvedParams.id, 1);
+        }
     }
     init();
   }, [params]);
+
+  const loadEpisodes = async (tvId: string, sNum: number) => {
+    try {
+        const seasonData = await fetchTMDB(`/tv/${tvId}/season/${sNum}`);
+        setEpisodes(seasonData.episodes || []);
+        setActiveSeasonTab(sNum);
+    } catch (err) {
+        console.error("Failed to load episodes", err);
+    }
+  };
 
   if (!data) return <div className="min-h-screen bg-black" />;
   const { item, similar } = data;
@@ -37,7 +56,7 @@ export default function WatchPage({ params }: { params: any }) {
     }
   };
 
-  const playerUrl = getStreamUrl(type, item.id, 1, 1, server);
+  const playerUrl = getStreamUrl(type, item.id, season, episode, server);
 
   return (
     <main className="min-h-screen bg-[#020202]">
@@ -57,6 +76,7 @@ export default function WatchPage({ params }: { params: any }) {
 
           {/* Server Selectors */}
           <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 hide-scrollbar">
+            <span className="text-xs font-bold text-gray-500 flex items-center mr-2 uppercase tracking-widest">Servers:</span>
             {Object.keys(SERVER_MAP).map((srv) => (
                 <button
                     key={srv}
@@ -85,6 +105,7 @@ export default function WatchPage({ params }: { params: any }) {
                 <div className="flex items-center gap-1 text-yellow-500 font-bold">
                     <Star size={16} fill="currentColor" /> {item.vote_average.toFixed(1)}
                 </div>
+                {type === "tv" && <div className="text-primary-600 font-bold uppercase tracking-widest">Season {season} Episode {episode}</div>}
                 <div className="flex items-center gap-1">
                     <Clock size={16} /> {item.runtime || item.episode_run_time?.[0] || "--"} min
                 </div>
@@ -97,20 +118,66 @@ export default function WatchPage({ params }: { params: any }) {
                 {item.overview}
             </p>
           </div>
+
+          {/* Season & Episode Selector */}
+          {type === "tv" && (
+              <div className="space-y-6 pt-8 border-t border-white/5">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-white">Episodes</h3>
+                    <div className="relative group">
+                        <button className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-md text-sm">
+                            Season {activeSeasonTab} <ChevronDown size={14} />
+                        </button>
+                        <div className="absolute right-0 top-full mt-2 w-40 bg-[#0b0b0b] border border-white/10 rounded-md shadow-2xl scale-95 opacity-0 pointer-events-none group-hover:scale-100 group-hover:opacity-100 group-hover:pointer-events-auto transition z-50">
+                            {item.seasons?.map((s: any) => (
+                                <button 
+                                    key={s.id}
+                                    onClick={() => loadEpisodes(item.id, s.season_number)}
+                                    className={`w-full px-4 py-2 text-left text-sm hover:bg-white/5 transition ${activeSeasonTab === s.season_number ? 'text-primary-600 font-bold' : ''}`}
+                                >
+                                    Season {s.season_number}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    {episodes.map((ep: any) => (
+                        <div 
+                            key={ep.id}
+                            onClick={() => { setSeason(activeSeasonTab); setEpisode(ep.episode_number); window.scrollTo({top: 0, behavior: 'smooth'}); }}
+                            className={`flex gap-4 p-3 rounded-xl border transition cursor-pointer group ${season === activeSeasonTab && episode === ep.episode_number ? 'bg-primary-600/10 border-primary-600/50' : 'bg-white/5 border-transparent hover:bg-white/10'}`}
+                        >
+                            <div className="relative h-20 w-32 flex-shrink-0 overflow-hidden rounded-lg">
+                                <img src={getImageUrl(ep.still_path || item.backdrop_path)} className="h-full w-full object-cover" />
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition">
+                                    <Play size={20} fill="white" />
+                                </div>
+                            </div>
+                            <div className="flex flex-col justify-center overflow-hidden">
+                                <h4 className="font-bold text-white truncate text-sm">EP{ep.episode_number}: {ep.name}</h4>
+                                <p className="text-xs text-gray-400 line-clamp-2 mt-1">{ep.overview || "No overview available."}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+              </div>
+          )}
         </div>
 
         <div className="space-y-8">
-            <div className="rounded-xl border border-white/10 bg-[#0a0a0a] p-6">
-                <h3 className="text-lg font-bold text-white mb-4">You might also like</h3>
+            <div className="rounded-xl border border-white/10 bg-[#0a0a0a] p-6 shadow-2xl">
+                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Star className="text-primary-600" size={18} fill="currentColor" /> Recommendations</h3>
                 <div className="grid grid-cols-2 gap-4">
                     {similar.results.slice(0, 6).map((s: any) => (
-                        <div key={s.id} className="group relative aspect-video overflow-hidden rounded-md cursor-pointer">
+                        <div key={s.id} className="group relative aspect-video overflow-hidden rounded-md cursor-pointer border border-white/5">
                             <img 
                                 src={getImageUrl(s.backdrop_path)} 
-                                className="h-full w-full object-cover transition duration-300 group-hover:scale-110"
+                                className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
                             />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                                <Play size={24} fill="white" />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center p-2 text-center">
+                                <p className="text-[10px] font-bold text-white line-clamp-2">{s.title || s.name}</p>
                             </div>
                         </div>
                     ))}
