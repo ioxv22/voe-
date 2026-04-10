@@ -43,7 +43,7 @@ export default function Home() {
                 const [latest, series, khaleeji, kids, topRated] = await Promise.all([
                     fetchTMDB(endpoints.movies, `${kidsParams}&sort_by=primary_release_date.desc`),
                     fetchTMDB(endpoints.series, kidsParams),
-                    fetchTMDB(endpoints.series, `with_original_language=ar&with_origin_country=SA|AE|KW|QA|OM|BH`), // Khaleeji Focus
+                    fetchTMDB(endpoints.series, `with_original_language=ar&with_origin_country=SA|AE|KW|EG|LB&sort_by=first_air_date.desc&include_null_first_air_dates=false`), // Tighter Arabic/Khaleeji Drama
                     fetchTMDB(endpoints.anime, "with_genres=16&with_original_language=ja"), // Anime for everyone
                     fetchTMDB(endpoints.topRated, kidsParams)
                 ]);
