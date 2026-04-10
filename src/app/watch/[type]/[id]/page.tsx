@@ -3,7 +3,7 @@
 import Navbar from "@/components/Navbar";
 import MovieRow from "@/components/MovieRow";
 import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
-import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown, RefreshCw } from "lucide-react";
+import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown, RefreshCw, ShieldCheck } from "lucide-react";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useEffect, useState } from "react";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
@@ -21,6 +21,7 @@ export default function WatchPage({ params }: { params: any }) {
   const [activeSeasonTab, setActiveSeasonTab] = useState(1);
   const [key, setKey] = useState(0); 
   const [sidebarAd, setSidebarAd] = useState("");
+  const [adFreeMode, setAdFreeMode] = useState(true); // Default to Ad-Free for everyone
   
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
 
@@ -37,7 +38,6 @@ export default function WatchPage({ params }: { params: any }) {
             loadEpisodes(resolvedParams.id, 1);
         }
 
-        // Load Sidebar Ad
         const adsSnap = await getDoc(doc(db, "system", "ads"));
         if (adsSnap.exists()) setSidebarAd(adsSnap.data().sidebar || "");
     }
@@ -76,13 +76,27 @@ export default function WatchPage({ params }: { params: any }) {
         <div className="lg:col-span-2 space-y-6">
           <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl group">
             <iframe
-              key={`${playerUrl}-${key}`}
+              key={`${playerUrl}-${key}-${adFreeMode}`}
               src={playerUrl}
               className="h-full w-full"
               allowFullScreen
-              sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals allow-popups-to-escape-sandbox allow-top-navigation"
+              // Ad-Free Mode strictly blocks all popups and navigation away from frame
+              sandbox={adFreeMode 
+                ? "allow-scripts allow-same-origin allow-forms allow-presentation" 
+                : "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals allow-top-navigation"
+              }
             />
             
+            {/* Ad-Block Controls */}
+            <div className="absolute top-4 left-4 z-50 flex items-center gap-2">
+                <button 
+                    onClick={() => setAdFreeMode(!adFreeMode)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold border transition ${adFreeMode ? 'bg-green-600/20 text-green-500 border-green-600/30' : 'bg-red-600/20 text-red-500 border-red-600/30'}`}
+                >
+                    <ShieldCheck size={12} /> {adFreeMode ? "AD-BLOCK ON" : "AD-BLOCK OFF (Compatible)"}
+                </button>
+            </div>
+
             <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition z-50">
                 <button 
                     onClick={() => setKey(k => k + 1)} 
@@ -99,10 +113,16 @@ export default function WatchPage({ params }: { params: any }) {
                         target="_blank"
                         className="bg-primary-600/90 backdrop-blur-md text-[10px] font-black text-white px-3 py-1.5 rounded-full border border-white/20 hover:bg-primary-500 transition shadow-lg"
                     >
-                        REMOVE ADS? GO VIP 👑
+                        VIP STATUS 👑
                     </a>
                 </div>
             )}
+          </div>
+
+          <div className="p-4 bg-blue-600/5 border border-blue-600/10 rounded-xl">
+             <p className="text-[11px] text-blue-400 font-medium leading-relaxed">
+                💡 <b>Tip:</b> If the video fails to load, click <b>"AD-BLOCK ON"</b> to toggle compatible mode. Many servers require popups to initialize the player correctly.
+             </p>
           </div>
 
           {!isPremium && (
@@ -110,8 +130,8 @@ export default function WatchPage({ params }: { params: any }) {
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-yellow-600/20 flex items-center justify-center text-yellow-600 text-lg">👑</div>
                     <div>
-                        <p className="text-sm font-bold text-white leading-tight">Upgrade to VIP for 25 AED</p>
-                        <p className="text-[10px] text-gray-500">Remove all player ads & support the platform.</p>
+                        <p className="text-sm font-bold text-white leading-tight">Support VOZ Stream</p>
+                        <p className="text-[10px] text-gray-500">Enable advanced features & support Hamad Al-Abdouli.</p>
                     </div>
                 </div>
                 <a href="https://t.me/iivoz" target="_blank" className="bg-yellow-600 text-black px-4 py-2 rounded-md text-[10px] font-black uppercase hover:bg-yellow-500 transition">Contact @iivoz</a>
@@ -189,7 +209,7 @@ export default function WatchPage({ params }: { params: any }) {
                         <div 
                             key={ep.id}
                             onClick={() => { setSeason(activeSeasonTab); setEpisode(ep.episode_number); window.scrollTo({top: 0, behavior: 'smooth'}); }}
-                            className={`flex gap-4 p-3 rounded-xl border transition cursor-pointer group ${season === activeSeasonTab && episode === ep.episode_number ? 'bg-primary-600/10 border-primary-600/50' : 'bg-white/5 border-transparent hover:bg-white/10'}`}
+                            className={`flex gap-4 p-3 rounded-xl border transition cursor-pointer group ${season === activeSeasonTab && episode === ep.episode_number ? 'bg-primary-600/20 border-primary-600/50' : 'bg-white/5 border-transparent hover:bg-white/10'}`}
                         >
                             <div className="relative h-20 w-32 flex-shrink-0 overflow-hidden rounded-lg">
                                 <img src={getImageUrl(ep.still_path || item.backdrop_path)} className="h-full w-full object-cover" />
@@ -209,7 +229,6 @@ export default function WatchPage({ params }: { params: any }) {
         </div>
 
         <div className="space-y-8">
-            {/* Dynamic Sidebar Ad */}
             {sidebarAd && (
                 <div 
                     className="rounded-xl border border-white/10 bg-white/5 p-4 overflow-hidden flex items-center justify-center"
