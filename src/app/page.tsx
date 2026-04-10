@@ -40,9 +40,10 @@ export default function Home() {
                 setLoadingContent(false);
 
                 // Fetch Dedicated Rows
-                const [latest, series, kids, topRated] = await Promise.all([
+                const [latest, series, khaleeji, kids, topRated] = await Promise.all([
                     fetchTMDB(endpoints.movies, `${kidsParams}&sort_by=primary_release_date.desc`),
                     fetchTMDB(endpoints.series, kidsParams),
+                    fetchTMDB(endpoints.series, `with_original_language=ar&with_origin_country=SA|AE|KW|QA|OM|BH`), // Khaleeji Focus
                     fetchTMDB(endpoints.anime, "with_genres=16&with_original_language=ja"), // Anime for everyone
                     fetchTMDB(endpoints.topRated, kidsParams)
                 ]);
@@ -51,6 +52,7 @@ export default function Home() {
                     ...prev, 
                     latest: latest.results, 
                     series: series.results, 
+                    khaleeji: khaleeji.results,
                     kids: kids.results,
                     topRated: topRated.results
                 }));
@@ -101,6 +103,15 @@ export default function Home() {
             <MovieRow 
                 title={currentProfile.isKids ? "New for Kids" : "Latest Movies"} 
                 movies={data.latest} 
+            />
+        )}
+
+        {/* KHALEEJI DRAMA */}
+        {data?.khaleeji && data.khaleeji.length > 0 && (
+            <MovieRow 
+                title="Khaleeji Drama | الدراما الخليجية" 
+                movies={data.khaleeji} 
+                isHighlighted
             />
         )}
 
