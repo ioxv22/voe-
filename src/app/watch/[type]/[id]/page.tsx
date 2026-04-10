@@ -7,8 +7,10 @@ import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown } from "lucide-re
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useEffect, useState } from "react";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
+import { useAuth } from "@/context/AuthContext";
 
 export default function WatchPage({ params }: { params: any }) {
+  const { isPremium } = useAuth();
   const [data, setData] = useState<{item: any, similar: any} | null>(null);
   const [server, setServer] = useState("nebula");
   const [season, setSeason] = useState(1);
@@ -70,11 +72,35 @@ export default function WatchPage({ params }: { params: any }) {
               className="h-full w-full"
               allowFullScreen
               referrerPolicy="no-referrer"
-              sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+              // Slightly more relaxed sandbox to fix "Not working" issues on some servers
+              sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups-to-escape-sandbox allow-top-navigation"
             />
+            {!isPremium && (
+                <div className="absolute top-4 right-4 z-40">
+                    <a 
+                        href="https://t.me/iivoz" 
+                        target="_blank"
+                        className="bg-primary-600/90 backdrop-blur-md text-[10px] font-black text-white px-3 py-1.5 rounded-full border border-white/20 hover:bg-primary-500 transition shadow-lg"
+                    >
+                        REMOVE ADS? GO VIP 👑
+                    </a>
+                </div>
+            )}
           </div>
 
-          {/* Server Selectors */}
+          {!isPremium && (
+              <div className="bg-gradient-to-r from-yellow-600/10 to-transparent border border-yellow-600/20 p-4 rounded-xl flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-yellow-600/20 flex items-center justify-center text-yellow-600 text-lg">👑</div>
+                    <div>
+                        <p className="text-sm font-bold text-white leading-tight">Upgrade to VIP for 25 AED</p>
+                        <p className="text-[10px] text-gray-500">Remove all player ads & support the platform.</p>
+                    </div>
+                </div>
+                <a href="https://t.me/iivoz" target="_blank" className="bg-yellow-600 text-black px-4 py-2 rounded-md text-[10px] font-black uppercase hover:bg-yellow-500 transition">Contact @iivoz</a>
+              </div>
+          )}
+
           <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 hide-scrollbar">
             <span className="text-xs font-bold text-gray-500 flex items-center mr-2 uppercase tracking-widest">Servers:</span>
             {Object.keys(SERVER_MAP).map((srv) => (
@@ -119,7 +145,6 @@ export default function WatchPage({ params }: { params: any }) {
             </p>
           </div>
 
-          {/* Season & Episode Selector */}
           {type === "tv" && (
               <div className="space-y-6 pt-8 border-t border-white/5">
                 <div className="flex items-center justify-between">

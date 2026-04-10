@@ -1,31 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, getDocs, doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Users, Eye, Heart, ShieldAlert, Lock, Save, Key } from "lucide-react";
+import { Users, Eye, Heart, ShieldAlert, Lock, Save, Key, Crown, Check, X } from "lucide-react";
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [stats, setStats] = useState({ users: 0, views: 0, likes: 0 });
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Security: Detect DevTools
-  useEffect(() => {
-    const detectDevTools = () => {
-        const threshold = 160;
-        const widthDiff = window.outerWidth - window.innerWidth > threshold;
-        const heightDiff = window.outerHeight - window.innerHeight > threshold;
-        if (widthDiff || heightDiff) {
-            // DevTools might be open
-            console.log("Security Alert: System Monitor detected.");
-        }
-    };
-    window.addEventListener('resize', detectDevTools);
-    return () => window.removeEventListener('resize', detectDevTools);
-  }, []);
+  const [userList, setUserList] = useState<any[]>([]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,31 +31,41 @@ export default function AdminDashboard() {
     setNewPassword("");
   };
 
+  const fetchAllData = async () => {
+    const usersSnap = await getDocs(collection(db, "users"));
+    const users = usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setUserList(users);
+    setStats({
+      users: usersSnap.size,
+      views: usersSnap.size * 18,
+      likes: usersSnap.size * 7,
+    });
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
-      const fetchStats = async () => {
-        const usersSnap = await getDocs(collection(db, "users"));
-        setStats({
-          users: usersSnap.size,
-          views: usersSnap.size * 18,
-          likes: usersSnap.size * 7,
-        });
-      };
-      fetchStats();
+        fetchAllData();
     }
   }, [isAuthenticated]);
+
+  const toggleVIP = async (userId: string, currentStatus: boolean) => {
+    await updateDoc(doc(db, "users", userId), { 
+        isVIP: !currentStatus,
+        isPremium: !currentStatus 
+    });
+    fetchAllData(); // Refresh list
+  };
 
   if (!isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#050505]">
-        <form onSubmit={handleLogin} className="w-full max-w-sm space-y-4 rounded-2xl border border-white/10 bg-[#0b0b0b] p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+        <form onSubmit={handleLogin} className="w-full max-w-sm space-y-4 rounded-2xl border border-white/10 bg-[#0b0b0b] p-8">
           <div className="flex justify-center mb-4">
              <div className="h-16 w-16 rounded-full bg-primary-600/10 flex items-center justify-center border border-primary-600/20">
                 <Lock size={32} className="text-primary-600" />
              </div>
           </div>
           <h2 className="text-center text-xl font-bold text-white tracking-widest uppercase">Security Terminal</h2>
-          <p className="text-center text-xs text-gray-500 mb-6">Level 4 Clearance Required</p>
           <input
             type="password"
             placeholder="ACCESS KEY"
@@ -78,7 +73,7 @@ export default function AdminDashboard() {
             value={passwordInput}
             onChange={(e) => setPasswordInput(e.target.value)}
           />
-          <button className="w-full rounded-md bg-primary-600 py-4 font-bold text-white transition hover:bg-primary-700 shadow-lg shadow-primary-600/20">
+          <button className="w-full rounded-md bg-primary-600 py-4 font-bold text-white transition hover:bg-primary-700">
             LOGIN
           </button>
         </form>
@@ -93,15 +88,8 @@ export default function AdminDashboard() {
         <div className="w-64 border-r border-white/10 bg-[#0a0a0a] p-6 hidden lg:block">
             <h2 className="text-primary-600 font-black text-xl mb-12">VOZ_ADMIN</h2>
             <nav className="space-y-4">
-                <div className="bg-primary-600/10 text-primary-600 p-3 rounded-lg flex items-center gap-3">
-                    <Users size={20} /> Dashboard
-                </div>
-                <div className="text-gray-500 p-3 hover:text-white transition flex items-center gap-3 cursor-pointer">
-                    <Eye size={20} /> Traffic logs
-                </div>
-                <div className="text-gray-500 p-3 hover:text-white transition flex items-center gap-3 cursor-pointer">
-                    <ShieldAlert size={20} /> Security
-                </div>
+                <div className="bg-primary-600/10 text-primary-600 p-3 rounded-lg flex items-center gap-3"><Users size={20} /> Dashboard</div>
+                <div className="text-gray-500 p-3 hover:text-white transition flex items-center gap-3 cursor-pointer"><Crown size={20} /> VIP Members</div>
             </nav>
         </div>
 
@@ -114,44 +102,48 @@ export default function AdminDashboard() {
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <StatCard icon={<Users />} label="Total Users" value={stats.users} />
+                <StatCard icon={<Crown className="text-yellow-500" />} label="VIP Members" value={userList.filter(u => u.isPremium || u.isVIP).length} />
                 <StatCard icon={<Eye />} label="Total Views" value={stats.views} />
-                <StatCard icon={<Heart />} label="Engagement" value={stats.likes} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
-                <div className="rounded-xl border border-white/10 bg-[#0b0b0b] p-8">
-                    <div className="flex items-center gap-3 mb-6 text-primary-600">
-                        <Key size={24} />
-                        <h3 className="text-xl font-bold text-white">Security Master Key</h3>
-                    </div>
-                    <p className="text-sm text-gray-400 mb-6">Update the system-wide access password. This will affect all future admin logins.</p>
-                    <div className="flex gap-4">
-                        <input 
-                            type="text" 
-                            placeholder="NEW MASTER KEY"
-                            className="flex-1 bg-white/5 border border-white/10 rounded-md p-3 outline-none focus:border-primary-600"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                        />
-                        <button 
-                            onClick={handleUpdatePassword}
-                            className="bg-primary-600 px-6 py-3 rounded-md font-bold hover:bg-primary-700 transition flex items-center gap-2"
-                        >
-                            <Save size={18} /> Update
-                        </button>
-                    </div>
+            {/* Users Table */}
+            <div className="mt-12 rounded-xl border border-white/10 bg-[#0b0b0b] overflow-hidden">
+                <div className="p-6 border-b border-white/10 flex justify-between items-center">
+                    <h3 className="text-xl font-bold">Manage Users</h3>
+                    <p className="text-xs text-gray-500 font-mono">FIRESTORE_RECORDS: {userList.length}</p>
                 </div>
-
-                <div className="rounded-xl border border-white/10 bg-[#0b0b0b] p-8">
-                    <div className="flex items-center gap-3 mb-6 text-yellow-500">
-                        <ShieldAlert size={24} />
-                        <h3 className="text-xl font-bold text-white">Activity Log</h3>
-                    </div>
-                    <div className="space-y-4 text-xs font-mono opacity-50">
-                        <p>[{new Date().toLocaleTimeString()}] ADMIN_AUTH_SUCCESS from IP: 192.168.1.1</p>
-                        <p>[{new Date().toLocaleTimeString()}] FIRESTORE_SYNC[OK]</p>
-                        <p>[{new Date().toLocaleTimeString()}] DDOS_PROTECTION[ACTIVE]</p>
-                    </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-white/5 text-gray-400 uppercase text-[10px] font-bold tracking-widest">
+                            <tr>
+                                <th className="p-4">User Email</th>
+                                <th className="p-4 text-center">VIP Status</th>
+                                <th className="p-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {userList.map(u => (
+                                <tr key={u.id} className="hover:bg-white/[0.02] transition">
+                                    <td className="p-4 font-medium">{u.email}</td>
+                                    <td className="p-4 text-center">
+                                        {(u.isPremium || u.isVIP) ? (
+                                            <span className="bg-yellow-600/20 text-yellow-600 px-3 py-1 rounded-full text-[10px] font-bold border border-yellow-600/20">VIP ACTIVE</span>
+                                        ) : (
+                                            <span className="text-gray-600 text-[10px] font-bold">Standard</span>
+                                        )}
+                                    </td>
+                                    <td className="p-4 text-right">
+                                        <button 
+                                            onClick={() => toggleVIP(u.id, u.isPremium || u.isVIP)}
+                                            className={`px-4 py-1.5 rounded-md text-[10px] font-black transition ${(u.isPremium || u.isVIP) ? 'bg-red-600/10 text-red-600 border border-red-600/20 hover:bg-red-600/20' : 'bg-green-600/10 text-green-600 border border-green-600/20 hover:bg-green-600/20'}`}
+                                        >
+                                            {(u.isPremium || u.isVIP) ? 'REVOKE VIP' : 'MAKE VIP'}
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
