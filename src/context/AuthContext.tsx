@@ -97,8 +97,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       await signInWithPopup(auth, googleProvider);
       localStorage.removeItem("voz_guest_session");
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("Google Sign In Error: ", error);
+      alert(`Login Failed: ${error.message}. If deploying on Vercel, ensure your Vercel domain is added to Firebase Authentication -> Settings -> Authorized Domains.`);
       setLoading(false);
     }
   };
