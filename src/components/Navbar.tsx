@@ -2,17 +2,17 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Bell, User } from "lucide-react";
+import { Search, Bell, User as UserIcon } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { useAuth } from "@/context/AuthContext";
+import { useProfile } from "@/context/ProfileContext";
+import SearchModal from "./SearchModal";
+import Logo from "./Logo";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
-import { useAuth } from "@/context/AuthContext";
-import { useProfile } from "@/context/ProfileContext";
-import SearchModal from "./SearchModal";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,10 +36,7 @@ export default function Navbar() {
       )}
     >
       <div className="flex items-center gap-8">
-        <Link href="/" className="group flex items-center gap-1 text-2xl font-black tracking-tighter text-primary-600">
-          <span className="text-white group-hover:text-primary-600 transition-colors">VOZ</span>
-          <span className="bg-primary-600 px-1 text-black rounded-sm">STREAM</span>
-        </Link>
+        <Logo />
 
         <ul className="hidden gap-6 text-sm font-medium text-gray-300 lg:flex">
           <Link href="/"><li className="cursor-pointer transition hover:text-white">Home</li></Link>
@@ -66,7 +63,6 @@ export default function Navbar() {
                 <div className="h-8 w-8 cursor-pointer overflow-hidden rounded-md border-2 border-transparent hover:border-white/20">
                     <img src={currentProfile.avatar} alt="Profile" className="h-full w-full object-cover" />
                 </div>
-                {/* Profile Dropdown */}
                 <div className="absolute right-0 top-full mt-2 w-48 scale-95 opacity-0 transition group-hover:scale-100 group-hover:opacity-100">
                     <div className="rounded-md border border-white/10 bg-[#0b0b0b] p-2 shadow-xl">
                         <p className="px-3 py-2 text-[10px] font-bold text-gray-400 border-b border-white/5 truncate">{currentProfile.name}</p>

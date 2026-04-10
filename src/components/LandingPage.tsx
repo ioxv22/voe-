@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
+import Logo from "./Logo";
 
-export default function LandingPage({ onSignIn }: { onSignIn: () => void }) {
+export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () => void, onGuestSignIn: () => void }) {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black font-sans selection:bg-red-600 selection:text-white">
       {/* Hero Background */}
@@ -17,10 +18,7 @@ export default function LandingPage({ onSignIn }: { onSignIn: () => void }) {
 
       {/* Header */}
       <header className="relative z-10 flex w-full items-center justify-between px-6 py-4 lg:px-12">
-        <div className="flex items-center gap-1 text-3xl font-black tracking-tighter text-primary-600">
-          <span className="text-white">VOZ</span>
-          <span className="bg-primary-600 px-1 text-black rounded-sm">STREAM</span>
-        </div>
+        <Logo />
         <button 
             onClick={onSignIn}
             className="rounded bg-primary-600 px-4 py-1.5 text-sm font-bold text-white transition hover:bg-primary-700"
@@ -58,6 +56,12 @@ export default function LandingPage({ onSignIn }: { onSignIn: () => void }) {
             className="flex items-center gap-2 rounded bg-primary-600 px-8 py-3 text-2xl font-medium transition hover:bg-primary-700"
           >
             Get Started <ChevronRight size={24} />
+          </button>
+          <button 
+            onClick={onGuestSignIn}
+            className="flex items-center gap-2 rounded border-2 border-white/20 px-8 py-3 text-2xl font-medium transition hover:bg-white/10"
+          >
+            Watch as Guest
           </button>
         </motion.div>
       </div>

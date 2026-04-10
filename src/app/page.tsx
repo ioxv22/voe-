@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const { user, loading: authLoading, signInWithGoogle } = useAuth();
+  const { user, loading: authLoading, signInWithGoogle, signInAsGuest } = useAuth();
   const { currentProfile, loading: profileLoading } = useProfile();
   const [data, setData] = useState<any>(null);
   const router = useRouter();
@@ -44,7 +44,7 @@ export default function Home() {
 
   if (authLoading || profileLoading) return <LoadingScreen />;
 
-  if (!user) return <LandingPage onSignIn={signInWithGoogle} />;
+  if (!user) return <LandingPage onSignIn={signInWithGoogle} onGuestSignIn={signInAsGuest} />;
 
   if (!currentProfile) return <LoadingScreen />;
 

@@ -10,29 +10,49 @@ import {
 import { auth, googleProvider } from "@/lib/firebase";
 
 interface AuthContextType {
-  user: User | null;
+  user: User | any | null;
   loading: boolean;
+  isGuest: boolean;
   signInWithGoogle: () => Promise<void>;
+  signInAsGuest: () => void;
   logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<any | null>(null);
+  const [isGuest, setIsGuest] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check local storage for guest session
+    const guestSession = localStorage.getItem("voz_guest_session");
+    if (guestSession) {
+        setIsGuest(true);
+        setUser({ displayName: "Guest User", uid: "guest_id", photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest" });
+        setLoading(false);
+        return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      setIsGuest(false);
       setLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
+  const signInAsGuest = () => {
+    setIsGuest(true);
+    setUser({ displayName: "Guest User", uid: "guest_id", photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest" });
+    localStorage.setItem("voz_guest_session", "true");
+  };
+
   const signInWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
+      localStorage.removeItem("voz_guest_session");
     } catch (error) {
       console.error("Login failed", error);
     }
@@ -40,14 +60,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      if (isGuest) {
+        setIsGuest(false);
+        setUser(null);
+        localStorage.removeItem("voz_guest_session");
+      } else {
+        await signOut(auth);
+      }
     } catch (error) {
       console.error("Logout failed", error);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, loading, isGuest, signInWithGoogle, signInAsGuest, logout }}>
       {children}
     </AuthContext.Provider>
   );
