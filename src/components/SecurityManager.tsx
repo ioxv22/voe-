@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function SecurityManager() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,7 +15,6 @@ export default function SecurityManager() {
 
     document.addEventListener('keydown', handleKeyDown, true);
     
-    // Low-frequency protocol sync
     const cleaner = setInterval(() => {
         console.clear();
         console.log("%cVOZ STREAM PROTECTED | BY HAMAD AL-ABDOULI", "color: #e50914; font-size: 14px; font-weight: bold;");
@@ -29,14 +28,11 @@ export default function SecurityManager() {
 
   return (
     <div ref={containerRef} className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden">
-        {/* HAMAD'S BRANDED WATERMARKS - Rights Protection */}
-        <div className="absolute top-10 left-10 opacity-10 text-white font-black text-[10px] tracking-widest uppercase select-none">
-            VOZ STREAM | @IIVOZ
-        </div>
-        <div className="absolute bottom-10 right-10 opacity-10 text-white font-black text-[10px] tracking-widest uppercase select-none flex flex-col items-end gap-1">
-            <span>TIKTOK: H7MADDD</span>
-            <span>SNAP: HAMADALABDOLLY</span>
-        </div>
+        {/* HAMAD'S BRANDED MOVING WATERMARKS */}
+        <Watermark id={1} initialPos={{x: 10, y: 10}} text="VOZ STREAM | @IIVOZ" />
+        <Watermark id={2} initialPos={{x: 80, y: 20}} text="TIKTOK: H7MADDD" />
+        <Watermark id={3} initialPos={{x: 50, y: 80}} text="SNAP: HAMADALABDOLLY" />
+        <Watermark id={4} initialPos={{x: 20, y: 60}} text="BUILT BY HAMAD AL-ABDOULI" />
         
         <style jsx global>{`
             img { pointer-events: none; -webkit-user-drag: none; }
@@ -46,4 +42,26 @@ export default function SecurityManager() {
         `}</style>
     </div>
   );
+}
+
+function Watermark({ id, initialPos, text }: { id: number, initialPos: {x: number, y: number}, text: string }) {
+    const [pos, setPos] = useState(initialPos);
+    
+    useEffect(() => {
+        // Slow interval to not cause lag, but keeps labels moving
+        const interval = setInterval(() => {
+            setPos({ x: Math.random() * 80 + 10, y: Math.random() * 80 + 10 });
+        }, 12000 + id * 3000); // Staggered timers
+        
+        return () => clearInterval(interval);
+    }, [id]);
+
+    return (
+        <div 
+            className="absolute opacity-10 text-white font-black text-[12px] tracking-widest uppercase select-none transition-all duration-[8000ms] ease-in-out whitespace-nowrap drop-shadow-md"
+            style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+        >
+            {text}
+        </div>
+    );
 }
