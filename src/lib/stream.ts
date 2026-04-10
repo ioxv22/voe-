@@ -11,7 +11,9 @@ export const SERVER_MAP = {
   helix: "helix",
   lunar: "lunar",
   galactus: "galactus",
-  vidsrc: "vidsrc", // Added stable fallback
+  vidsrc: "vidsrc",
+  vpro: "vpro", // Vidsrc PRO
+  super: "super", // SuperEmbed
   zero: "zero",
 };
 
@@ -22,6 +24,20 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
       return type === "movie" 
         ? `${baseUrl}/movie/${id}` 
         : `${baseUrl}/tv/${id}/${season}/${episode}`;
+  }
+
+  if (server === "vpro") {
+    const baseUrl = "https://vidsrc.pro/embed";
+    return type === "movie" 
+      ? `${baseUrl}/movie/${id}` 
+      : `${baseUrl}/tv/${id}/${season}/${episode}`;
+  }
+
+  if (server === "super") {
+    const baseUrl = "https://multiembed.mov/directstream.php";
+    return type === "movie" 
+      ? `${baseUrl}/?video_id=${id}&tmdb=1` 
+      : `${baseUrl}/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`;
   }
 
   const worker = WORKERS[0];
