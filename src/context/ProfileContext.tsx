@@ -29,6 +29,8 @@ interface ProfileContextType {
   currentProfile: UserProfile | null;
   selectProfile: (profile: UserProfile) => void;
   createProfile: (name: string, avatar: string, isKids: boolean, pin?: string) => Promise<void>;
+  updateProfile: (id: string, name: string, avatar: string, isKids: boolean, pin?: string) => Promise<void>;
+  deleteProfile: (id: string) => Promise<void>;
   toggleMyList: (movie: any) => Promise<void>;
   loading: boolean;
 }
@@ -172,8 +174,44 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateProfile = async (id: string, name: string, avatar: string, isKids: boolean = false, pin?: string) => {
+    if (!user) return;
+    const updatedData = { name, avatar, isKids, pin };
+    
+    setProfiles(prev => {
+        const updated = prev.map(p => p.id === id ? { ...p, ...updatedData } : p);
+        if (isGuest) localStorage.setItem("voz_guest_profiles", JSON.stringify(updated));
+        return updated;
+    });
+
+    if (currentProfile?.id === id) {
+        const newCurrent = { ...currentProfile, ...updatedData };
+        setCurrentProfile(newCurrent);
+        sessionStorage.setItem("voz_active_profile", JSON.stringify(newCurrent));
+    }
+
+    if (!isGuest) {
+        const docRef = doc(db, "users", user.uid, "profiles", id);
+        updateDoc(docRef, updatedData).catch(() => {});
+    }
+  };
+
+  const deleteProfile = async (id: string) => {
+      if (!user) return;
+      setProfiles(prev => {
+          const updated = prev.filter(p => p.id !== id);
+          if (isGuest) localStorage.setItem("voz_guest_profiles", JSON.stringify(updated));
+          return updated;
+      });
+      if (!isGuest) {
+          const { deleteDoc } = await import("firebase/firestore");
+          const docRef = doc(db, "users", user.uid, "profiles", id);
+          deleteDoc(docRef).catch(() => {});
+      }
+  };
+
   return (
-    <ProfileContext.Provider value={{ profiles, currentProfile, selectProfile, createProfile, toggleMyList, loading }}>
+    <ProfileContext.Provider value={{ profiles, currentProfile, selectProfile, createProfile, updateProfile, deleteProfile, toggleMyList, loading }}>
       {children}
     </ProfileContext.Provider>
   );

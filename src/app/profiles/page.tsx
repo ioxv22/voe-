@@ -41,12 +41,27 @@ export default function ProfilesPage() {
   const [newAvatar, setNewAvatar] = useState(AVATARS[0]);
   const [isKids, setIsKids] = useState(false);
   const [newPin, setNewPin] = useState("");
+  const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
   
   const router = useRouter();
 
+  const resetForm = () => {
+      setNewName("");
+      setNewAvatar(AVATARS[0]);
+      setIsKids(false);
+      setNewPin("");
+      setEditingProfileId(null);
+      setIsAdding(false);
+  };
+
   const handleSelect = (p: any) => {
     if (isManaging) {
-        alert("Edit and delete features are active in the developer console.");
+        setEditingProfileId(p.id);
+        setNewName(p.name);
+        setNewAvatar(p.avatar);
+        setIsKids(p.isKids);
+        setNewPin(p.pin || "");
+        setIsAdding(true);
         return;
     }
     
@@ -70,20 +85,33 @@ export default function ProfilesPage() {
     }
   };
 
-  const handleCreate = async () => {
+  const handleSave = async () => {
     if (newName && !isSaving) {
       setIsSaving(true);
       try {
-        await createProfile(newName, newAvatar, isKids, newPin || undefined);
-        setNewName("");
-        setNewPin("");
-        setIsAdding(false);
+        if (editingProfileId && updateProfile) {
+            await updateProfile(editingProfileId, newName, newAvatar, isKids, newPin || undefined);
+        } else {
+            await createProfile(newName, newAvatar, isKids, newPin || undefined);
+        }
+        resetForm();
       } catch (err) {
         console.error(err);
       } finally {
         setIsSaving(false);
       }
     }
+  };
+
+  const handleDelete = async () => {
+      if (editingProfileId && deleteProfile) {
+          if(confirm("Are you sure you want to delete this profile?")) {
+              setIsSaving(true);
+              await deleteProfile(editingProfileId);
+              resetForm();
+              setIsSaving(false);
+          }
+      }
   };
 
   if (contextLoading) {
@@ -186,9 +214,9 @@ export default function ProfilesPage() {
             className="w-full max-w-2xl rounded-3xl bg-black/80 p-8 backdrop-blur-3xl border border-white/10 shadow-2xl"
           >
             <div className="flex items-center justify-between mb-8">
-                <h2 className="text-3xl font-black tracking-tighter">Add Profile</h2>
+                <h2 className="text-3xl font-black tracking-tighter">{editingProfileId ? "Edit Profile" : "Add Profile"}</h2>
                 <button 
-                  onClick={() => setIsAdding(false)}
+                  onClick={resetForm}
                   className="h-10 w-10 flex items-center justify-center rounded-full hover:bg-white/10 transition"
                 ><X /></button>
             </div>
@@ -255,20 +283,28 @@ export default function ProfilesPage() {
                         </div>
                     </div>
 
-                    <div className="flex gap-4 pt-6">
+                    <div className="flex flex-wrap gap-4 pt-6">
                         <button 
                             disabled={isSaving}
-                            onClick={handleCreate}
+                            onClick={handleSave}
                             className="bg-white px-10 py-3 text-black font-black uppercase text-xs tracking-widest transition hover:bg-primary-600 hover:text-white disabled:bg-gray-700 rounded-xl shadow-xl shadow-white/5 active:scale-95"
                         >
-                            {isSaving ? "Creating..." : "Save Profile"}
+                            {isSaving ? "Saving..." : "Save Profile"}
                         </button>
                         <button 
-                             onClick={() => setIsAdding(false)}
+                            onClick={resetForm}
                             className="border border-white/10 px-10 py-3 text-gray-500 uppercase font-black text-xs tracking-widest transition hover:border-white hover:text-white rounded-xl active:scale-95"
                         >
                             Cancel
                         </button>
+                        {editingProfileId && (
+                            <button 
+                                onClick={handleDelete}
+                                className="ml-auto bg-red-600/20 px-6 py-3 text-red-500 uppercase font-black text-xs tracking-widest transition hover:bg-red-600 hover:text-white shadow-xl shadow-red-600/5 active:scale-95 rounded-xl border border-red-600/20"
+                            >
+                                Delete
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
