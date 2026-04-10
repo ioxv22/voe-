@@ -30,6 +30,8 @@ interface ProfileContextType {
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
+const DEFAULT_AVATAR = "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix";
+
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const { user, isGuest, loading: authLoading } = useAuth();
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
@@ -37,7 +39,6 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Wait for auth to settle before fetching profiles
     if (authLoading) return;
 
     if (!user) {
@@ -49,45 +50,51 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
 
     const fetchProfiles = async () => {
       setLoading(true);
+      const guestKey = "voz_guest_profiles";
+      const sessionActiveKey = "voz_active_profile";
+
       try {
           if (isGuest) {
-            const localProfiles = localStorage.getItem("voz_guest_profiles");
-            if (localProfiles) {
-                const parsed = JSON.parse(localProfiles);
-                setProfiles(parsed);
-                const sessionProfile = sessionStorage.getItem("voz_active_profile");
-                if (sessionProfile) setCurrentProfile(JSON.parse(sessionProfile));
-            } else {
-                const defaultProfile = { id: 'guest_main', name: 'Guest', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest', isKids: false };
-                setProfiles([defaultProfile]);
-                localStorage.setItem("voz_guest_profiles", JSON.stringify([defaultProfile]));
-            }
-          } else {
-            const q = query(collection(db, "users", user.uid, "profiles"), limit(4));
-            const snapshot = await getDocs(q);
+            const localProfiles = localStorage.getItem(guestKey);
+            let parsed = localProfiles ? JSON.parse(localProfiles) : [];
             
-            if (snapshot.empty) {
-              const defaultProfile = { 
-                  id: 'main', 
-                  name: user.displayName || 'Me', 
-                  avatar: user.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-                  isKids: false
-              };
-              await setDoc(doc(db, "users", user.uid, "profiles", "main"), defaultProfile);
-              setProfiles([defaultProfile]);
-            } else {
-              const p = snapshot.docs.map(doc => ({ ...doc.data() } as UserProfile));
-              setProfiles(p);
-              const sessionProfile = sessionStorage.getItem("voz_active_profile");
-              if (sessionProfile) {
-                  const saved = JSON.parse(sessionProfile);
-                  const found = p.find(prof => prof.id === saved.id);
-                  if (found) setCurrentProfile(found);
-              }
+            if (parsed.length === 0) {
+                parsed = [{ id: 'guest_main', name: 'Guest', avatar: DEFAULT_AVATAR, isKids: false }];
+                localStorage.setItem(guestKey, JSON.stringify(parsed));
+            }
+            
+            setProfiles(parsed);
+            const saved = sessionStorage.getItem(sessionActiveKey);
+            if (saved) setCurrentProfile(JSON.parse(saved));
+          } else {
+            // FIREBASE AUTHENTICATED FETCH
+            try {
+                const q = query(collection(db, "users", user.uid, "profiles"), limit(4));
+                const snapshot = await getDocs(q);
+                
+                if (snapshot.empty) {
+                  const defaultProfile = { id: 'main', name: user.displayName || 'Me', avatar: user.photoURL || DEFAULT_AVATAR, isKids: false };
+                  // We don't await this to avoid "Offline" blocking the UI
+                  setDoc(doc(db, "users", user.uid, "profiles", "main"), defaultProfile).catch(() => {});
+                  setProfiles([defaultProfile]);
+                } else {
+                  const p = snapshot.docs.map(doc => ({ ...doc.data() } as UserProfile));
+                  setProfiles(p);
+                  const saved = sessionStorage.getItem(sessionActiveKey);
+                  if (saved) {
+                      const found = p.find(prof => prof.id === JSON.parse(saved).id);
+                      if (found) setCurrentProfile(found);
+                  }
+                }
+            } catch (firebaseErr) {
+                console.warn("Firestore Offline - Using Emergency Fallback", firebaseErr);
+                // OFFLINE FALLBACK: Provide at least one profile so the user isn't stuck
+                const fallbackProfile = { id: 'fallback', name: user.displayName || 'User', avatar: DEFAULT_AVATAR, isKids: false };
+                setProfiles([fallbackProfile]);
             }
           }
       } catch (err) {
-          console.error("Profile fetch error", err);
+          console.error("General Profile Error:", err);
       } finally {
           setLoading(false);
       }
@@ -110,7 +117,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         return updated;
     });
     if (!isGuest) {
-        await setDoc(doc(db, "users", user.uid, "profiles", newProfile.id), newProfile);
+        setDoc(doc(db, "users", user.uid, "profiles", newProfile.id), newProfile).catch(() => {});
     }
   };
 
@@ -123,6 +130,6 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
 
 export const useProfile = () => {
   const context = useContext(ProfileContext);
-  if (context === undefined) throw new Error("useProfile error");
+  if (context === undefined) throw new Error("useProfile Error");
   return context;
 };

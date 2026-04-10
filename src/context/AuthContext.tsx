@@ -33,7 +33,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Recover Guest session immediately
     const guestSession = localStorage.getItem("voz_guest_session");
     
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -41,31 +40,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(firebaseUser);
           setIsGuest(false);
           
-          try {
-              // Background data sync
-              const userDocRef = doc(db, "users", firebaseUser.uid);
-              const userDoc = await getDoc(userDocRef);
-              if (userDoc.exists()) {
-                  setIsPremium(!!userDoc.data().isVIP || !!userDoc.data().isPremium);
-              } else {
-                  await setDoc(userDocRef, { 
-                      email: firebaseUser.email, 
-                      displayName: firebaseUser.displayName,
-                      createdAt: new Date().toISOString(),
-                      isPremium: false 
-                  }, { merge: true });
+          // NON-BLOCKING Background Sync
+          const syncUser = async () => {
+              try {
+                  const userDocRef = doc(db, "users", firebaseUser.uid);
+                  const userDoc = await getDoc(userDocRef);
+                  if (userDoc.exists()) {
+                      setIsPremium(!!userDoc.data().isVIP || !!userDoc.data().isPremium);
+                  } else {
+                      // Silently attempt provision
+                      setDoc(userDocRef, { 
+                          email: firebaseUser.email, 
+                          displayName: firebaseUser.displayName,
+                          isPremium: false 
+                      }, { merge: true }).catch(() => {});
+                  }
+              } catch (err) {
+                  console.warn("Auth sync offline - continuing as standard user.");
+                  setIsPremium(false);
               }
-          } catch (err) {
-              console.error("Auth document sync delayed", err);
-          }
+          };
+          syncUser();
           setLoading(false);
       } else if (guestSession) {
           setIsGuest(true);
+          setIsPremium(false);
           setUser({ displayName: "Guest User", uid: "guest_id", photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest" });
           setLoading(false);
       } else {
           setUser(null);
-          setIsGuest(false);
           setLoading(false);
       }
     });
@@ -95,7 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       const cred = await createUserWithEmailAndPassword(auth, email, pass);
-      await setDoc(doc(db, "users", cred.user.uid), { email, isPremium: false });
+      setDoc(doc(db, "users", cred.user.uid), { email, isPremium: false }).catch(() => {});
       localStorage.removeItem("voz_guest_session");
     } catch (error) {
       setLoading(false);
@@ -122,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     setIsGuest(false);
     setLoading(false);
-    window.location.href = "/"; // Hard reload to clear all states
+    window.location.href = "/";
   };
 
   return (
