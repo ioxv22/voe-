@@ -45,6 +45,7 @@ export const endpoints = {
   series: "/trending/tv/week",
   anime: "/discover/tv", // will add genre 16
   search: "/search/multi",
+  topRated: "/movie/top_rated",
   details: (type: string, id: string) => `/${type}/${id}`,
   similar: (type: string, id: string) => `/${type}/${id}/similar`,
 };
