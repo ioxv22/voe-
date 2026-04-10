@@ -17,7 +17,9 @@ export default function SecurityManager() {
         e.key === 'F12' || e.key === 'PrintScreen'
       ) {
         e.preventDefault();
-        alert("Security Policy: Screen capture and source viewing is disabled.");
+        if (e.key === 'PrintScreen' || (e.ctrlKey && e.key === 'p')) {
+            alert("Security Policy: Screen capture is strictly disabled.");
+        }
       }
     };
 
