@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 export default function NativeAd() {
   return (
     <div className="w-full flex justify-center my-8 px-4 overflow-hidden rounded-xl">
