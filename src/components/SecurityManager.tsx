@@ -6,24 +6,20 @@ export default function SecurityManager() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Light deterrents only. Avoid heavy loops to prevent "Hangs"
+    // Light deterrents to protect IP without lagging the app
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey && (e.key === 'u' || e.key === 's')) || e.key === 'F12') {
         e.preventDefault();
       }
     };
 
-    const handleContext = (e: MouseEvent) => {
-        // Allow right click but protect images if needed
-    };
-
     document.addEventListener('keydown', handleKeyDown, true);
     
-    // Low-frequency sync
+    // Low-frequency protocol sync
     const cleaner = setInterval(() => {
         console.clear();
-        console.log("%cVOZ STREAM PROTECTED", "color: #e50914; font-size: 14px; font-weight: bold;");
-    }, 15000);
+        console.log("%cVOZ STREAM PROTECTED | BY HAMAD AL-ABDOULI", "color: #e50914; font-size: 14px; font-weight: bold;");
+    }, 20000);
 
     return () => {
       clearInterval(cleaner);
@@ -33,13 +29,20 @@ export default function SecurityManager() {
 
   return (
     <div ref={containerRef} className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden">
-        {/* Stationary corners - less CPU usage than moving watermarks */}
-        <div className="absolute top-10 left-10 opacity-10 text-white font-black text-[10px] tracking-widest uppercase select-none">VOZ STREAM | DXB</div>
-        <div className="absolute bottom-10 right-10 opacity-10 text-white font-black text-[10px] tracking-widest uppercase select-none">@IIVOZ PROTOCOL</div>
+        {/* HAMAD'S BRANDED WATERMARKS - Rights Protection */}
+        <div className="absolute top-10 left-10 opacity-10 text-white font-black text-[10px] tracking-widest uppercase select-none">
+            VOZ STREAM | @IIVOZ
+        </div>
+        <div className="absolute bottom-10 right-10 opacity-10 text-white font-black text-[10px] tracking-widest uppercase select-none flex flex-col items-end gap-1">
+            <span>TIKTOK: H7MADDD</span>
+            <span>SNAP: HAMADALABDOLLY</span>
+        </div>
         
         <style jsx global>{`
             img { pointer-events: none; -webkit-user-drag: none; }
             body { background-color: #020202 !important; }
+            /* Global selection color matched to Hamad's Brand */
+            ::selection { background: #e50914; color: white; }
         `}</style>
     </div>
   );
