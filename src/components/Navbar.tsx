@@ -8,7 +8,10 @@ import { twMerge } from "tailwind-merge";
 import { useAuth } from "@/context/AuthContext";
 import { useProfile } from "@/context/ProfileContext";
 import SearchModal from "./SearchModal";
+import NotificationPanel from "./NotificationPanel";
 import Logo from "./Logo";
+import { collection, query, limit, onSnapshot, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -17,16 +20,32 @@ function cn(...inputs: ClassValue[]) {
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [notifCount, setNotifCount] = useState(0);
+  
   const { user, signInWithGoogle, logout } = useAuth();
   const { currentProfile } = useProfile();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    
+    // Listen for notification changes
+    const q = query(collection(db, "notifications"), orderBy("date", "desc"), limit(5));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        setNotifCount(snapshot.size);
+    });
+
+    return () => {
+        window.removeEventListener("scroll", handleScroll);
+        unsubscribe();
+    };
   }, []);
+
+  const handleOpenNotif = () => {
+      setIsNotifOpen(!isNotifOpen);
+      setNotifCount(0); // Reset visual dot on open
+  };
 
   return (
     <nav
@@ -40,8 +59,8 @@ export default function Navbar() {
 
         <ul className="hidden gap-6 text-sm font-medium text-gray-300 lg:flex">
           <Link href="/"><li className="cursor-pointer transition hover:text-white">Home</li></Link>
-          <li className="cursor-pointer transition hover:text-white">TV Shows</li>
-          <li className="cursor-pointer transition hover:text-white">Movies</li>
+          <Link href="/browse"><li className="cursor-pointer transition hover:text-white">TV Shows</li></Link>
+          <Link href="/browse"><li className="cursor-pointer transition hover:text-white">Movies</li></Link>
           <li className="cursor-pointer transition hover:text-white">New & Popular</li>
           <li className="cursor-pointer transition hover:text-white">My List</li>
         </ul>
@@ -51,11 +70,14 @@ export default function Navbar() {
         <button onClick={() => setIsSearchOpen(true)} className="cursor-pointer hover:text-white">
           <Search size={20} strokeWidth={2.5} />
         </button>
-        <button className="relative cursor-pointer hover:text-white">
+        
+        <button onClick={handleOpenNotif} className="relative cursor-pointer hover:text-white transition active:scale-90">
           <Bell size={20} strokeWidth={2.5} />
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary-600 text-[10px] font-bold text-white">
-            2
-          </span>
+          {notifCount > 0 && (
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary-600 text-[10px] font-black text-white shadow-lg animate-bounce">
+                {notifCount}
+            </span>
+          )}
         </button>
         
         {user && currentProfile ? (
@@ -81,7 +103,9 @@ export default function Navbar() {
             </button>
         )}
       </div>
+
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <NotificationPanel isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
     </nav>
   );
 }
