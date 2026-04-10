@@ -31,13 +31,15 @@ interface ProfileContextType {
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
-  const { user, isGuest } = useAuth();
+  const { user, isGuest, loading: authLoading } = useAuth();
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [currentProfile, setCurrentProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Clear and return if no user
+    // Wait for auth to settle before fetching profiles
+    if (authLoading) return;
+
     if (!user) {
       setProfiles([]);
       setCurrentProfile(null);
@@ -53,11 +55,8 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
             if (localProfiles) {
                 const parsed = JSON.parse(localProfiles);
                 setProfiles(parsed);
-                // Respect session selection if exists
                 const sessionProfile = sessionStorage.getItem("voz_active_profile");
-                if (sessionProfile) {
-                    setCurrentProfile(JSON.parse(sessionProfile));
-                }
+                if (sessionProfile) setCurrentProfile(JSON.parse(sessionProfile));
             } else {
                 const defaultProfile = { id: 'guest_main', name: 'Guest', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest', isKids: false };
                 setProfiles([defaultProfile]);
@@ -79,11 +78,10 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
             } else {
               const p = snapshot.docs.map(doc => ({ ...doc.data() } as UserProfile));
               setProfiles(p);
-              
-              // Respect session selection
               const sessionProfile = sessionStorage.getItem("voz_active_profile");
               if (sessionProfile) {
-                  const found = p.find(prof => prof.id === JSON.parse(sessionProfile).id);
+                  const saved = JSON.parse(sessionProfile);
+                  const found = p.find(prof => prof.id === saved.id);
                   if (found) setCurrentProfile(found);
               }
             }
@@ -96,7 +94,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     };
 
     fetchProfiles();
-  }, [user, isGuest]);
+  }, [user, isGuest, authLoading]);
 
   const selectProfile = (profile: UserProfile) => {
     setCurrentProfile(profile);
@@ -105,24 +103,14 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
 
   const createProfile = async (name: string, avatar: string, isKids: boolean = false, pin?: string) => {
     if (!user || profiles.length >= 4) return;
-    
     const newProfile = { id: Date.now().toString(), name, avatar, isKids, pin };
-    
-    // Optimistic Update
     setProfiles(prev => {
         const updated = [...prev, newProfile];
-        if (isGuest) {
-            localStorage.setItem("voz_guest_profiles", JSON.stringify(updated));
-        }
+        if (isGuest) localStorage.setItem("voz_guest_profiles", JSON.stringify(updated));
         return updated;
     });
-
     if (!isGuest) {
-        try {
-            await setDoc(doc(db, "users", user.uid, "profiles", newProfile.id), newProfile);
-        } catch (err) {
-            console.error("Firestore sync failed", err);
-        }
+        await setDoc(doc(db, "users", user.uid, "profiles", newProfile.id), newProfile);
     }
   };
 
@@ -135,8 +123,6 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
 
 export const useProfile = () => {
   const context = useContext(ProfileContext);
-  if (context === undefined) {
-    throw new Error("useProfile must be used within a ProfileProvider");
-  }
+  if (context === undefined) throw new Error("useProfile error");
   return context;
 };

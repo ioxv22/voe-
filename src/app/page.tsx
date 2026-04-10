@@ -17,14 +17,14 @@ export default function Home() {
   const { currentProfile, loading: profileLoading } = useProfile();
   const [data, setData] = useState<any>(null);
   const [loadingContent, setLoadingContent] = useState(true);
-  const [forceHideLoading, setForceHideLoading] = useState(false);
+  const [forceHideProgress, setForceHideProgress] = useState(false);
   const router = useRouter();
 
-  // Force loading screen to hide after 5 seconds max (Hamad's request)
+  // Safety timer to ensure we don't stay stuck on black screen if API is slow
   useEffect(() => {
     const timer = setTimeout(() => {
-        setForceHideLoading(true);
-    }, 5000);
+        setForceHideProgress(true);
+    }, 8000); // 8 second grace period for high-volume loads
     return () => clearTimeout(timer);
   }, []);
 
@@ -32,7 +32,7 @@ export default function Home() {
     if (!authLoading && user && !profileLoading && !currentProfile) {
         router.push("/profiles");
     }
-  }, [user, authLoading, currentProfile, profileLoading]);
+  }, [user, authLoading, currentProfile, profileLoading, router]);
 
   useEffect(() => {
     if (user && currentProfile) {
@@ -42,12 +42,12 @@ export default function Home() {
             const kidsParams = isKids ? "with_genres=16,10751" : ""; 
 
             try {
-                // Fetch basic data first for Hero (faster initial load)
+                // Primary content for initial paint
                 const trending = await fetchTMDB(endpoints.trending, isKids ? "with_genres=16" : "");
                 setData((prev: any) => ({ ...prev, trending }));
-                setLoadingContent(false); // Show Hero immediately
+                setLoadingContent(false);
 
-                // Fetch the rest in the background
+                // Background secondary content
                 const [movies, series, anime] = await Promise.all([
                     fetchTMDB(endpoints.movies, kidsParams),
                     fetchTMDB(endpoints.series, kidsParams),
@@ -55,7 +55,7 @@ export default function Home() {
                 ]);
                 setData((prev: any) => ({ ...prev, movies, series, anime }));
             } catch (err) {
-                console.error("Content load failed", err);
+                console.error("Content fetch failed", err);
                 setLoadingContent(false);
             }
         }
@@ -63,27 +63,32 @@ export default function Home() {
     }
   }, [user, currentProfile]);
 
-  // Priority check: Use forceHideLoading to bypass visual loading screens
-  const isVisualLoading = (authLoading || profileLoading || !currentProfile || (loadingContent && !data?.trending)) && !forceHideLoading;
+  // CLINICAL LOADING CHECK
+  // 1. Initial State: Auth is still determining who you are
+  if (authLoading) return <LoadingScreen />;
 
-  if (isVisualLoading) {
-     // Still need base auth for Landing Page
-     if (!authLoading && !user) return <LandingPage onSignIn={signInWithGoogle} onGuestSignIn={signInAsGuest} />;
-     return <LoadingScreen />;
-  }
-
-  // Final fallback if not logged in
+  // 2. Unauthenticated: Show landing/login immediately
   if (!user) return <LandingPage onSignIn={signInWithGoogle} onGuestSignIn={signInAsGuest} />;
 
+  // 3. Profile Fetching: We know user exists, but wait for profile logic
+  if (profileLoading && !forceHideProgress) return <LoadingScreen />;
+
+  // 4. Redirect Case: User is logged in but hasn't picked a profile (ProfileContext logic handles this)
+  if (!currentProfile) return <LoadingScreen />;
+
+  // 5. Content Prep: Show loading until at least the Hero data exists
+  if (loadingContent && !data?.trending && !forceHideProgress) return <LoadingScreen />;
+
+  // If we reach here, we are ready to show the UI
   const featured = data?.trending?.results?.[0];
 
   return (
-    <main className="min-h-screen bg-[#020202] pb-20">
+    <main className="min-h-screen bg-[#020202] pb-20 overflow-x-hidden">
       <Navbar />
       
       {featured && <Hero movie={featured} />}
 
-      <div className="-mt-16 relative z-30 lg:-mt-24">
+      <div className="relative z-30 -mt-16 lg:-mt-24 space-y-12">
         {data?.trending && (
             <MovieRow 
                 title={currentProfile?.isKids ? "Fun Adventures for You" : "Trending Now"} 
@@ -106,16 +111,16 @@ export default function Home() {
         )}
         
         {/* Contact/Telegram Highlight */}
-        <div className="mt-12 px-4 lg:px-12">
-            <div className="rounded-xl bg-gradient-to-r from-blue-600/20 to-transparent p-8 border border-white/5 flex flex-col items-start lg:flex-row lg:items-center justify-between gap-6">
-                <div>
-                    <h3 className="text-xl font-bold text-white mb-2">Need Help or Content Requests?</h3>
-                    <p className="text-gray-400 max-w-md">Contact us directly on Telegram for fast support and site updates.</p>
+        <div className="px-4 lg:px-12 pb-12">
+            <div className="rounded-3xl bg-white/[0.03] backdrop-blur-md p-10 border border-white/5 flex flex-col items-start lg:flex-row lg:items-center justify-between gap-8">
+                <div className="space-y-2">
+                    <h3 className="text-2xl font-black text-white">Need Support?</h3>
+                    <p className="text-gray-500 max-w-sm font-medium">Connect with the development team for content requests and technical assistance.</p>
                 </div>
                 <a 
                     href="https://t.me/iivoz" 
                     target="_blank" 
-                    className="px-8 py-3 bg-[#0088cc] text-white font-bold rounded-full hover:scale-105 transition shadow-lg shadow-blue-500/20"
+                    className="px-10 py-4 bg-primary-600 text-black font-black rounded-2xl hover:bg-primary-700 transition shadow-2xl shadow-primary-600/20 uppercase tracking-widest text-xs"
                 >
                     Chat on Telegram @iivoz
                 </a>
