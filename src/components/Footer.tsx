@@ -1,5 +1,4 @@
-import React from "react";
-import { Send, Github, Twitter } from "lucide-react";
+import { Send } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -22,9 +21,6 @@ export default function Footer() {
                 <a href="https://t.me/iivoz" target="_blank" className="h-10 w-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition">
                     <Send size={18} />
                 </a>
-                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400">
-                    <Github size={18} />
-                </div>
             </div>
           </div>
 
