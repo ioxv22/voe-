@@ -41,6 +41,10 @@ export default function RootLayout({
             crossOrigin="anonymous" 
             strategy="afterInteractive"
           />
+          <Script 
+            src="https://pl29118911.profitablecpmratenetwork.com/94/fe/c5/94fec515712decf5618381e9375b08aa.js" 
+            strategy="afterInteractive"
+          />
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
         <SecurityManager />
