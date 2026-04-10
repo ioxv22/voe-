@@ -30,7 +30,7 @@ const AVATARS = [
 ];
 
 export default function ProfilesPage() {
-  const { profiles, selectProfile, createProfile, loading: contextLoading } = useProfile();
+  const { profiles, selectProfile, createProfile, updateProfile, deleteProfile, loading: contextLoading } = useProfile();
   const [isManaging, setIsManaging] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
