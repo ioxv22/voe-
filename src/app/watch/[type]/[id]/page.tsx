@@ -8,6 +8,8 @@ import { useWatchlist } from "@/hooks/useWatchlist";
 import { useEffect, useState } from "react";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
 import { useAuth } from "@/context/AuthContext";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function WatchPage({ params }: { params: any }) {
   const { isPremium } = useAuth();
@@ -17,7 +19,8 @@ export default function WatchPage({ params }: { params: any }) {
   const [episode, setEpisode] = useState(1);
   const [episodes, setEpisodes] = useState<any[]>([]);
   const [activeSeasonTab, setActiveSeasonTab] = useState(1);
-  const [key, setKey] = useState(0); // For player refresh
+  const [key, setKey] = useState(0); 
+  const [sidebarAd, setSidebarAd] = useState("");
   
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
 
@@ -33,6 +36,10 @@ export default function WatchPage({ params }: { params: any }) {
         if (resolvedParams.type === "tv") {
             loadEpisodes(resolvedParams.id, 1);
         }
+
+        // Load Sidebar Ad
+        const adsSnap = await getDoc(doc(db, "system", "ads"));
+        if (adsSnap.exists()) setSidebarAd(adsSnap.data().sidebar || "");
     }
     init();
   }, [params]);
@@ -73,17 +80,13 @@ export default function WatchPage({ params }: { params: any }) {
               src={playerUrl}
               className="h-full w-full"
               allowFullScreen
-              // IMPORTANT: Using relaxed sandbox fixes "Playback Error"
-              // allow-popups is REQUIRED for many 3rd party HLS players even if we want to block them
               sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals allow-popups-to-escape-sandbox allow-top-navigation"
             />
             
-            {/* Player Controls Overlay */}
             <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition z-50">
                 <button 
                     onClick={() => setKey(k => k + 1)} 
                     className="p-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 text-white hover:bg-primary-600 transition"
-                    title="Refresh Player"
                 >
                     <RefreshCw size={16} />
                 </button>
@@ -206,6 +209,14 @@ export default function WatchPage({ params }: { params: any }) {
         </div>
 
         <div className="space-y-8">
+            {/* Dynamic Sidebar Ad */}
+            {sidebarAd && (
+                <div 
+                    className="rounded-xl border border-white/10 bg-white/5 p-4 overflow-hidden flex items-center justify-center"
+                    dangerouslySetInnerHTML={{ __html: sidebarAd }}
+                />
+            )}
+
             <div className="rounded-xl border border-white/10 bg-[#0a0a0a] p-6 shadow-2xl">
                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Star className="text-primary-600" size={18} fill="currentColor" /> Recommendations</h3>
                 <div className="grid grid-cols-2 gap-4">

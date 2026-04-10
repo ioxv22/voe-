@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Users, Eye, Heart, ShieldAlert, Lock, Save, Key, Crown, Check, X } from "lucide-react";
+import { Users, Eye, Lock, Save, Key, Crown, LayoutDashboard } from "lucide-react";
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -11,6 +11,7 @@ export default function AdminDashboard() {
   const [newPassword, setNewPassword] = useState("");
   const [stats, setStats] = useState({ users: 0, views: 0, likes: 0 });
   const [userList, setUserList] = useState<any[]>([]);
+  const [adCodes, setAdCodes] = useState({ header: "", footer: "", sidebar: "" });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,10 +32,19 @@ export default function AdminDashboard() {
     setNewPassword("");
   };
 
+  const handleUpdateAds = async () => {
+    await setDoc(doc(db, "system", "ads"), adCodes, { merge: true });
+    alert("Ad scripts updated globally.");
+  };
+
   const fetchAllData = async () => {
     const usersSnap = await getDocs(collection(db, "users"));
     const users = usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     setUserList(users);
+    
+    const adsSnap = await getDoc(doc(db, "system", "ads"));
+    if (adsSnap.exists()) setAdCodes(adsSnap.data() as any);
+    
     setStats({
       users: usersSnap.size,
       views: usersSnap.size * 18,
@@ -53,7 +63,7 @@ export default function AdminDashboard() {
         isVIP: !currentStatus,
         isPremium: !currentStatus 
     });
-    fetchAllData(); // Refresh list
+    fetchAllData();
   };
 
   if (!isAuthenticated) {
@@ -89,15 +99,14 @@ export default function AdminDashboard() {
             <h2 className="text-primary-600 font-black text-xl mb-12">VOZ_ADMIN</h2>
             <nav className="space-y-4">
                 <div className="bg-primary-600/10 text-primary-600 p-3 rounded-lg flex items-center gap-3"><Users size={20} /> Dashboard</div>
-                <div className="text-gray-500 p-3 hover:text-white transition flex items-center gap-3 cursor-pointer"><Crown size={20} /> VIP Members</div>
             </nav>
         </div>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-8 lg:p-12">
             <div className="flex items-center justify-between mb-12">
-                <h1 className="text-3xl font-black">System Overview</h1>
-                <button onClick={() => setIsAuthenticated(false)} className="px-6 py-2 bg-red-600/10 text-red-600 border border-red-600/20 rounded-md hover:bg-red-600/20 transition text-xs font-bold">DISCONNECT</button>
+                <h1 className="text-3xl font-black">Admin Protocol</h1>
+                <button onClick={() => setIsAuthenticated(false)} className="px-6 py-2 bg-red-600/10 text-red-600 border border-red-600/20 rounded-md hover:bg-red-600/20 transition text-xs font-bold font-mono">DISCONNECT</button>
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -106,18 +115,70 @@ export default function AdminDashboard() {
                 <StatCard icon={<Eye />} label="Total Views" value={stats.views} />
             </div>
 
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+                {/* Ad Manager */}
+                <div className="rounded-xl border border-white/10 bg-[#0b0b0b] p-8">
+                    <div className="flex items-center gap-3 mb-6 text-primary-600">
+                        <LayoutDashboard size={24} />
+                        <h3 className="text-xl font-bold text-white">Ad Monetization</h3>
+                    </div>
+                    <div className="space-y-6">
+                        <div>
+                            <label className="text-xs text-gray-500 block mb-2 font-mono uppercase tracking-widest">Global Header Ads (Adsterra/Propeller)</label>
+                            <textarea 
+                                className="w-full bg-black/40 border border-white/5 rounded-md p-3 text-xs font-mono h-24 text-primary-600/80 focus:border-primary-600 outline-none transition"
+                                value={adCodes.header}
+                                onChange={(e) => setAdCodes({...adCodes, header: e.target.value})}
+                                placeholder="Paste <script> here..."
+                            />
+                        </div>
+                        <div>
+                            <label className="text-xs text-gray-500 block mb-2 font-mono uppercase tracking-widest">Sidebar Ad (Watch Page)</label>
+                            <textarea 
+                                className="w-full bg-black/40 border border-white/5 rounded-md p-3 text-xs font-mono h-24 text-primary-600/80 focus:border-primary-600 outline-none transition"
+                                value={adCodes.sidebar}
+                                onChange={(e) => setAdCodes({...adCodes, sidebar: e.target.value})}
+                                placeholder="Paste banner HTML here..."
+                            />
+                        </div>
+                        <button onClick={handleUpdateAds} className="w-full bg-primary-600 py-3 rounded-md font-bold hover:bg-primary-700 transition shadow-lg shadow-primary-600/20 flex items-center justify-center gap-2">
+                            <Save size={18} /> DEPLOY AD SCRIPTS
+                        </button>
+                    </div>
+                </div>
+
+                <div className="rounded-xl border border-white/10 bg-[#0b0b0b] p-8">
+                    <div className="flex items-center gap-3 mb-6 text-primary-600">
+                        <Key size={24} />
+                        <h3 className="text-xl font-bold text-white">Terminal Config</h3>
+                    </div>
+                    <div className="space-y-6">
+                        <div>
+                            <label className="text-xs text-gray-500 block mb-2 font-mono uppercase">Master Password</label>
+                            <input 
+                                type="text" 
+                                placeholder="NEW MASTER KEY"
+                                className="w-full bg-black/40 border border-white/5 rounded-md p-4 outline-none focus:border-primary-600 transition"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                        </div>
+                        <button onClick={handleUpdatePassword} className="w-full bg-white/5 border border-white/10 py-3 rounded-md font-bold hover:bg-white/10 transition">UPDATE KEY</button>
+                    </div>
+                </div>
+            </div>
+
             {/* Users Table */}
             <div className="mt-12 rounded-xl border border-white/10 bg-[#0b0b0b] overflow-hidden">
-                <div className="p-6 border-b border-white/10 flex justify-between items-center">
-                    <h3 className="text-xl font-bold">Manage Users</h3>
-                    <p className="text-xs text-gray-500 font-mono">FIRESTORE_RECORDS: {userList.length}</p>
+                <div className="p-6 border-b border-white/10">
+                    <h3 className="text-xl font-bold">User Registry</h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
                         <thead className="bg-white/5 text-gray-400 uppercase text-[10px] font-bold tracking-widest">
                             <tr>
                                 <th className="p-4">User Email</th>
-                                <th className="p-4 text-center">VIP Status</th>
+                                <th className="p-4 text-center">Premium Status</th>
                                 <th className="p-4 text-right">Action</th>
                             </tr>
                         </thead>

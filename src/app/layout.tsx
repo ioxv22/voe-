@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 import { AuthProvider } from "@/context/AuthContext";
 import { ProfileProvider } from "@/context/ProfileContext";
 import SecurityManager from "@/components/SecurityManager";
+import AdManager from "@/components/AdManager";
 
 export default function RootLayout({
   children,
@@ -36,6 +37,7 @@ export default function RootLayout({
         <SecurityManager />
         <AuthProvider>
           <ProfileProvider>
+            <AdManager />
             {children}
           </ProfileProvider>
         </AuthProvider>
