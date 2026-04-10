@@ -7,16 +7,26 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
 const AVATARS = [
+    // Anime / RPG Styles (Lorelei & Adventurer)
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=Haruka",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=Akira",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=Yuki",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=Zoro",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=Saber",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=Goku",
+    
+    // Premium 3D & Human Styles
     "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
     "https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka",
     "https://api.dicebear.com/7.x/avataaars/svg?seed=Garrett",
-    "https://api.dicebear.com/7.x/avataaars/svg?seed=Caleb",
+    "https://api.dicebear.com/7.x/notionists/svg?seed=Luna",
+    "https://api.dicebear.com/7.x/notionists/svg?seed=Nova",
+    
+    // Fun & Kids
     "https://api.dicebear.com/7.x/bottts/svg?seed=Buster",
     "https://api.dicebear.com/7.x/bottts/svg?seed=Tinker",
-    "https://api.dicebear.com/7.x/bottts/svg?seed=Sparky",
     "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Joy",
     "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Cool",
-    "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Wink",
 ];
 
 export default function ProfilesPage() {
