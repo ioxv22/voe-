@@ -16,15 +16,11 @@ export default function LoadingScreen() {
             className="flex flex-col items-center"
         >
             <img 
-                src="https://i.ibb.co/23Bkgcrx/image.png" 
+                src="/logo.png" 
                 className="h-28 w-auto object-contain mb-6" 
                 alt="VOZ"
-                style={{ filter: "drop-shadow(0 0 20px rgba(229, 9, 20, 0.4))" }}
+                style={{ filter: "drop-shadow(0 0 20px rgba(0, 200, 200, 0.4))" }}
             />
-            <div className="flex items-center gap-2 text-6xl font-black tracking-tighter uppercase italic">
-                <span className="text-white">VOZ</span>
-                <span className="text-primary-600">STREAM</span>
-            </div>
             <p className="text-gray-600 mt-4 text-[10px] font-black tracking-[0.4em] uppercase">Built By Hamad Al-Abdouli</p>
         </motion.div>
 

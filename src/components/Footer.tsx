@@ -9,11 +9,10 @@ export default function Footer() {
           <div className="space-y-6">
             <div className="flex items-center gap-2">
                 <img 
-                    src="https://i.ibb.co/23Bkgcrx/image.png" 
+                    src="/logo.png" 
                     alt="VOZ Stream" 
-                    className="h-10 w-auto object-contain brightness-110" 
+                    className="h-10 w-auto object-contain" 
                 />
-                <span className="text-xl font-black text-white uppercase tracking-tighter">VOZ STREAM</span>
             </div>
             <p className="text-sm text-gray-500 leading-relaxed">
               Premium cinematic experience delivered directly to your screens. Built for the next generation of streamers by Hamad Al-Abdouli.
