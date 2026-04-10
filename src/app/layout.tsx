@@ -16,6 +16,23 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "VOZ Stream | Watch Movies, TV Series & Anime Online in HD",
   description: "VOZ Stream is a premium entertainment discovery platform for movies, TV series, and anime in HD.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "VOZ Stream",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport = {
+  themeColor: "#020202",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 import { AuthProvider } from "@/context/AuthContext";
@@ -40,12 +57,13 @@ export default function RootLayout({
             async 
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8867564621500356" 
             crossOrigin="anonymous" 
-            strategy="afterInteractive"
+            strategy="beforeInteractive"
           />
           <Script 
             src="https://pl29118911.profitablecpmratenetwork.com/94/fe/c5/94fec515712decf5618381e9375b08aa.js" 
             strategy="afterInteractive"
           />
+          <link rel="apple-touch-icon" href="https://i.ibb.co/23Bkgcrx/image.png" />
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
         <ThemeProvider>

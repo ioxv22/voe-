@@ -21,22 +21,7 @@ export default function AdManager() {
   }, []);
 
   return (
-    <div className="w-full flex flex-col items-center justify-center my-4 overflow-hidden">
-        {/* Hardcoded Adsterra Native Banner in iFrame to bypass React block */}
-        <iframe 
-            srcDoc={`
-                <!DOCTYPE html>
-                <html>
-                    <body style="margin:0;padding:0;background:transparent;display:flex;justify-content:center;align-items:center;">
-                        <script async="async" data-cfasync="false" src="https://pl29118998.profitablecpmratenetwork.com/a279fcd0ccd0a0b5b0dcace3052c9bcf/invoke.js"></script>
-                        <div id="container-a279fcd0ccd0a0b5b0dcace3052c9bcf"></div>
-                    </body>
-                </html>
-            `}
-            style={{ width: '100%', minHeight: '100px', border: 'none', overflow: 'hidden' }}
-            scrolling="no"
-        />
-
+    <div className="w-full flex flex-col items-center justify-center overflow-hidden">
         {adCode && (
             <div 
                 id="voz-global-ads"
