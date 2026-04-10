@@ -35,7 +35,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const guestSession = localStorage.getItem("voz_guest_session");
     
+    // Safety Timer: Force loading screen to drop after 1.5s if auth hangs
+    const safetyTimer = setTimeout(() => {
+        if (loading) setLoading(false);
+    }, 1500);
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      clearTimeout(safetyTimer); // Clear timer if auth resolves fast
+      
       if (firebaseUser) {
           setUser(firebaseUser);
           setIsGuest(false);
@@ -48,7 +55,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   if (userDoc.exists()) {
                       setIsPremium(!!userDoc.data().isVIP || !!userDoc.data().isPremium);
                   } else {
-                      // Silently attempt provision
                       setDoc(userDocRef, { 
                           email: firebaseUser.email, 
                           displayName: firebaseUser.displayName,
@@ -73,8 +79,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    return () => unsubscribe();
-  }, []);
+    return () => {
+        clearTimeout(safetyTimer);
+        unsubscribe();
+    };
+  }, []); // loading removed to prevent dependency loop
 
   const signInAsGuest = () => {
     localStorage.setItem("voz_guest_session", "true");

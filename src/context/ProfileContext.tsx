@@ -56,6 +56,22 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       const guestKey = "voz_guest_profiles";
       const sessionActiveKey = "voz_active_profile";
 
+      // 1. FAST TRACK: If we have a saved profile session, use it immediately to kill the Loading Screen!
+      const savedSessionStr = sessionStorage.getItem(sessionActiveKey);
+      if (savedSessionStr) {
+          try {
+              setCurrentProfile(JSON.parse(savedSessionStr));
+              setLoading(false); // Unblock UI Instantly!
+          } catch (e) {
+              console.error("Session parse error", e);
+          }
+      }
+
+      // 2. TIMEOUT PROTECTION: Force unblock after 1.5s maximum if DB hangs
+      const safetyTimer = setTimeout(() => {
+          setLoading(false);
+      }, 1500);
+
       try {
           if (isGuest) {
             const localProfiles = localStorage.getItem(guestKey);
@@ -65,37 +81,51 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem(guestKey, JSON.stringify(parsed));
             }
             setProfiles(parsed);
-            const saved = sessionStorage.getItem(sessionActiveKey);
-            if (saved) setCurrentProfile(JSON.parse(saved));
-          } else {
-            const q = query(collection(db, "users", user.uid, "profiles"), limit(4));
-            const snapshot = await getDocs(q);
-            
-            if (snapshot.empty) {
-              const defaultProfile = { id: 'main', name: user.displayName || 'Me', avatar: user.photoURL || DEFAULT_AVATAR, isKids: false, myList: [] };
-              setDoc(doc(db, "users", user.uid, "profiles", "main"), defaultProfile).catch(() => {});
-              setProfiles([defaultProfile]);
-            } else {
-              const p = snapshot.docs.map(doc => ({ ...doc.data() } as UserProfile));
-              setProfiles(p);
-              const saved = sessionStorage.getItem(sessionActiveKey);
-              if (saved) {
-                  const savedData = JSON.parse(saved);
-                  const found = p.find(prof => prof.id === savedData.id);
-                  if (found) setCurrentProfile(found);
-              }
+            if (!savedSessionStr) {
+                setCurrentProfile(parsed[0]);
+                sessionStorage.setItem(sessionActiveKey, JSON.stringify(parsed[0]));
             }
+            clearTimeout(safetyTimer);
+            setLoading(false);
+          } else {
+            // Asynchronous fetch so it doesn't block
+            const q = query(collection(db, "users", user.uid, "profiles"), limit(4));
+            getDocs(q).then((snapshot) => {
+                if (snapshot.empty) {
+                  const defaultProfile = { id: 'main', name: user.displayName || 'Me', avatar: user.photoURL || DEFAULT_AVATAR, isKids: false, myList: [] };
+                  setDoc(doc(db, "users", user.uid, "profiles", "main"), defaultProfile).catch(() => {});
+                  setProfiles([defaultProfile]);
+                  if (!savedSessionStr) setCurrentProfile(defaultProfile);
+                } else {
+                  const p = snapshot.docs.map(doc => ({ ...doc.data() } as UserProfile));
+                  setProfiles(p);
+                  
+                  // Restore active profile connection if possible
+                  if (savedSessionStr) {
+                      const savedData = JSON.parse(savedSessionStr);
+                      const found = p.find(prof => prof.id === savedData.id);
+                      if (found) setCurrentProfile(found);
+                  }
+                }
+                clearTimeout(safetyTimer);
+                setLoading(false);
+            }).catch(err => {
+                console.warn("Profile Sync Offline - Using Cache", err);
+                if (profiles.length === 0) {
+                    setProfiles([{ id: 'fb', name: user.displayName || 'Me', avatar: DEFAULT_AVATAR, isKids: false, myList: [] }]);
+                }
+                clearTimeout(safetyTimer);
+                setLoading(false);
+            });
           }
       } catch (err) {
-          console.warn("Profile Load Failed - Standard Fallback Active");
-          setProfiles([{ id: 'fb', name: user.displayName || 'User', avatar: DEFAULT_AVATAR, isKids: false, myList: [] }]);
-      } finally {
+          clearTimeout(safetyTimer);
           setLoading(false);
       }
     };
 
     fetchProfiles();
-  }, [user, isGuest, authLoading]);
+  }, [user, isGuest, authLoading]); // Removed missing dependencies
 
   const selectProfile = (profile: UserProfile) => {
     setCurrentProfile(profile);
