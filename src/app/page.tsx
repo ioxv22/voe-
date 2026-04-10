@@ -17,7 +17,16 @@ export default function Home() {
   const { currentProfile, loading: profileLoading } = useProfile();
   const [data, setData] = useState<any>(null);
   const [loadingContent, setLoadingContent] = useState(true);
+  const [forceHideLoading, setForceHideLoading] = useState(false);
   const router = useRouter();
+
+  // Force loading screen to hide after 5 seconds max (Hamad's request)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        setForceHideLoading(true);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!authLoading && user && !profileLoading && !currentProfile) {
@@ -54,14 +63,17 @@ export default function Home() {
     }
   }, [user, currentProfile]);
 
-  if (authLoading || profileLoading) return <LoadingScreen />;
+  // Priority check: Use forceHideLoading to bypass visual loading screens
+  const isVisualLoading = (authLoading || profileLoading || !currentProfile || (loadingContent && !data?.trending)) && !forceHideLoading;
 
+  if (isVisualLoading) {
+     // Still need base auth for Landing Page
+     if (!authLoading && !user) return <LandingPage onSignIn={signInWithGoogle} onGuestSignIn={signInAsGuest} />;
+     return <LoadingScreen />;
+  }
+
+  // Final fallback if not logged in
   if (!user) return <LandingPage onSignIn={signInWithGoogle} onGuestSignIn={signInAsGuest} />;
-
-  if (!currentProfile) return <LoadingScreen />;
-
-  // Display partial data if trending is loaded
-  if (loadingContent && !data?.trending) return <LoadingScreen />;
 
   const featured = data?.trending?.results?.[0];
 
@@ -74,21 +86,21 @@ export default function Home() {
       <div className="-mt-16 relative z-30 lg:-mt-24">
         {data?.trending && (
             <MovieRow 
-                title={currentProfile.isKids ? "Fun Adventures for You" : "Trending Now"} 
+                title={currentProfile?.isKids ? "Fun Adventures for You" : "Trending Now"} 
                 movies={data.trending.results} 
             />
         )}
         
         {data?.movies && (
             <MovieRow 
-                title={currentProfile.isKids ? "Kids Movies" : "Popular Movies"} 
+                title={currentProfile?.isKids ? "Kids Movies" : "Popular Movies"} 
                 movies={data.movies.results} 
             />
         )}
 
         {data?.series && (
             <MovieRow 
-                title={currentProfile.isKids ? "Animation Series" : "TV Shows"} 
+                title={currentProfile?.isKids ? "Animation Series" : "TV Shows"} 
                 movies={data.series.results} 
             />
         )}
