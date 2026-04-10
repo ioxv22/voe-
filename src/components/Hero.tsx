@@ -21,7 +21,7 @@ export default function Hero({ movie }: HeroProps) {
       <img
         src={getImageUrl(movie.backdrop_path, "original")}
         alt={movie.title || movie.name}
-        className="absolute h-full w-full object-cover transition-opacity duration-1000"
+        className="absolute h-full w-full object-cover transition-opacity duration-1000 protected-img"
       />
 
       {/* Cinematic Overlays */}

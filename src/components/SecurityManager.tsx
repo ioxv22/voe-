@@ -35,10 +35,10 @@ export default function SecurityManager() {
         <Watermark id={4} initialPos={{x: 20, y: 60}} text="BUILT BY HAMAD AL-ABDOULI" />
         
         <style jsx global>{`
-            img { pointer-events: none; -webkit-user-drag: none; }
-            body { background-color: #020202 !important; }
+            .protected-img { pointer-events: none; -webkit-user-drag: none; }
+            body { background-color: var(--background) !important; }
             /* Global selection color matched to Hamad's Brand */
-            ::selection { background: #e50914; color: white; }
+            ::selection { background: var(--primary); color: white; }
         `}</style>
     </div>
   );

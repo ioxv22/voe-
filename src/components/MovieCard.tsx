@@ -35,7 +35,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
             <img
             src={imageUrl}
             alt={movie.title || movie.name}
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-110 protected-img"
             loading="lazy"
             />
         ) : (

@@ -17,7 +17,7 @@ export default function LoadingScreen() {
         >
             <img 
                 src="https://i.ibb.co/23Bkgcrx/image.png" 
-                className="h-28 w-auto object-contain mb-6" 
+                className="h-28 w-auto object-contain mb-6 protected-img" 
                 alt="VOZ"
                 style={{ filter: "drop-shadow(0 0 20px rgba(0, 200, 200, 0.4))" }}
             />
