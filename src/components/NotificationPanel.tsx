@@ -55,7 +55,7 @@ export default function NotificationPanel({ isOpen, onClose }: { isOpen: boolean
                             <div className="space-y-1">
                                 <p className="text-sm font-bold text-white group-hover:text-primary-500 transition">{n.title}</p>
                                 <p className="text-[11px] text-gray-500 leading-relaxed line-clamp-2">{n.message}</p>
-                                <p className="text-[9px] text-gray-700 font-bold uppercase tracking-widest">Just Added • DXB Server</p>
+                                <p className="text-[9px] text-gray-700 font-bold uppercase tracking-widest">Just Added • VOZ STREAM</p>
                             </div>
                         </div>
                     ))

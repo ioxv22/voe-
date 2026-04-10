@@ -47,23 +47,33 @@ export default function AdminDashboard() {
           setNotif({ title: "", message: "", type: "movie" });
       } catch (err) {
           console.error(err);
+          alert("فشل إرسال الإشعار. تأكد من قواعد فايربيس.");
       }
   };
 
   const handleUpdateAds = async () => {
-    await setDoc(doc(db, "system", "ads"), adCodes, { merge: true });
-    alert("Ad scripts updated globally.");
+    try {
+        await setDoc(doc(db, "system", "ads"), adCodes, { merge: true });
+        alert("Ad scripts updated globally.");
+    } catch (e) {
+        alert("فشل تحديث الإعلانات. تأكد من قواعد فايربيس.");
+    }
   };
 
   const fetchAllData = async () => {
-    const usersSnap = await getDocs(collection(db, "users"));
-    const users = usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setUserList(users);
-    
-    const adsSnap = await getDoc(doc(db, "system", "ads"));
-    if (adsSnap.exists()) setAdCodes(adsSnap.data() as any);
-    
-    setStats({ users: usersSnap.size, views: usersSnap.size * 18, likes: usersSnap.size * 7 });
+    try {
+        const usersSnap = await getDocs(collection(db, "users"));
+        const users = usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setUserList(users);
+        
+        const adsSnap = await getDoc(doc(db, "system", "ads"));
+        if (adsSnap.exists()) setAdCodes(adsSnap.data() as any);
+        
+        setStats({ users: usersSnap.size, views: usersSnap.size * 18, likes: usersSnap.size * 7 });
+    } catch (err: any) {
+        console.error("Firebase Admin Error:", err);
+        alert("فشل جلب البيانات. الرجاء التأكد من تحديث قواعد حماية فايربيس (Firestore Rules) إلى Test Mode لكي تعمل لوحة التحكم.");
+    }
   };
 
   useEffect(() => {
@@ -71,8 +81,12 @@ export default function AdminDashboard() {
   }, [isAuthenticated]);
 
   const toggleVIP = async (userId: string, currentStatus: boolean) => {
-    await updateDoc(doc(db, "users", userId), { isVIP: !currentStatus, isPremium: !currentStatus });
-    fetchAllData();
+    try {
+        await updateDoc(doc(db, "users", userId), { isVIP: !currentStatus, isPremium: !currentStatus });
+        fetchAllData();
+    } catch (e) {
+        alert("فشل تغيير حالة المستخدم. الركاء التأكد من قواعد فايربيس.");
+    }
   };
 
   if (!isAuthenticated) {
