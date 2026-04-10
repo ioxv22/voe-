@@ -3,7 +3,7 @@
 import Navbar from "@/components/Navbar";
 import MovieRow from "@/components/MovieRow";
 import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
-import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown, RefreshCw, ShieldCheck } from "lucide-react";
+import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown, ShieldCheck } from "lucide-react";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useEffect, useState } from "react";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
@@ -94,15 +94,6 @@ export default function WatchPage({ params }: { params: any }) {
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold border transition ${adFreeMode ? 'bg-green-600/20 text-green-500 border-green-600/30' : 'bg-red-600/20 text-red-500 border-red-600/30'}`}
                 >
                     <ShieldCheck size={12} /> {adFreeMode ? "AD-BLOCK ON" : "AD-BLOCK OFF (Compatible)"}
-                </button>
-            </div>
-
-            <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition z-50">
-                <button 
-                    onClick={() => setKey(k => k + 1)} 
-                    className="p-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 text-white hover:bg-primary-600 transition"
-                >
-                    <RefreshCw size={16} />
                 </button>
             </div>
 
