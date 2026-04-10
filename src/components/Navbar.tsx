@@ -11,12 +11,14 @@ function cn(...inputs: ClassValue[]) {
 }
 
 import { useAuth } from "@/context/AuthContext";
+import { useProfile } from "@/context/ProfileContext";
 import SearchModal from "./SearchModal";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { user, signInWithGoogle, logout } = useAuth();
+  const { currentProfile } = useProfile();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,18 +61,18 @@ export default function Navbar() {
           </span>
         </button>
         
-        {user ? (
+        {user && currentProfile ? (
             <div className="group relative">
                 <div className="h-8 w-8 cursor-pointer overflow-hidden rounded-md border-2 border-transparent hover:border-white/20">
-                    <img src={user.photoURL || ""} alt="Profile" className="h-full w-full object-cover" />
+                    <img src={currentProfile.avatar} alt="Profile" className="h-full w-full object-cover" />
                 </div>
                 {/* Profile Dropdown */}
                 <div className="absolute right-0 top-full mt-2 w-48 scale-95 opacity-0 transition group-hover:scale-100 group-hover:opacity-100">
                     <div className="rounded-md border border-white/10 bg-[#0b0b0b] p-2 shadow-xl">
-                        <p className="px-3 py-2 text-xs font-bold text-gray-400 border-b border-white/5 truncate">{user.displayName}</p>
-                        <button className="w-full px-3 py-2 text-left text-sm hover:bg-white/5">Account</button>
-                        <button className="w-full px-3 py-2 text-left text-sm hover:bg-white/5">Help Center</button>
-                        <button onClick={logout} className="w-full px-3 py-2 text-left text-sm font-bold text-primary-600 hover:bg-white/5">Sign Out</button>
+                        <p className="px-3 py-2 text-[10px] font-bold text-gray-400 border-b border-white/5 truncate">{currentProfile.name}</p>
+                        <Link href="/profiles"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5">Switch Profiles</button></Link>
+                        <a href="https://t.me/iivoz" target="_blank"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5">Help Center</button></a>
+                        <button onClick={logout} className="w-full px-3 py-2 text-left text-xs font-bold text-primary-600 hover:bg-white/5">Sign Out</button>
                     </div>
                 </div>
             </div>

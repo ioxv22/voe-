@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/context/AuthContext";
+import { ProfileProvider } from "@/context/ProfileContext";
 
 export default function RootLayout({
   children,
@@ -28,10 +29,13 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background">
         <AuthProvider>
-          {children}
+          <ProfileProvider>
+            {children}
+          </ProfileProvider>
         </AuthProvider>
       </body>
     </html>

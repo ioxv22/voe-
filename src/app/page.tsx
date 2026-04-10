@@ -1,17 +1,56 @@
+"use client";
+
+import { useAuth } from "@/context/AuthContext";
+import { useProfile } from "@/context/ProfileContext";
+import LandingPage from "@/components/LandingPage";
+import LoadingScreen from "@/components/LoadingScreen";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import MovieRow from "@/components/MovieRow";
 import { fetchTMDB, endpoints } from "@/lib/tmdb";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default async function Home() {
-  const [trending, trendingMovies, trendingSeries, anime] = await Promise.all([
-    fetchTMDB(endpoints.trending),
-    fetchTMDB(endpoints.movies),
-    fetchTMDB(endpoints.series),
-    fetchTMDB(endpoints.anime, "with_genres=16&with_original_language=ja"),
-  ]);
+export default function Home() {
+  const { user, loading: authLoading, signInWithGoogle } = useAuth();
+  const { currentProfile, loading: profileLoading } = useProfile();
+  const [data, setData] = useState<any>(null);
+  const router = useRouter();
 
-  const featured = trending.results[Math.floor(Math.random() * 5)];
+  useEffect(() => {
+    if (!authLoading && user && !profileLoading && !currentProfile) {
+        router.push("/profiles");
+    }
+  }, [user, authLoading, currentProfile, profileLoading]);
+
+  useEffect(() => {
+    if (user && currentProfile) {
+        async function load() {
+            const isKids = currentProfile?.isKids;
+            // Filter endpoints for kids if needed
+            const kidsParams = isKids ? "with_genres=16,10751" : ""; 
+
+            const [trending, movies, series, anime] = await Promise.all([
+                fetchTMDB(endpoints.trending, isKids ? "with_genres=16" : ""),
+                fetchTMDB(endpoints.movies, kidsParams),
+                fetchTMDB(endpoints.series, kidsParams),
+                fetchTMDB(endpoints.anime, "with_genres=16&with_original_language=ja"),
+            ]);
+            setData({ trending, movies, series, anime });
+        }
+        load();
+    }
+  }, [user, currentProfile]);
+
+  if (authLoading || profileLoading) return <LoadingScreen />;
+
+  if (!user) return <LandingPage onSignIn={signInWithGoogle} />;
+
+  if (!currentProfile) return <LoadingScreen />;
+
+  if (!data) return <LoadingScreen />;
+
+  const featured = data.trending.results[0];
 
   return (
     <main className="min-h-screen bg-[#020202] pb-20">
@@ -20,17 +59,33 @@ export default async function Home() {
       <Hero movie={featured} />
 
       <div className="-mt-16 relative z-30 lg:-mt-24">
-        <MovieRow title="Trending Now" movies={trending.results} />
-        <MovieRow title="Popular Movies" movies={trendingMovies.results} />
-        <MovieRow title="TV Shows Worth Binging" movies={trendingSeries.results} />
-        <MovieRow title="Anime Collection" movies={anime.results} />
+        <MovieRow 
+            title={currentProfile.isKids ? "Fun Adventures for You" : "Trending Now"} 
+            movies={data.trending.results} 
+        />
+        <MovieRow 
+            title={currentProfile.isKids ? "Kids Movies" : "Popular Movies"} 
+            movies={data.movies.results} 
+        />
+        <MovieRow 
+            title={currentProfile.isKids ? "Animation Series" : "TV Shows"} 
+            movies={data.series.results} 
+        />
         
-        {/* Placeholder for "Continue Watching" */}
-        <div className="mt-8 px-4 lg:px-12">
-            <div className="rounded-xl bg-gradient-to-r from-primary-600/20 to-transparent p-8 border border-white/5">
-                <h3 className="text-xl font-bold text-white mb-2">Ready for your next adventure?</h3>
-                <p className="text-gray-400 max-w-md">Continue watching where you left off or explore our personalized recommendations based on your tastes.</p>
-                <button className="mt-4 px-6 py-2 bg-white text-black font-bold rounded-md hover:bg-gray-200 transition">Explore More</button>
+        {/* Contact/Telegram Highlight */}
+        <div className="mt-12 px-4 lg:px-12">
+            <div className="rounded-xl bg-gradient-to-r from-blue-600/20 to-transparent p-8 border border-white/5 flex flex-col items-start lg:flex-row lg:items-center justify-between gap-6">
+                <div>
+                    <h3 className="text-xl font-bold text-white mb-2">Need Help or Content Requests?</h3>
+                    <p className="text-gray-400 max-w-md">Contact us directly on Telegram for fast support and site updates.</p>
+                </div>
+                <a 
+                    href="https://t.me/iivoz" 
+                    target="_blank" 
+                    className="px-8 py-3 bg-[#0088cc] text-white font-bold rounded-full hover:scale-105 transition shadow-lg shadow-blue-500/20"
+                >
+                    Chat on Telegram @iivoz
+                </a>
             </div>
         </div>
       </div>
