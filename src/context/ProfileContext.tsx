@@ -18,13 +18,14 @@ interface UserProfile {
   name: string;
   avatar: string;
   isKids: boolean;
+  pin?: string;
 }
 
 interface ProfileContextType {
   profiles: UserProfile[];
   currentProfile: UserProfile | null;
   selectProfile: (profile: UserProfile) => void;
-  createProfile: (name: string, avatar: string, isKids: boolean) => Promise<void>;
+  createProfile: (name: string, avatar: string, isKids: boolean, pin?: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -74,9 +75,9 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(`voz_profile_${user?.uid}`, profile.id);
   };
 
-  const createProfile = async (name: string, avatar: string, isKids: boolean = false) => {
+  const createProfile = async (name: string, avatar: string, isKids: boolean = false, pin?: string) => {
     if (!user || profiles.length >= 4) return;
-    const newProfile = { id: Date.now().toString(), name, avatar, isKids };
+    const newProfile = { id: Date.now().toString(), name, avatar, isKids, pin };
     await setDoc(doc(db, "users", user.uid, "profiles", newProfile.id), newProfile);
     setProfiles([...profiles, newProfile]);
   };

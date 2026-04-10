@@ -31,7 +31,18 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-background">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          document.addEventListener('contextmenu', e => e.preventDefault());
+          document.addEventListener('keydown', e => {
+            if (e.ctrlKey && (e.key === 's' || e.key === 'u' || e.key === 'i' || e.key === 'j' || e.key === 'k')) {
+              e.preventDefault();
+            }
+            if (e.key === 'F12') e.preventDefault();
+          });
+        `}} />
+      </head>
+      <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
         <AuthProvider>
           <ProfileProvider>
             {children}

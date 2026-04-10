@@ -1,7 +1,7 @@
 "use client";
 
 import { useProfile } from "@/context/ProfileContext";
-import { Plus, Edit2, Check, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Edit2, Lock, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
@@ -23,33 +23,86 @@ export default function ProfilesPage() {
   const { profiles, selectProfile, createProfile } = useProfile();
   const [isManaging, setIsManaging] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [activePinProfile, setActivePinProfile] = useState<any>(null);
+  const [pinInput, setPinInput] = useState("");
+  
   const [newName, setNewName] = useState("");
   const [newAvatar, setNewAvatar] = useState(AVATARS[0]);
   const [isKids, setIsKids] = useState(false);
+  const [newPin, setNewPin] = useState("");
+  
   const router = useRouter();
 
   const handleSelect = (p: any) => {
     if (isManaging) {
-        // Mock edit - in real apps you'd open an edit modal
-        alert("Edit feature coming soon! You can add new ones for now.");
+        alert("Edit feature coming soon!");
         return;
     }
+    
+    if (p.pin) {
+        setActivePinProfile(p);
+        return;
+    }
+    
     selectProfile(p);
     router.push("/");
   };
 
+  const handlePinSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pinInput === activePinProfile.pin) {
+        selectProfile(activePinProfile);
+        router.push("/");
+    } else {
+        alert("Incorrect PIN");
+        setPinInput("");
+    }
+  };
+
   const handleCreate = async () => {
     if (newName) {
-      await createProfile(newName, newAvatar, isKids);
+      await createProfile(newName, newAvatar, isKids, newPin || undefined);
       setIsAdding(false);
       setNewName("");
+      setNewPin("");
     }
   };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#141414] text-white p-4">
       <AnimatePresence mode="wait">
-        {!isAdding ? (
+        {activePinProfile ? (
+            <motion.div 
+                key="pin"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center"
+            >
+                <h1 className="mb-8 text-3xl font-medium">Profile Lock is on.</h1>
+                <p className="mb-8 text-gray-400">Enter your PIN to access the {activePinProfile.name} profile.</p>
+                <div className="flex flex-col items-center gap-4">
+                    <img src={activePinProfile.avatar} className="h-32 w-32 rounded-md mb-4" />
+                    <form onSubmit={handlePinSubmit} className="flex flex-col items-center gap-6">
+                        <input 
+                            autoFocus
+                            type="password"
+                            maxLength={4}
+                            placeholder="● ● ● ●"
+                            className="bg-transparent text-4xl tracking-[1rem] text-center border-b-2 border-gray-600 outline-none focus:border-white w-48 py-2"
+                            value={pinInput}
+                            onChange={(e) => setPinInput(e.target.value)}
+                        />
+                        <button type="submit" className="hidden">Submit</button>
+                        <button 
+                            onClick={() => setActivePinProfile(null)}
+                            className="text-gray-500 hover:text-white transition uppercase tracking-widest text-xs"
+                        >
+                            Cancel
+                        </button>
+                    </form>
+                </div>
+            </motion.div>
+        ) : !isAdding ? (
           <motion.div 
             key="list"
             initial={{ opacity: 0 }}
@@ -71,11 +124,9 @@ export default function ProfilesPage() {
                 >
                   <div className="relative h-32 w-32 overflow-hidden rounded-md border-2 border-transparent group-hover:border-white lg:h-40 lg:w-40">
                     <img src={p.avatar} alt={p.name} className="h-full w-full object-cover" />
-                    {isManaging && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                            <Edit2 size={32} />
-                        </div>
-                    )}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-transparent transition">
+                        {isManaging ? <Edit2 size={32} /> : p.pin ? <Lock size={24} className="opacity-50" /> : null}
+                    </div>
                   </div>
                   <p className="text-gray-400 group-hover:text-white">{p.name}</p>
                   {p.isKids && (
@@ -124,16 +175,29 @@ export default function ProfilesPage() {
                 </div>
 
                 <div className="flex-1 space-y-8">
-                    <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-400 uppercase">Name</label>
-                        <input 
-                            type="text" 
-                            autoFocus
-                            placeholder="Type name..."
-                            className="w-full bg-[#333] p-3 text-lg outline-none focus:bg-[#444]"
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-400 uppercase">Name</label>
+                            <input 
+                                type="text" 
+                                autoFocus
+                                placeholder="Type name..."
+                                className="w-full bg-[#333] p-3 text-lg outline-none focus:bg-[#444]"
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-gray-400 uppercase">Profile PIN (Optional)</label>
+                            <input 
+                                type="password" 
+                                maxLength={4}
+                                placeholder="4 digits"
+                                className="w-full bg-[#333] p-3 text-lg outline-none focus:bg-[#444] tracking-widest"
+                                value={newPin}
+                                onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ""))}
+                            />
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-4 bg-[#333] p-4 rounded-md">
@@ -146,7 +210,7 @@ export default function ProfilesPage() {
                         />
                         <label htmlFor="kids" className="cursor-pointer">
                             <span className="block font-bold">Kid?</span>
-                            <span className="text-xs text-gray-400">If selected, they'll only see kids-safe content.</span>
+                            <span className="text-xs text-gray-400">Restricts content and changes avatars.</span>
                         </label>
                     </div>
 

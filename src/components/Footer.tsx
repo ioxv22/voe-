@@ -1,0 +1,66 @@
+import React from "react";
+import { Send, Github, Twitter } from "lucide-react";
+
+export default function Footer() {
+  return (
+    <footer className="relative z-30 border-t border-white/10 bg-[#020202] py-20 px-6 lg:px-12">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
+          <div className="space-y-6">
+            <div className="flex items-center gap-2">
+                <img 
+                    src="https://i.ibb.co/23Bkgcrx/image.png" 
+                    alt="VOZ Stream" 
+                    className="h-10 w-auto object-contain brightness-110" 
+                />
+                <span className="text-xl font-black text-white">VOZ STREAM</span>
+            </div>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              Premium cinematic experience delivered directly to your screens. Built for the next generation of streamers.
+            </p>
+            <div className="flex items-center gap-4">
+                <a href="https://t.me/iivoz" target="_blank" className="h-10 w-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition">
+                    <Send size={18} />
+                </a>
+                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400">
+                    <Github size={18} />
+                </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold mb-6">Explore</h4>
+            <ul className="space-y-4 text-sm text-gray-500">
+                <li className="hover:text-white cursor-pointer transition">Browse All</li>
+                <li className="hover:text-white cursor-pointer transition">Trending</li>
+                <li className="hover:text-white cursor-pointer transition">New Releases</li>
+                <li className="hover:text-white cursor-pointer transition">Top Rated</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold mb-6">Support</h4>
+            <ul className="space-y-4 text-sm text-gray-500">
+                <li className="hover:text-white cursor-pointer transition">Help Center</li>
+                <a href="https://t.me/iivoz" target="_blank"><li className="hover:text-white cursor-pointer transition">Contact Us</li></a>
+                <li className="hover:text-white cursor-pointer transition">Privacy Policy</li>
+                <li className="hover:text-white cursor-pointer transition">Terms of Service</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold mb-6">Copyrights</h4>
+            <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-primary-600/10 border border-primary-600/20">
+                    <p className="text-xs font-bold text-primary-600 uppercase tracking-widest mb-1">Developer</p>
+                    <p className="text-white font-black text-lg">حمد العبدولي</p>
+                    <p className="text-[10px] text-gray-500 mt-2 hover:text-white transition">Telegram: @iivoz</p>
+                </div>
+                <p className="text-[10px] text-gray-600 uppercase tracking-widest">&copy; 2026 VOZ STREAM. All rights reserved.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
