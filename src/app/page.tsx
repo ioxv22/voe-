@@ -17,20 +17,12 @@ export default function Home() {
   const { currentProfile, loading: profileLoading } = useProfile();
   const [data, setData] = useState<any>(null);
   const [loadingContent, setLoadingContent] = useState(true);
-  const [forceHideProgress, setForceHideProgress] = useState(false);
   const router = useRouter();
 
-  // Safety timer to ensure we don't stay stuck on black screen if API is slow
   useEffect(() => {
-    const timer = setTimeout(() => {
-        setForceHideProgress(true);
-    }, 8000); // 8 second grace period for high-volume loads
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!authLoading && user && !profileLoading && !currentProfile) {
-        router.push("/profiles");
+    // 1. Session Protection: If logged in but no profile, send to selection
+    if (!authLoading && !profileLoading && user && !currentProfile) {
+        router.replace("/profiles");
     }
   }, [user, authLoading, currentProfile, profileLoading, router]);
 
@@ -38,16 +30,16 @@ export default function Home() {
     if (user && currentProfile) {
         async function load() {
             setLoadingContent(true);
-            const isKids = currentProfile?.isKids;
-            const kidsParams = isKids ? "with_genres=16,10751" : ""; 
-
             try {
-                // Primary content for initial paint
+                const isKids = currentProfile?.isKids;
+                const kidsParams = isKids ? "with_genres=16,10751" : ""; 
+
+                // Fetch essential data first
                 const trending = await fetchTMDB(endpoints.trending, isKids ? "with_genres=16" : "");
                 setData((prev: any) => ({ ...prev, trending }));
                 setLoadingContent(false);
 
-                // Background secondary content
+                // Load secondary rows in background
                 const [movies, series, anime] = await Promise.all([
                     fetchTMDB(endpoints.movies, kidsParams),
                     fetchTMDB(endpoints.series, kidsParams),
@@ -55,7 +47,7 @@ export default function Home() {
                 ]);
                 setData((prev: any) => ({ ...prev, movies, series, anime }));
             } catch (err) {
-                console.error("Content fetch failed", err);
+                console.error("Home Data Load Failure:", err);
                 setLoadingContent(false);
             }
         }
@@ -63,66 +55,68 @@ export default function Home() {
     }
   }, [user, currentProfile]);
 
-  // CLINICAL LOADING CHECK
-  // 1. Initial State: Auth is still determining who you are
-  if (authLoading) return <LoadingScreen />;
+  // CLINICAL STATE RESOLUTION
+  if (authLoading || (user && profileLoading)) {
+      return <LoadingScreen />;
+  }
 
-  // 2. Unauthenticated: Show landing/login immediately
-  if (!user) return <LandingPage onSignIn={signInWithGoogle} onGuestSignIn={signInAsGuest} />;
+  if (!user) {
+      return <LandingPage onSignIn={signInWithGoogle} onGuestSignIn={signInAsGuest} />;
+  }
 
-  // 3. Profile Fetching: We know user exists, but wait for profile logic
-  if (profileLoading && !forceHideProgress) return <LoadingScreen />;
+  if (!currentProfile) {
+      // Re-trigger loading screen while redirecting
+      return <LoadingScreen />;
+  }
 
-  // 4. Redirect Case: User is logged in but hasn't picked a profile (ProfileContext logic handles this)
-  if (!currentProfile) return <LoadingScreen />;
+  // Show content only when trending data exists (or fallback)
+  if (loadingContent && !data?.trending) {
+      return <LoadingScreen />;
+  }
 
-  // 5. Content Prep: Show loading until at least the Hero data exists
-  if (loadingContent && !data?.trending && !forceHideProgress) return <LoadingScreen />;
-
-  // If we reach here, we are ready to show the UI
   const featured = data?.trending?.results?.[0];
 
   return (
-    <main className="min-h-screen bg-[#020202] pb-20 overflow-x-hidden">
+    <main className="min-h-screen bg-[#020202] pb-20 overflow-x-hidden selection:bg-primary-600 selection:text-white">
       <Navbar />
       
       {featured && <Hero movie={featured} />}
 
-      <div className="relative z-30 -mt-16 lg:-mt-24 space-y-12">
+      <div className="relative z-30 -mt-16 lg:-mt-24 space-y-16">
         {data?.trending && (
             <MovieRow 
-                title={currentProfile?.isKids ? "Fun Adventures for You" : "Trending Now"} 
+                title={currentProfile.isKids ? "Specially for Kids" : "Global Trending"} 
                 movies={data.trending.results} 
             />
         )}
         
         {data?.movies && (
             <MovieRow 
-                title={currentProfile?.isKids ? "Kids Movies" : "Popular Movies"} 
+                title={currentProfile.isKids ? "Top Animations" : "New On VOZ Movies"} 
                 movies={data.movies.results} 
             />
         )}
 
         {data?.series && (
             <MovieRow 
-                title={currentProfile?.isKids ? "Animation Series" : "TV Shows"} 
+                title={currentProfile.isKids ? "Series for You" : "Latest TV Series"} 
                 movies={data.series.results} 
             />
         )}
         
-        {/* Contact/Telegram Highlight */}
+        {/* Support Access */}
         <div className="px-4 lg:px-12 pb-12">
-            <div className="rounded-3xl bg-white/[0.03] backdrop-blur-md p-10 border border-white/5 flex flex-col items-start lg:flex-row lg:items-center justify-between gap-8">
-                <div className="space-y-2">
-                    <h3 className="text-2xl font-black text-white">Need Support?</h3>
-                    <p className="text-gray-500 max-w-sm font-medium">Connect with the development team for content requests and technical assistance.</p>
+            <div className="rounded-[40px] bg-gradient-to-br from-white/[0.05] to-transparent backdrop-blur-3xl p-12 border border-white/5 flex flex-col items-center text-center lg:flex-row lg:text-left lg:items-center justify-between gap-10">
+                <div className="space-y-3">
+                    <h3 className="text-3xl font-black text-white italic tracking-tighter">VOZ STREAM SUPPORT</h3>
+                    <p className="text-gray-500 max-w-sm font-medium leading-relaxed">Encountering playback issues or missing your favorite season? Contact the DXB protocol team.</p>
                 </div>
                 <a 
                     href="https://t.me/iivoz" 
                     target="_blank" 
-                    className="px-10 py-4 bg-primary-600 text-black font-black rounded-2xl hover:bg-primary-700 transition shadow-2xl shadow-primary-600/20 uppercase tracking-widest text-xs"
+                    className="px-12 py-5 bg-white text-black font-black rounded-full hover:bg-primary-600 hover:text-white transition-all transform hover:scale-105 shadow-2xl shadow-white/5 uppercase tracking-[0.2em] text-[10px]"
                 >
-                    Chat on Telegram @iivoz
+                    Chat on Telegram
                 </a>
             </div>
         </div>
