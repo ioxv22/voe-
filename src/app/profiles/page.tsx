@@ -80,12 +80,16 @@ export default function ProfilesPage() {
         selectProfile(activePinProfile);
         router.push("/");
     } else {
-        alert("Incorrect PIN");
+        alert("كلمة المرور غير صحيحة");
         setPinInput("");
     }
   };
 
   const handleSave = async () => {
+    if (!newName) {
+       alert("الرجاء كتابة اسم البروفايل أولاً!");
+       return;
+    }
     if (newName && !isSaving) {
       setIsSaving(true);
       try {
@@ -172,7 +176,7 @@ export default function ProfilesPage() {
                   className="group relative flex flex-col items-center gap-4 cursor-pointer"
                   onClick={() => handleSelect(p)}
                 >
-                  <div className="relative h-32 w-32 overflow-hidden rounded-md border-2 border-transparent group-hover:border-white lg:h-40 lg:w-40 transition-all duration-300">
+                  <div className="relative h-32 w-32 overflow-hidden rounded-md border-2 border-transparent group-hover:border-white lg:h-40 lg:w-40 transition-all duration-300 pointer-events-auto">
                     <img src={p.avatar} alt={p.name} className="h-full w-full object-cover" />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-transparent transition duration-300">
                         {isManaging ? <Edit2 size={32} /> : p.pin ? <Lock size={24} className="opacity-50" /> : null}
@@ -273,12 +277,13 @@ export default function ProfilesPage() {
                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Select Character</label>
                         <div className="flex flex-wrap gap-3">
                             {AVATARS.map(url => (
-                                <img 
+                                <div 
                                     key={url}
-                                    src={url} 
-                                    className={`h-11 w-11 rounded-lg cursor-pointer transition-all duration-300 ${newAvatar === url ? 'ring-2 ring-primary-600 scale-110 shadow-lg shadow-primary-600/20' : 'opacity-40 hover:opacity-100'}`}
+                                    className={`h-11 w-11 rounded-lg cursor-pointer transition-all duration-300 pointer-events-auto overflow-hidden ${newAvatar === url ? 'ring-2 ring-primary-600 scale-110 shadow-lg shadow-primary-600/20 opacity-100' : 'opacity-40 hover:opacity-100'}`}
                                     onClick={() => setNewAvatar(url)}
-                                />
+                                >
+                                  <img src={url} className="h-full w-full pointer-events-none" />
+                                </div>
                             ))}
                         </div>
                     </div>
