@@ -12,7 +12,6 @@ const IMAGE_BASE_URL = "https://image.tmdb.org/t/p";
 export const fetchTMDB = async (endpoint: string, params: string = "") => {
   const isServer = typeof window === "undefined";
   
-  // On Server: Direct call with key
   if (isServer) {
     const TMDB_KEY = TMDB_KEYS[Math.floor(Math.random() * TMDB_KEYS.length)];
     const res = await fetch(`${BASE_URL}${endpoint}?api_key=${TMDB_KEY}&${params}`, {
@@ -22,10 +21,17 @@ export const fetchTMDB = async (endpoint: string, params: string = "") => {
     return res.json();
   } 
   
-  // On Client: Secure call through Proxy
-  const res = await fetch(`/api/tmdb${endpoint}?${params}`);
-  if (!res.ok) throw new Error("Failed to fetch TMDB data via proxy");
-  return res.json();
+  try {
+    const res = await fetch(`/api/tmdb${endpoint}?${params}`);
+    if (!res.ok) throw new Error("Proxy error");
+    return await res.json();
+  } catch (error) {
+    console.warn("Proxy Failed - Falling back to direct secure fetch", error);
+    const TMDB_KEY = TMDB_KEYS[Math.floor(Math.random() * TMDB_KEYS.length)];
+    const fallbackRes = await fetch(`${BASE_URL}${endpoint}?api_key=${TMDB_KEY}&${params}`);
+    if (!fallbackRes.ok) throw new Error("Complete TMDB Failure");
+    return fallbackRes.json();
+  }
 };
 
 export const getImageUrl = (path: string, size: "w500" | "original" = "w500") => {
