@@ -16,6 +16,7 @@ export default function Home() {
   const { user, loading: authLoading, signInWithGoogle, signInAsGuest } = useAuth();
   const { currentProfile, loading: profileLoading } = useProfile();
   const [data, setData] = useState<any>(null);
+  const [loadingContent, setLoadingContent] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,17 +28,27 @@ export default function Home() {
   useEffect(() => {
     if (user && currentProfile) {
         async function load() {
+            setLoadingContent(true);
             const isKids = currentProfile?.isKids;
-            // Filter endpoints for kids if needed
             const kidsParams = isKids ? "with_genres=16,10751" : ""; 
 
-            const [trending, movies, series, anime] = await Promise.all([
-                fetchTMDB(endpoints.trending, isKids ? "with_genres=16" : ""),
-                fetchTMDB(endpoints.movies, kidsParams),
-                fetchTMDB(endpoints.series, kidsParams),
-                fetchTMDB(endpoints.anime, "with_genres=16&with_original_language=ja"),
-            ]);
-            setData({ trending, movies, series, anime });
+            try {
+                // Fetch basic data first for Hero (faster initial load)
+                const trending = await fetchTMDB(endpoints.trending, isKids ? "with_genres=16" : "");
+                setData((prev: any) => ({ ...prev, trending }));
+                setLoadingContent(false); // Show Hero immediately
+
+                // Fetch the rest in the background
+                const [movies, series, anime] = await Promise.all([
+                    fetchTMDB(endpoints.movies, kidsParams),
+                    fetchTMDB(endpoints.series, kidsParams),
+                    fetchTMDB(endpoints.anime, "with_genres=16&with_original_language=ja"),
+                ]);
+                setData((prev: any) => ({ ...prev, movies, series, anime }));
+            } catch (err) {
+                console.error("Content load failed", err);
+                setLoadingContent(false);
+            }
         }
         load();
     }
@@ -49,29 +60,38 @@ export default function Home() {
 
   if (!currentProfile) return <LoadingScreen />;
 
-  if (!data) return <LoadingScreen />;
+  // Display partial data if trending is loaded
+  if (loadingContent && !data?.trending) return <LoadingScreen />;
 
-  const featured = data.trending.results[0];
+  const featured = data?.trending?.results?.[0];
 
   return (
     <main className="min-h-screen bg-[#020202] pb-20">
       <Navbar />
       
-      <Hero movie={featured} />
+      {featured && <Hero movie={featured} />}
 
       <div className="-mt-16 relative z-30 lg:-mt-24">
-        <MovieRow 
-            title={currentProfile.isKids ? "Fun Adventures for You" : "Trending Now"} 
-            movies={data.trending.results} 
-        />
-        <MovieRow 
-            title={currentProfile.isKids ? "Kids Movies" : "Popular Movies"} 
-            movies={data.movies.results} 
-        />
-        <MovieRow 
-            title={currentProfile.isKids ? "Animation Series" : "TV Shows"} 
-            movies={data.series.results} 
-        />
+        {data?.trending && (
+            <MovieRow 
+                title={currentProfile.isKids ? "Fun Adventures for You" : "Trending Now"} 
+                movies={data.trending.results} 
+            />
+        )}
+        
+        {data?.movies && (
+            <MovieRow 
+                title={currentProfile.isKids ? "Kids Movies" : "Popular Movies"} 
+                movies={data.movies.results} 
+            />
+        )}
+
+        {data?.series && (
+            <MovieRow 
+                title={currentProfile.isKids ? "Animation Series" : "TV Shows"} 
+                movies={data.series.results} 
+            />
+        )}
         
         {/* Contact/Telegram Highlight */}
         <div className="mt-12 px-4 lg:px-12">
