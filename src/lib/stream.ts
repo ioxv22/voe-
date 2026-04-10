@@ -11,11 +11,19 @@ export const SERVER_MAP = {
   helix: "helix",
   lunar: "lunar",
   galactus: "galactus",
+  vidsrc: "vidsrc", // Added stable fallback
   zero: "zero",
-  lucid: "lucid",
 };
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula") => {
+  // Direct vidsrc implementation if selected
+  if (server === "vidsrc") {
+      const baseUrl = "https://vidsrc.to/embed";
+      return type === "movie" 
+        ? `${baseUrl}/movie/${id}` 
+        : `${baseUrl}/tv/${id}/${season}/${episode}`;
+  }
+
   const worker = WORKERS[0];
   const serverParam = SERVER_MAP[server as keyof typeof SERVER_MAP] || "nebula";
   

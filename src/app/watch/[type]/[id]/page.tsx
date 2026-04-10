@@ -3,7 +3,7 @@
 import Navbar from "@/components/Navbar";
 import MovieRow from "@/components/MovieRow";
 import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
-import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown } from "lucide-react";
+import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown, RefreshCw } from "lucide-react";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useEffect, useState } from "react";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
@@ -17,6 +17,7 @@ export default function WatchPage({ params }: { params: any }) {
   const [episode, setEpisode] = useState(1);
   const [episodes, setEpisodes] = useState<any[]>([]);
   const [activeSeasonTab, setActiveSeasonTab] = useState(1);
+  const [key, setKey] = useState(0); // For player refresh
   
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
 
@@ -66,15 +67,28 @@ export default function WatchPage({ params }: { params: any }) {
 
       <div className="pt-24 lg:pt-28 px-4 lg:px-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl">
+          <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl group">
             <iframe
+              key={`${playerUrl}-${key}`}
               src={playerUrl}
               className="h-full w-full"
               allowFullScreen
-              referrerPolicy="no-referrer"
-              // Slightly more relaxed sandbox to fix "Not working" issues on some servers
-              sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups-to-escape-sandbox allow-top-navigation"
+              // IMPORTANT: Using relaxed sandbox fixes "Playback Error"
+              // allow-popups is REQUIRED for many 3rd party HLS players even if we want to block them
+              sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals allow-popups-to-escape-sandbox allow-top-navigation"
             />
+            
+            {/* Player Controls Overlay */}
+            <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition z-50">
+                <button 
+                    onClick={() => setKey(k => k + 1)} 
+                    className="p-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 text-white hover:bg-primary-600 transition"
+                    title="Refresh Player"
+                >
+                    <RefreshCw size={16} />
+                </button>
+            </div>
+
             {!isPremium && (
                 <div className="absolute top-4 right-4 z-40">
                     <a 
