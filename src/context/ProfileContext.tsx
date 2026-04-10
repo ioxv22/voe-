@@ -5,7 +5,6 @@ import {
   collection, 
   doc, 
   getDocs, 
-  addDoc,
   query,
   limit,
   setDoc
@@ -32,7 +31,7 @@ interface ProfileContextType {
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, isGuest } = useAuth();
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [currentProfile, setCurrentProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,40 +45,69 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     }
 
     const fetchProfiles = async () => {
-      const q = query(collection(db, "users", user.uid, "profiles"), limit(4));
-      const snapshot = await getDocs(q);
-      
-      if (snapshot.empty) {
-        // Create initial default profile
-        const defaultProfile = { 
-            id: 'main', 
-            name: user.displayName || 'Me', 
-            avatar: user.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix' 
-        };
-        await setDoc(doc(db, "users", user.uid, "profiles", "main"), defaultProfile);
-        setProfiles([defaultProfile]);
-        setCurrentProfile(defaultProfile);
+      setLoading(true);
+      if (isGuest) {
+        const localProfiles = localStorage.getItem("voz_guest_profiles");
+        if (localProfiles) {
+            const parsed = JSON.parse(localProfiles);
+            setProfiles(parsed);
+            setCurrentProfile(parsed[0]);
+        } else {
+            const defaultProfile = { id: 'guest_main', name: 'Guest', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest', isKids: false };
+            setProfiles([defaultProfile]);
+            setCurrentProfile(defaultProfile);
+            localStorage.setItem("voz_guest_profiles", JSON.stringify([defaultProfile]));
+        }
       } else {
-        const p = snapshot.docs.map(doc => ({ ...doc.data() } as UserProfile));
-        setProfiles(p);
-        setCurrentProfile(p[0]);
+        const q = query(collection(db, "users", user.uid, "profiles"), limit(4));
+        const snapshot = await getDocs(q);
+        
+        if (snapshot.empty) {
+          const defaultProfile = { 
+              id: 'main', 
+              name: user.displayName || 'Me', 
+              avatar: user.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+              isKids: false
+          };
+          await setDoc(doc(db, "users", user.uid, "profiles", "main"), defaultProfile);
+          setProfiles([defaultProfile]);
+          setCurrentProfile(defaultProfile);
+        } else {
+          const p = snapshot.docs.map(doc => ({ ...doc.data() } as UserProfile));
+          setProfiles(p);
+          setCurrentProfile(p[0]);
+        }
       }
       setLoading(false);
     };
 
     fetchProfiles();
-  }, [user]);
+  }, [user, isGuest]);
 
   const selectProfile = (profile: UserProfile) => {
     setCurrentProfile(profile);
-    localStorage.setItem(`voz_profile_${user?.uid}`, profile.id);
   };
 
   const createProfile = async (name: string, avatar: string, isKids: boolean = false, pin?: string) => {
     if (!user || profiles.length >= 4) return;
+    
     const newProfile = { id: Date.now().toString(), name, avatar, isKids, pin };
-    await setDoc(doc(db, "users", user.uid, "profiles", newProfile.id), newProfile);
-    setProfiles([...profiles, newProfile]);
+    
+    // Instant UI feedback
+    setProfiles(prev => {
+        const updated = [...prev, newProfile];
+        if (isGuest) {
+            localStorage.setItem("voz_guest_profiles", JSON.stringify(updated));
+        }
+        return updated;
+    });
+
+    if (!isGuest) {
+        // Background Firestore sync
+        setDoc(doc(db, "users", user.uid, "profiles", newProfile.id), newProfile).catch(err => {
+            console.error("Firestore sync failed", err);
+        });
+    }
   };
 
   return (

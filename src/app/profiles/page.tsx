@@ -61,10 +61,14 @@ export default function ProfilesPage() {
 
   const handleCreate = async () => {
     if (newName) {
-      await createProfile(newName, newAvatar, isKids, newPin || undefined);
-      setIsAdding(false);
-      setNewName("");
-      setNewPin("");
+      try {
+        setIsAdding(false); // Close immediately for maximum speed
+        await createProfile(newName, newAvatar, isKids, newPin || undefined);
+        setNewName("");
+        setNewPin("");
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
