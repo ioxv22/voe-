@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #e50914;
+  --color-primary-foreground: #ffffff;
+  
+  --color-background: #020202;
+  --color-foreground: #ffffff;
+  
+  --color-card: #0a0a0a;
+  --color-card-foreground: #ffffff;
+
+  --color-muted: #737373;
+  --color-muted-foreground: #a3a3a3;
+
+  --color-accent: #e50914;
+  --color-accent-foreground: #ffffff;
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from { height: 0 }
+    to { height: var(--radix-accordion-content-height) }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height) }
+    to { height: 0 }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-white/10;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .glass-nav {
+    @apply sticky top-0 z-50 w-full border-b border-white/5 bg-background/60 backdrop-blur-xl transition-all duration-300;
+  }
+  
+  .movie-card-hover {
+    @apply transition-transform duration-300 ease-out hover:scale-110 hover:z-20 cursor-pointer;
+  }
+
+  .netflix-scroll {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .hero-gradient {
+    background: linear-gradient(to top, #020202 0%, transparent 50%, rgba(0,0,0,0.4) 100%),
+                linear-gradient(to right, #020202 0%, transparent 50%);
+  }
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
