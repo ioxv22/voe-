@@ -130,7 +130,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     setLoading(true);
     localStorage.removeItem("voz_guest_session");
-    sessionStorage.removeItem("voz_active_profile");
     if (!isGuest) await signOut(auth);
     setUser(null);
     setIsGuest(false);

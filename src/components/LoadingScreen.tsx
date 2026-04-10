@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function LoadingScreen() {
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center bg-[#020202] text-white relative overflow-hidden text-centerSelection selection:bg-primary-600 selection:text-white">
+    <div className="flex flex-col min-h-screen items-center justify-center bg-background text-foreground relative overflow-hidden text-center selection:bg-primary selection:text-white">
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary-600/10 rounded-full blur-[150px] pointer-events-none" />
       

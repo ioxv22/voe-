@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 import { AuthProvider } from "@/context/AuthContext";
 import { ProfileProvider } from "@/context/ProfileContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import SecurityManager from "@/components/SecurityManager";
 import AdManager from "@/components/AdManager";
 
@@ -47,13 +48,15 @@ export default function RootLayout({
           />
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
-        <SecurityManager />
-        <AuthProvider>
-          <ProfileProvider>
-            <AdManager />
-            {children}
-          </ProfileProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <SecurityManager />
+          <AuthProvider>
+            <ProfileProvider>
+              <AdManager />
+              {children}
+            </ProfileProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

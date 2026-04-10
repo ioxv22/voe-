@@ -59,7 +59,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       const sessionActiveKey = "voz_active_profile";
 
       // 1. FAST TRACK: If we have a saved profile session, use it immediately to kill the Loading Screen!
-      const savedSessionStr = sessionStorage.getItem(sessionActiveKey);
+      const savedSessionStr = localStorage.getItem(sessionActiveKey);
       if (savedSessionStr) {
           try {
               setCurrentProfile(JSON.parse(savedSessionStr));
@@ -85,7 +85,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
             setProfiles(parsed);
             if (!savedSessionStr) {
                 setCurrentProfile(parsed[0]);
-                sessionStorage.setItem(sessionActiveKey, JSON.stringify(parsed[0]));
+                localStorage.setItem(sessionActiveKey, JSON.stringify(parsed[0]));
             }
             clearTimeout(safetyTimer);
             setLoading(false);
@@ -97,7 +97,10 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
                   const defaultProfile = { id: 'main', name: user.displayName || 'Me', avatar: user.photoURL || DEFAULT_AVATAR, isKids: false, myList: [] };
                   setDoc(doc(db, "users", user.uid, "profiles", "main"), defaultProfile).catch(() => {});
                   setProfiles([defaultProfile]);
-                  if (!savedSessionStr) setCurrentProfile(defaultProfile);
+                  if (!savedSessionStr) {
+                      setCurrentProfile(defaultProfile);
+                      localStorage.setItem(sessionActiveKey, JSON.stringify(defaultProfile));
+                  }
                 } else {
                   const p = snapshot.docs.map(doc => ({ ...doc.data() } as UserProfile));
                   setProfiles(p);
@@ -106,7 +109,18 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
                   if (savedSessionStr) {
                       const savedData = JSON.parse(savedSessionStr);
                       const found = p.find(prof => prof.id === savedData.id);
-                      if (found) setCurrentProfile(found);
+                      if (found) {
+                          setCurrentProfile(found);
+                          localStorage.setItem(sessionActiveKey, JSON.stringify(found));
+                      } else {
+                          // If last used profile doesn't exist anymore, pick first
+                          setCurrentProfile(p[0]);
+                          localStorage.setItem(sessionActiveKey, JSON.stringify(p[0]));
+                      }
+                  } else {
+                      // First time login or cleared cache
+                      setCurrentProfile(p[0]);
+                      localStorage.setItem(sessionActiveKey, JSON.stringify(p[0]));
                   }
                 }
                 clearTimeout(safetyTimer);
@@ -127,11 +141,11 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     };
 
     fetchProfiles();
-  }, [user, isGuest, authLoading]); // Removed missing dependencies
+  }, [user, isGuest, authLoading]); 
 
   const selectProfile = (profile: UserProfile) => {
     setCurrentProfile(profile);
-    sessionStorage.setItem("voz_active_profile", JSON.stringify(profile));
+    localStorage.setItem("voz_active_profile", JSON.stringify(profile));
   };
 
   const toggleMyList = async (movie: any) => {
@@ -145,7 +159,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     // Optimistic Update
     const updatedProfile = { ...currentProfile, myList: updatedList };
     setCurrentProfile(updatedProfile);
-    sessionStorage.setItem("voz_active_profile", JSON.stringify(updatedProfile));
+    localStorage.setItem("voz_active_profile", JSON.stringify(updatedProfile));
 
     setProfiles(prev => prev.map(p => p.id === currentProfile.id ? updatedProfile : p));
 
