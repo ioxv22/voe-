@@ -115,19 +115,21 @@ export default function WatchPage({ params }: { params: any }) {
 
       <div className="pt-24 lg:pt-28 px-4 lg:px-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl group">
-            <iframe
-              key={`${playerUrl}-${key}-${adFreeMode}`}
-              src={playerUrl}
-              className="h-full w-full"
-              allowFullScreen
-              // Ad-Free Mode strictly blocks all popups and navigation away from frame
-              referrerPolicy="no-referrer"
-              sandbox={adFreeMode 
-                ? "allow-scripts allow-same-origin allow-forms allow-presentation allow-storage-access-by-user-activation allow-popups allow-modals" 
-                : "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals allow-top-navigation allow-storage-access-by-user-activation"
-              }
-            />
+            <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl group">
+             {/* Invisible Shield for Click-Jacking Prevention */}
+             <div className="absolute inset-0 z-10 bg-transparent cursor-pointer group-hover:hidden transition-all duration-700" title="Click to play safely" />
+             
+             <iframe
+               key={`${playerUrl}-${key}-${adFreeMode}`}
+               src={playerUrl}
+               className="h-full w-full relative z-0"
+               allowFullScreen
+               referrerPolicy="no-referrer"
+               sandbox={adFreeMode 
+                 ? "allow-scripts allow-same-origin allow-forms allow-presentation allow-storage-access-by-user-activation allow-popups allow-modals" 
+                 : "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals allow-top-navigation allow-storage-access-by-user-activation"
+               }
+             />
             
             {/* Ad-Block Controls */}
             <div className="absolute top-4 left-4 z-50 flex items-center gap-2">
