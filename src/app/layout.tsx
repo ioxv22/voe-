@@ -61,10 +61,7 @@ export default function RootLayout({
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8867564621500356" 
             crossOrigin="anonymous" 
           ></script>
-          <Script 
-            src="https://pl29118911.profitablecpmratenetwork.com/94/fe/c5/94fec515712decf5618381e9375b08aa.js" 
-            strategy="afterInteractive"
-          />
+
           <link rel="apple-touch-icon" href="https://i.ibb.co/23Bkgcrx/image.png" />
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>

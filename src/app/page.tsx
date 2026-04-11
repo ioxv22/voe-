@@ -40,21 +40,25 @@ export default function Home() {
                 setLoadingContent(false);
 
                 // Fetch Dedicated Rows
-                const [latest, series, khaleeji, kids, topRated] = await Promise.all([
+                const [latest, series, arabicSeries, kids, action, horror, kDrama] = await Promise.all([
                     fetchTMDB(endpoints.movies, `${kidsParams}&sort_by=primary_release_date.desc`),
                     fetchTMDB(endpoints.series, kidsParams),
-                    fetchTMDB(endpoints.series, `with_original_language=ar&with_origin_country=SA|AE|KW|EG|LB&sort_by=first_air_date.desc&include_null_first_air_dates=false`), // Tighter Arabic/Khaleeji Drama
-                    fetchTMDB(endpoints.anime, "with_genres=16&with_original_language=ja"), // Anime for everyone
-                    fetchTMDB(endpoints.topRated, kidsParams)
+                    fetchTMDB("/discover/tv", `with_original_language=ar&sort_by=popularity.desc`), // Broad Arabic Series
+                    fetchTMDB(endpoints.anime, "with_genres=16&with_original_language=ja"),
+                    fetchTMDB("/discover/movie", "with_genres=28&sort_by=popularity.desc"), // Action
+                    fetchTMDB("/discover/movie", "with_genres=27&sort_by=popularity.desc"), // Horror
+                    fetchTMDB("/discover/tv", "with_original_language=ko&sort_by=popularity.desc") // K-Drama
                 ]);
                 
                 setData((prev: any) => ({ 
                     ...prev, 
                     latest: latest.results, 
                     series: series.results, 
-                    khaleeji: khaleeji.results,
+                    arabicSeries: arabicSeries.results,
                     kids: kids.results,
-                    topRated: topRated.results
+                    action: action.results,
+                    horror: horror.results,
+                    kDrama: kDrama.results
                 }));
             } catch (err) {
                 console.error("Home Data Load Failure:", err);
@@ -106,28 +110,52 @@ export default function Home() {
             />
         )}
 
-        {/* KHALEEJI DRAMA */}
-        {data?.khaleeji && data.khaleeji.length > 0 && (
+        {/* ARABIC SERIES */}
+        {data?.arabicSeries && data.arabicSeries.length > 0 && (
             <MovieRow 
-                title="Khaleeji Drama | الدراما الخليجية" 
-                movies={data.khaleeji} 
+                title="Arabic TV Hits | مسلسلات عربية" 
+                movies={data.arabicSeries} 
                 isHighlighted
+            />
+        )}
+
+        {/* K-DRAMA */}
+        {data?.kDrama && (
+            <MovieRow 
+                title="Korean Dramas | مسلسلات كورية" 
+                movies={data.kDrama} 
+            />
+        )}
+
+        {/* ACTION */}
+        {data?.action && (
+            <MovieRow 
+                title="Adrenaline Rush | أفلام أكشن" 
+                movies={data.action} 
             />
         )}
 
         {/* TV SERIES */}
         {data?.series && (
             <MovieRow 
-                title={currentProfile.isKids ? "Fun Series" : "Latest TV Series"} 
+                title={currentProfile.isKids ? "Fun Series" : "Binge-worthy TV Series"} 
                 movies={data.series} 
             />
         )}
 
-        {/* TOP RATED / KIDS PORTAL */}
-        {data?.topRated && (
+        {/* HORROR */}
+        {data?.horror && (
+            <MovieRow 
+                title="Nightmare Fuel | أفلام رعب" 
+                movies={data.horror} 
+            />
+        )}
+
+        {/* ANIME / KIDS */}
+        {data?.kids && (
              <MovieRow 
-                title={currentProfile.isKids ? "Best for Kids" : "Top Rated Content"} 
-                movies={data.topRated} 
+                title={currentProfile.isKids ? "Best for Kids" : "Popular Anime"} 
+                movies={data.kids} 
             />
         )}
         

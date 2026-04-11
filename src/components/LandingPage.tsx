@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ChevronRight, Mail, Lock, User } from "lucide-react";
+import { ChevronRight, Mail, Lock, User, Send, Ghost } from "lucide-react";
 import Logo from "./Logo";
 import Footer from "./Footer";
 import { useState } from "react";
@@ -113,6 +113,22 @@ export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () 
                     <button className="w-full bg-primary-600 py-4 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-primary-700 transition shadow-lg shadow-primary-600/20">
                         {isLogin ? 'Enter' : 'Join Now'}
                     </button>
+                    
+                    <div className="relative my-8 text-center">
+                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
+                        <span className="relative bg-[#0b0b0b] px-4 text-[10px] text-gray-600 uppercase tracking-widest font-black">Fast Connect</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <button type="button" onClick={() => window.open('https://t.me/iivoz', '_blank')} className="flex items-center justify-center gap-2 bg-[#229ED9]/10 border border-[#229ED9]/20 p-3 rounded-xl hover:bg-[#229ED9]/20 transition group">
+                            <Send size={18} className="text-[#229ED9] group-hover:scale-110 transition" />
+                            <span className="text-[10px] font-bold text-white uppercase">Telegram</span>
+                        </button>
+                        <button type="button" onClick={() => window.open('https://t.me/iivoz', '_blank')} className="flex items-center justify-center gap-2 bg-[#FFFC00]/10 border border-[#FFFC00]/20 p-3 rounded-xl hover:bg-[#FFFC00]/20 transition group">
+                            <Ghost size={18} className="text-[#FFFC00] group-hover:scale-110 transition" />
+                            <span className="text-[10px] font-bold text-white uppercase">Snapchat</span>
+                        </button>
+                    </div>
                 </form>
                 <p className="mt-6 text-sm text-gray-500">
                     {isLogin ? "Don't have an account?" : "Already a member?"}

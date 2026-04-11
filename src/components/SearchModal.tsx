@@ -6,7 +6,7 @@ import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function SearchModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+export default function SearchModal({ isOpen, onClose, onSelect }: { isOpen: boolean, onClose: () => void, onSelect?: (item: any) => void }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -68,13 +68,9 @@ export default function SearchModal({ isOpen, onClose }: { isOpen: boolean, onCl
               
               {!loading && results.length > 0 && (
                 <div className="grid grid-cols-1 gap-2">
-                  {results.map((item) => (
-                    <Link 
-                      key={item.id} 
-                      href={`/watch/${item.media_type || (item.title ? "movie" : "tv")}/${item.id}`} 
-                      onClick={onClose}
-                    >
-                      <div className="flex items-center gap-4 rounded-md p-2 transition hover:bg-white/5">
+                  {results.map((item) => {
+                    const content = (
+                      <div className="flex items-center gap-4 rounded-md p-2 transition hover:bg-white/5 text-left w-full">
                         <img 
                           src={getImageUrl(item.poster_path)} 
                           alt="" 
@@ -88,8 +84,26 @@ export default function SearchModal({ isOpen, onClose }: { isOpen: boolean, onCl
                         </div>
                         <Play size={20} className="text-gray-600" />
                       </div>
-                    </Link>
-                  ))}
+                    );
+
+                    if (onSelect) {
+                        return (
+                            <button key={item.id} onClick={() => { onSelect(item); onClose(); }} className="w-full">
+                                {content}
+                            </button>
+                        );
+                    }
+
+                    return (
+                        <Link 
+                          key={item.id} 
+                          href={`/watch/${item.media_type || (item.title ? "movie" : "tv")}/${item.id}`} 
+                          onClick={onClose}
+                        >
+                          {content}
+                        </Link>
+                    );
+                  })}
                 </div>
               )}
 

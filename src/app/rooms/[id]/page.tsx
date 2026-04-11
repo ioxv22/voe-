@@ -6,8 +6,9 @@ import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
-import { MessageSquare, Send, X, Users, Crown, Lock, Play, Radio } from "lucide-react";
+import { MessageSquare, Send, X, Users, Crown, Lock, Play, Radio, Mic, MicOff, ScreenShare, Monitor, Clapperboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import SearchModal from "@/components/SearchModal";
 
 export default function RoomDetailsPage({ params }: { params: any }) {
   const { user } = useAuth();
@@ -20,6 +21,9 @@ export default function RoomDetailsPage({ params }: { params: any }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMicOn, setIsMicOn] = useState(false);
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
 
   useEffect(() => {
     async function getParams() {
@@ -84,6 +88,20 @@ export default function RoomDetailsPage({ params }: { params: any }) {
     });
   };
 
+  const handleMovieSelect = async (item: any) => {
+    if (!roomId || user?.uid !== room?.hostId) return;
+    try {
+        await updateDoc(doc(db, "rooms", roomId), {
+            currentMovie: item,
+            currentType: item.media_type || (item.title ? "movie" : "tv"),
+            lastUpdated: serverTimestamp()
+        });
+        alert("Movie Sync Updated!");
+    } catch (e) {
+        console.error(e);
+    }
+  };
+
   if (!room) return <div className="min-h-screen bg-black" />;
 
   if (!isJoined && room.password) {
@@ -111,7 +129,7 @@ export default function RoomDetailsPage({ params }: { params: any }) {
       );
   }
 
-  const playerUrl = getStreamUrl(room.currentType || "movie", room.currentMovie?.id, 1, 1, "nebula");
+  const playerUrl = getStreamUrl(room.currentType || "movie", room.currentMovie?.id, 1, 1, "auto", true);
 
   return (
     <main className="min-h-screen bg-[#020202] flex flex-col h-screen overflow-hidden">
@@ -149,17 +167,47 @@ export default function RoomDetailsPage({ params }: { params: any }) {
                     </AnimatePresence>
                 </div>
 
-                {/* Reaction Controls */}
+                {/* Interaction & Tools Controls */}
                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-black/40 backdrop-blur-xl p-2 rounded-2xl border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    {['🔥', '😂', '🍿', '❤️', '😱', '👏'].map(emoji => (
+                    {/* Media Tools */}
+                    <div className="flex items-center gap-1 pr-3 border-r border-white/10">
                         <button 
-                            key={emoji}
-                            onClick={() => sendReaction(emoji)}
-                            className="hover:scale-125 transition active:scale-95 text-xl p-2"
+                            onClick={() => setIsMicOn(!isMicOn)}
+                            className={`p-2 rounded-xl transition ${isMicOn ? 'bg-primary-600 text-white' : 'hover:bg-white/5 text-gray-400'}`}
+                            title="Voice Chat"
                         >
-                            {emoji}
+                            {isMicOn ? <Mic size={20} /> : <MicOff size={20} />}
                         </button>
-                    ))}
+                        <button 
+                            onClick={() => setIsScreenSharing(!isScreenSharing)}
+                            className={`p-2 rounded-xl transition ${isScreenSharing ? 'bg-primary-600 text-white' : 'hover:bg-white/5 text-gray-400'}`}
+                            title="Screen Share"
+                        >
+                            <ScreenShare size={20} />
+                        </button>
+                        {user?.uid === room.hostId && (
+                            <button 
+                                onClick={() => setIsSearchOpen(true)}
+                                className="p-2 rounded-xl hover:bg-white/5 text-gray-400 transition"
+                                title="Change Movie"
+                            >
+                                <Clapperboard size={20} />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Reactions */}
+                    <div className="flex items-center gap-2">
+                        {['🔥', '😂', '🍿', '❤️', '😱', '👏'].map(emoji => (
+                            <button 
+                                key={emoji}
+                                onClick={() => sendReaction(emoji)}
+                                className="hover:scale-125 transition active:scale-95 text-xl p-1"
+                            >
+                                {emoji}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -224,6 +272,12 @@ export default function RoomDetailsPage({ params }: { params: any }) {
              </form>
         </div>
       </div>
+
+      <SearchModal 
+        isOpen={isSearchOpen} 
+        onClose={() => setIsSearchOpen(false)} 
+        onSelect={handleMovieSelect}
+      />
     </main>
   );
 }

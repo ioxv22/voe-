@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, getDocs, doc, getDoc, setDoc, updateDoc, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Users, Eye, Lock, Save, Key, Crown, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings } from "lucide-react";
 
 export default function AdminDashboard() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [passwordInput, setPasswordInput] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [stats, setStats] = useState({ users: 0, views: 0, likes: 0 });
@@ -27,11 +27,15 @@ export default function AdminDashboard() {
         const storedPass = configSnap.exists() ? configSnap.data().adminPassword : "hamadk2010@@";
         if (passwordInput === storedPass || passwordInput === "hamadk2010@@") {
           setIsAuthenticated(true);
+          localStorage.setItem("voz_admin_auth", "true");
         } else {
           alert("Unauthorized Access Key.");
         }
     } catch (err) {
-        if (passwordInput === "hamadk2010@@") setIsAuthenticated(true);
+        if (passwordInput === "hamadk2010@@") {
+            setIsAuthenticated(true);
+            localStorage.setItem("voz_admin_auth", "true");
+        }
         else alert("Connection error.");
     } finally {
         setIsLoading(false);
@@ -95,6 +99,15 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
+    const isAuth = localStorage.getItem("voz_admin_auth") === "true";
+    if (isAuth) {
+        setIsAuthenticated(true);
+    } else {
+        setIsAuthenticated(false);
+    }
+  }, []);
+
+  useEffect(() => {
     if (isAuthenticated) {
         fetchAllData();
         // Live listener for active rooms
@@ -105,6 +118,11 @@ export default function AdminDashboard() {
         return () => unsubRooms();
     }
   }, [isAuthenticated]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("voz_admin_auth");
+    setIsAuthenticated(false);
+  };
 
   const updateGlobalConfig = async (key: string, value: any) => {
     try {
@@ -124,6 +142,20 @@ export default function AdminDashboard() {
         alert("فشل تغيير حالة المستخدم. الركاء التأكد من قواعد فايربيس.");
     }
   };
+
+  const deleteRoom = async (roomId: string) => {
+    if (!confirm("Are you sure you want to PERMANENTLY delete this room?")) return;
+    try {
+        await deleteDoc(doc(db, "rooms", roomId)); 
+        alert("Room deleted permanently.");
+        fetchAllData();
+    } catch (e) {
+        console.error(e);
+        alert("Action failed. Check Firebase permissions.");
+    }
+  };
+
+  if (isAuthenticated === null) return <div className="min-h-screen bg-black" />;
 
   if (!isAuthenticated) {
     return (
@@ -153,7 +185,7 @@ export default function AdminDashboard() {
         <div className="flex-1 overflow-y-auto p-8 lg:p-16 custom-scrollbar">
             <div className="flex items-center justify-between mb-12">
                 <h1 className="text-4xl font-black tracking-tight">System Core</h1>
-                <button onClick={() => setIsAuthenticated(false)} className="px-6 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-red-600/20 hover:text-red-500 transition text-[10px] font-black uppercase">Logout</button>
+                <button onClick={handleLogout} className="px-6 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-red-600/20 hover:text-red-500 transition text-[10px] font-black uppercase">Logout</button>
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
@@ -270,7 +302,7 @@ export default function AdminDashboard() {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
                         <thead className="bg-white/5 text-gray-400 uppercase text-[10px] font-bold tracking-[0.3em]">
-                            <tr><th className="p-6">Room Name</th><th className="p-6">Host</th><th className="p-6">Content ID</th><th className="p-6 text-right">Created</th></tr>
+                            <tr><th className="p-6">Room Name</th><th className="p-6">Host</th><th className="p-6">Content ID</th><th className="p-6 text-right">Action</th></tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
                             {activeRooms.map(r => (
@@ -278,7 +310,9 @@ export default function AdminDashboard() {
                                     <td className="p-6 font-bold text-primary-500">{r.name}</td>
                                     <td className="p-6">{r.hostName}</td>
                                     <td className="p-6 text-gray-400">{r.currentMovie?.id} ({r.currentType})</td>
-                                    <td className="p-6 text-right text-[10px] text-gray-600">{(r.createdAt?.toDate()?.toLocaleTimeString()) || 'Just now'}</td>
+                                    <td className="p-6 text-right">
+                                        <button onClick={() => deleteRoom(r.id)} className="px-4 py-2 bg-red-600/10 text-red-500 rounded-lg text-[10px] font-black uppercase hover:bg-red-600 hover:text-white transition">Terminate</button>
+                                    </td>
                                 </tr>
                             ))}
                             {activeRooms.length === 0 && <tr><td colSpan={4} className="p-12 text-center text-gray-600 font-bold uppercase tracking-widest italic">No active parties found.</td></tr>}
