@@ -49,6 +49,12 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   const worker = WORKERS[0];
   const serverParam = SERVER_MAP[targetServer as keyof typeof SERVER_MAP] || "nebula";
   
+  // Custom logic for Arabic: If Nebula is selected for Arabic content, we redirect to ALOOY 
+  // because Nebula sometimes mis-maps Arabic IDs to English ones.
+  if (lang === 'ar' && targetServer === "nebula") {
+     return `https://vidsrc.stream/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
+  }
+
   const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
   const extraParams = isRoom ? "&adblock=1&autoplay=1" : "";
   return `${worker}${path}?server=${serverParam}&token=${STREAM_TOKEN}${extraParams}`;

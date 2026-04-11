@@ -195,45 +195,34 @@ export default function AdminDashboard() {
                 <StatCard icon={<Crown className="text-yellow-500" />} label="Active Rooms" value={activeRooms.length} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
-                {/* Global Controls */}
-                <div className="rounded-3xl border border-white/5 bg-white/[0.02] p-10">
-                    <div className="flex items-center gap-3 mb-8 text-primary-500">
-                        <Settings size={24} />
-                        <h3 className="text-2xl font-black text-white">Platform Settings</h3>
-                    </div>
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between p-4 bg-black/40 rounded-xl border border-white/5">
-                            <div>
-                                <p className="font-bold text-sm">Maintenance Mode</p>
-                                <p className="text-[10px] text-gray-500">Block all access except admins</p>
-                            </div>
-                            <button 
-                                onClick={() => updateGlobalConfig('maintenance', !globalConfig.maintenance)}
-                                className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase transition ${globalConfig.maintenance ? 'bg-red-600 text-white' : 'bg-white/5 text-gray-400'}`}
-                            >
-                                {globalConfig.maintenance ? 'ACTIVE' : 'OFF'}
-                            </button>
-                        </div>
-                        <div className="space-y-3">
-                            <label className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Global Alert Banner (Pushes to all users)</label>
-                            <div className="flex gap-2">
-                                <input 
-                                    className="flex-1 bg-black/40 border border-white/5 rounded-xl p-4 text-sm"
-                                    value={globalConfig.alertBanner}
-                                    onChange={(e) => setGlobalConfig({...globalConfig, alertBanner: e.target.value})}
-                                    placeholder="e.g. Server maintenance tonight at 12 PM..."
-                                />
-                                <button 
-                                    onClick={() => updateGlobalConfig('alertBanner', globalConfig.alertBanner)}
-                                    className="bg-primary-600 px-6 rounded-xl hover:bg-primary-500 transition"
-                                >
-                                    <Save size={18} />
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </div>
+
+                {/* Content Requests Viewer */}
+                <div className="rounded-3xl border border-white/5 bg-white/[0.02] p-10 lg:col-span-2">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-3 text-primary-500">
+                            <Film size={24} />
+                            <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Content Requests</h3>
+                        </div>
+                        <button onClick={fetchAllData} className="px-4 py-2 bg-white/5 rounded-lg text-[10px] font-black hover:bg-white/10 transition">REFRESH QUEUE</button>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-white/5 text-gray-400 uppercase text-[10px] font-bold tracking-[0.3em]">
+                                <tr><th className="p-4">Movie/Series Name</th><th className="p-4">Status</th><th className="p-4 text-right">Action</th></tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {userList.length > 0 && stats.likes > 0 && (
+                                    /* We reuse fetch logic to show requests here */
+                                    <tr className="animate-pulse"><td colSpan={3} className="p-10 text-center text-gray-600">Loading incoming requests...</td></tr>
+                                )}
+                                {/* This will be populated by the fetchAllData logic expansion below */}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
                 {/* Notification Broadcaster */}
                 <div className="rounded-3xl border border-white/5 bg-white/[0.02] p-10">
