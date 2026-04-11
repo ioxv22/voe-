@@ -52,7 +52,7 @@ export default function WatchPage({ params }: { params: any }) {
         const adsSnap = await getDoc(doc(db, "system", "ads"));
         if (adsSnap.exists()) setSidebarAd(adsSnap.data().sidebar || "");
         if (resolvedItem.original_language === 'ar') {
-            setServer("auto");
+            setServer("vidsrcme");
         }
       } catch (err) {
           console.error("Init Error:", err);
@@ -164,7 +164,11 @@ export default function WatchPage({ params }: { params: any }) {
 
           <div className="p-4 bg-blue-600/5 border border-blue-600/10 rounded-xl">
              <p className="text-[11px] text-blue-400 font-medium leading-relaxed">
-                💡 <b>Tip:</b> If the video fails to load, click <b>"AD-BLOCK ON"</b> to toggle compatible mode. Many servers require popups to initialize the player correctly.
+                {item.original_language === 'ar' ? (
+                    <>💡 <b>نصيحة:</b> للمسلسلات والأفلام العربية، يرجى استخدام سيرفر <b>VIDSRCME</b> أو <b>EMBEDSU</b>. إذا لم يعمل أحدهما، جرب التبديل بينهم أو إيقاف <b>AD-BLOCK</b>.</>
+                ) : (
+                    <>💡 <b>Tip:</b> If the video fails to load, click <b>"AD-BLOCK ON"</b> to toggle compatible mode. Many servers require popups to initialize the player correctly.</>
+                )}
              </p>
           </div>
 

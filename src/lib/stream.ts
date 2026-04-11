@@ -23,7 +23,7 @@ export const SERVER_MAP = {
 };
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en") => {
-  const targetServer = (isRoom || lang === 'ar') ? "auto" : server;
+  const targetServer = (isRoom || lang === 'ar') ? "vidsrcme" : server;
 
   // Primary Reliable Mirrors (No Worker needed)
   if (targetServer === "auto") return `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914&autoplay=false`;
