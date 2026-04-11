@@ -23,7 +23,7 @@ export const SERVER_MAP = {
 };
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en") => {
-  const targetServer = (isRoom || lang === 'ar') ? "embedsu" : server;
+  const targetServer = (isRoom || lang === 'ar') ? "auto" : server;
   
   if (targetServer === "vidsrc") {
       const baseUrl = "https://vidsrc.to/embed";
