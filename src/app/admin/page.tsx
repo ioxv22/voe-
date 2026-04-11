@@ -267,7 +267,6 @@ export default function AdminDashboard() {
                         </table>
                     </div>
                 </div>
-            </div>
 
                 {/* Notification Broadcaster */}
                 <div className="rounded-3xl border border-white/5 bg-white/[0.02] p-10">
