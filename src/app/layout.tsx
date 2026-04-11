@@ -73,9 +73,11 @@ export default function RootLayout({
           <link rel="apple-touch-icon" href="https://i.ibb.co/23Bkgcrx/image.png" />
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
-        <amp-auto-ads type="adsense"
-                data-ad-client="ca-pub-8867564621500356">
-        </amp-auto-ads>
+        <div dangerouslySetInnerHTML={{ __html: `
+          <amp-auto-ads type="adsense"
+                  data-ad-client="ca-pub-8867564621500356">
+          </amp-auto-ads>
+        `}} />
         <ThemeProvider>
           <VisitorTracker />
           <SecurityManager />
