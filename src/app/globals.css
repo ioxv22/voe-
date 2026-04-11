@@ -60,17 +60,37 @@
   }
 }
 
+/* iPhone & Mobile Precision Fixes */
+@layer base {
+  html, body {
+    height: 100%;
+    min-height: 100dvh; /* Dynamic Viewport for iPhone Safari */
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent; /* Remove gray box on touch */
+    -webkit-overflow-scrolling: touch; /* Smooth momentum scroll */
+  }
+
+  body {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+}
+
 @layer components {
   .glass-nav {
-    @apply sticky top-0 z-50 w-full border-b border-white/5 backdrop-blur-xl transition-all duration-300;
+    @apply sticky top-0 z-50 w-full border-b border-white/5 backdrop-blur-3xl transition-all duration-300;
     background-color: var(--nav-bg);
+    padding-top: calc(1rem + env(safe-area-inset-top));
   }
   
   .movie-card-hover {
-    @apply transition-transform duration-300 ease-out hover:scale-110 hover:z-20 cursor-pointer;
+    @apply transition-transform duration-300 ease-out hover:scale-105 active:scale-95 hover:z-20 cursor-pointer;
   }
 
   .netflix-scroll {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     &::-webkit-scrollbar {
       display: none;
@@ -78,8 +98,8 @@
   }
 
   .hero-gradient {
-    background: linear-gradient(to top, var(--background) 0%, transparent 50%, rgba(0,0,0,0.4) 100%),
-                linear-gradient(to right, var(--background) 0%, transparent 50%);
+    background: linear-gradient(to top, var(--background) 0%, transparent 40%, rgba(0,0,0,0.5) 100%),
+                linear-gradient(to right, var(--background) 0%, transparent 60%);
   }
 }
 
@@ -90,3 +110,8 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Fix for iPhone Notch Overlap */
+.safe-p-top { padding-top: env(safe-area-inset-top); }
+.safe-p-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
