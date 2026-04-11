@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
-import { MessageSquare, Send, X, Users, Crown, ShieldLock, Play, Radio } from "lucide-react";
+import { MessageSquare, Send, X, Users, Crown, Lock, Play, Radio } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function RoomDetailsPage({ params }: { params: any }) {
@@ -75,7 +75,7 @@ export default function RoomDetailsPage({ params }: { params: any }) {
         <div className="min-h-screen bg-[#020202] flex items-center justify-center p-6">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm text-center">
                 <div className="h-20 w-20 rounded-3xl bg-yellow-600/10 text-yellow-600 flex items-center justify-center mb-8 mx-auto border border-yellow-600/20">
-                    <ShieldLock size={32} />
+                    <Lock size={32} />
                 </div>
                 <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-2">{room.name}</h2>
                 <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-8">This room is protected</p>
