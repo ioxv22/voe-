@@ -29,6 +29,13 @@ export default function WatchPage({ params }: { params: any }) {
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
 
   useEffect(() => {
+    // Global Ad-Block Interceptor: Prevent any JS from opening new windows
+    const originalOpen = window.open;
+    window.open = function() {
+        console.warn("VOZ Shield: Blocked an external navigation attempt.");
+        return null;
+    };
+
     async function init() {
       try {
         const resolvedParams = await params;
@@ -55,6 +62,8 @@ export default function WatchPage({ params }: { params: any }) {
       }
     }
     init();
+
+    return () => { window.open = originalOpen; };
   }, [params]);
 
   const loadEpisodes = async (tvId: string, sNum: number) => {
