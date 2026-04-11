@@ -16,14 +16,14 @@ import { db } from "@/lib/firebase";
 export default function WatchPage({ params }: { params: any }) {
   const { user, isPremium } = useAuth();
   const [data, setData] = useState<{item: any, similar: any} | null>(null);
-  const [server, setServer] = useState("auto");
+  const [server, setServer] = useState("nebula");
   const [season, setSeason] = useState(1);
   const [episode, setEpisode] = useState(1);
   const [episodes, setEpisodes] = useState<any[]>([]);
   const [activeSeasonTab, setActiveSeasonTab] = useState(1);
   const [key, setKey] = useState(0); 
   const [sidebarAd, setSidebarAd] = useState("");
-  const [adFreeMode, setAdFreeMode] = useState(false); // Default to Compatible mode to avoid lag and playback issues
+  const [adFreeMode, setAdFreeMode] = useState(true); // Default to Ad-Free as requested
   
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
 
