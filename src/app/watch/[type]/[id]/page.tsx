@@ -21,10 +21,9 @@ export default function WatchPage({ params }: { params: any }) {
   const [episode, setEpisode] = useState(1);
   const [episodes, setEpisodes] = useState<any[]>([]);
   const [activeSeasonTab, setActiveSeasonTab] = useState(1);
-  const [key, setKey] = useState(0); 
   const [sidebarAd, setSidebarAd] = useState("");
   const [adFreeMode, setAdFreeMode] = useState(true); 
-  const [routeParams, setRouteParams] = useState<{type: string, id: string} | null>(null);
+  const [paramsData, setParamsData] = useState<any>(null);
   
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
 
@@ -32,24 +31,21 @@ export default function WatchPage({ params }: { params: any }) {
     async function init() {
       try {
         const resolvedParams = await params;
-        setRouteParams({ type: resolvedParams.type, id: resolvedParams.id });
+        setParamsData(resolvedParams);
         const [resolvedItem, resolvedSimilar] = await Promise.all([
           fetchTMDB(endpoints.details(resolvedParams.type, resolvedParams.id)),
           fetchTMDB(endpoints.similar(resolvedParams.type, resolvedParams.id)),
         ]);
         setData({ item: resolvedItem, similar: resolvedSimilar });
         
-        // Real-Time View Tracking Logic
-        try {
-            const statsRef = doc(db, "system", "stats");
-            const statsSnap = await getDoc(statsRef);
-            const currentViews = statsSnap.exists() ? (statsSnap.data().totalViews || 0) : 0;
-            await setDoc(statsRef, { totalViews: currentViews + 1 }, { merge: true });
-        } catch (e) { console.error("Stats Error:", e); }
-
         if (resolvedParams.type === "tv") {
             loadEpisodes(resolvedParams.id, 1);
         }
+
+        const statsRef = doc(db, "system", "stats");
+        const statsSnap = await getDoc(statsRef);
+        const currentViews = statsSnap.exists() ? (statsSnap.data().totalViews || 0) : 0;
+        await setDoc(statsRef, { totalViews: currentViews + 1 }, { merge: true });
 
         const adsSnap = await getDoc(doc(db, "system", "ads"));
         if (adsSnap.exists()) setSidebarAd(adsSnap.data().sidebar || "");
@@ -70,18 +66,13 @@ export default function WatchPage({ params }: { params: any }) {
     }
   };
 
-  const currentType = routeParams?.type || "movie";
-  const currentId = routeParams?.id || "";
-  const playerUrl = getStreamUrl(currentType, currentId, season, episode, server, false, data?.item?.original_language || "en");
+  if (!paramsData || !data) return <div className="min-h-screen bg-black flex items-center justify-center text-white font-black italic tracking-widest animate-pulse">VOZ STREAM | LOADING...</div>;
 
-  if (!routeParams) return <div className="min-h-screen bg-black" />;
-  
-  const item = data?.item;
-  const similar = data?.similar;
-  const type = currentType;
+  const { item, similar } = data;
+  const type = paramsData.type;
+  const playerUrl = getStreamUrl(type, item.id, season, episode, server, false, item.original_language);
 
   const toggleWatchlist = () => {
-    if (!item) return;
     if (isInWatchlist(item.id)) {
       removeFromWatchlist(item.id);
     } else {
@@ -92,7 +83,7 @@ export default function WatchPage({ params }: { params: any }) {
   const router = useRouter();
 
   const handleStartParty = async () => {
-    if (!user || !item) return alert("Please Sign In to start a party.");
+    if (!user) return alert("Please Sign In to start a party.");
     try {
       const docRef = await addDoc(collection(db, "rooms"), {
         name: `${user.displayName}'s Cinema`,
