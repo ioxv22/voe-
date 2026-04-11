@@ -56,11 +56,13 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-          <script 
+          <Script 
+            id="adsense-init"
             async 
+            strategy="lazyOnload"
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8867564621500356" 
             crossOrigin="anonymous" 
-          ></script>
+          />
 
           <link rel="apple-touch-icon" href="https://i.ibb.co/23Bkgcrx/image.png" />
       </head>
