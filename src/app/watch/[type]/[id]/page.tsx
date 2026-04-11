@@ -21,6 +21,7 @@ export default function WatchPage({ params }: { params: any }) {
   const [episode, setEpisode] = useState(1);
   const [episodes, setEpisodes] = useState<any[]>([]);
   const [activeSeasonTab, setActiveSeasonTab] = useState(1);
+  const [key, setKey] = useState(0); 
   const [sidebarAd, setSidebarAd] = useState("");
   const [adFreeMode, setAdFreeMode] = useState(true); 
   const [paramsData, setParamsData] = useState<any>(null);
