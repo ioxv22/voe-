@@ -25,6 +25,7 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isRequestOpen, setIsRequestOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
   
   const { user, signInWithGoogle, logout } = useAuth();
@@ -98,18 +99,27 @@ export default function Navbar() {
         </button>
         
         {user && currentProfile ? (
-            <div className="group relative">
-                <div className="h-8 w-8 cursor-pointer overflow-hidden rounded-md border-2 border-transparent hover:border-foreground/20">
+            <div className="relative">
+                <div 
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="h-8 w-8 cursor-pointer overflow-hidden rounded-md border-2 border-transparent hover:border-foreground/20 active:scale-90 transition shadow-lg"
+                >
                     <img src={currentProfile.avatar} alt="Profile" className="h-full w-full object-cover" />
                 </div>
-                <div className="absolute right-0 top-full mt-2 w-48 scale-95 opacity-0 transition group-hover:scale-100 group-hover:opacity-100">
-                    <div className="rounded-md border border-white/10 bg-card p-2 shadow-xl">
-                        <p className="px-3 py-2 text-[10px] font-bold text-muted border-b border-white/5 truncate">{currentProfile.name}</p>
-                        <Link href="/profiles"><button className="w-full px-3 py-2 text-left text-xs hover:bg-foreground/5 transition">Switch Profiles</button></Link>
-                        <a href="https://t.me/iivoz" target="_blank"><button className="w-full px-3 py-2 text-left text-xs hover:bg-foreground/5 transition">Help Center</button></a>
-                        <button onClick={logout} className="w-full px-3 py-2 text-left text-xs font-bold text-primary transition hover:bg-foreground/5">Sign Out</button>
-                    </div>
-                </div>
+                
+                {isProfileOpen && (
+                    <>
+                        <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
+                        <div className="absolute right-0 top-full mt-2 w-48 z-50">
+                            <div className="rounded-xl border border-white/10 bg-black/90 backdrop-blur-3xl p-2 shadow-2xl animate-in fade-in zoom-in duration-200">
+                                <p className="px-3 py-2 text-[10px] font-bold text-muted border-b border-white/5 truncate uppercase tracking-widest">{currentProfile.name}</p>
+                                <Link href="/profiles"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg mt-1">Switch Profiles</button></Link>
+                                <a href="https://t.me/iivoz" target="_blank"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg">Help Center</button></a>
+                                <button onClick={logout} className="w-full px-3 py-2 text-left text-xs font-bold text-primary transition hover:bg-primary/10 rounded-lg mt-1">Sign Out</button>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         ) : (
             <button 
