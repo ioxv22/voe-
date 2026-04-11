@@ -113,8 +113,9 @@ export default function WatchPage({ params }: { params: any }) {
               className="h-full w-full"
               allowFullScreen
               // Ad-Free Mode strictly blocks all popups and navigation away from frame
+              referrerPolicy="no-referrer"
               sandbox={adFreeMode 
-                ? "allow-scripts allow-same-origin allow-forms allow-presentation allow-storage-access-by-user-activation allow-popups-to-escape-sandbox allow-popups allow-modals" 
+                ? "allow-scripts allow-same-origin allow-forms allow-presentation allow-storage-access-by-user-activation allow-popups allow-modals" 
                 : "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals allow-top-navigation allow-storage-access-by-user-activation"
               }
             />
