@@ -129,7 +129,7 @@ export default function RoomDetailsPage({ params }: { params: any }) {
       );
   }
 
-  const playerUrl = getStreamUrl(room.currentType || "movie", room.currentMovie?.id, 1, 1, "auto", true);
+  const playerUrl = getStreamUrl(room.currentType || "movie", room.currentMovie?.id, 1, 1, "auto", true, room.currentMovie?.original_language);
 
   return (
     <main className="min-h-screen bg-[#020202] flex flex-col h-screen overflow-hidden">

@@ -86,7 +86,7 @@ export default function WatchPage({ params }: { params: any }) {
         hostId: user.uid,
         hostName: user.displayName,
         createdAt: serverTimestamp(),
-        currentMovie: { id: item.id },
+        currentMovie: { id: item.id, original_language: item.original_language },
         currentType: type
       });
       router.push(`/rooms/${docRef.id}`);
@@ -95,7 +95,7 @@ export default function WatchPage({ params }: { params: any }) {
     }
   };
 
-  const playerUrl = getStreamUrl(type, item.id, season, episode, server);
+  const playerUrl = getStreamUrl(type, item.id, season, episode, server, false, item.original_language);
 
   return (
     <main className="min-h-screen bg-[#020202]">
@@ -136,17 +136,23 @@ export default function WatchPage({ params }: { params: any }) {
                 </div>
             </div>
 
-            {!isPremium && (
-                <div className="absolute top-4 right-4 z-40">
-                    <a 
-                        href="https://t.me/iivoz" 
-                        target="_blank"
-                        className="bg-primary-600/90 backdrop-blur-md text-[10px] font-black text-white px-3 py-1.5 rounded-full border border-white/20 hover:bg-primary-500 transition shadow-lg"
-                    >
-                        VIP STATUS 👑
-                    </a>
-                </div>
-            )}
+                {item.original_language === 'ar' && (
+                    <div className="absolute top-4 right-4 z-40 bg-blue-600/90 backdrop-blur-md text-[10px] font-black text-white px-3 py-1.5 rounded-full border border-white/20 shadow-lg flex items-center gap-1">
+                        <Radio size={12} className="animate-pulse" /> OPTIMIZED SERVERS ACTIVE
+                    </div>
+                )}
+                
+                {!isPremium && item.original_language !== 'ar' && (
+                    <div className="absolute top-4 right-4 z-40">
+                        <a 
+                            href="https://t.me/iivoz" 
+                            target="_blank"
+                            className="bg-primary-600/90 backdrop-blur-md text-[10px] font-black text-white px-3 py-1.5 rounded-full border border-white/20 hover:bg-primary-500 transition shadow-lg"
+                        >
+                            VIP STATUS 👑
+                        </a>
+                    </div>
+                )}
           </div>
 
           <div className="p-4 bg-blue-600/5 border border-blue-600/10 rounded-xl">
@@ -174,9 +180,15 @@ export default function WatchPage({ params }: { params: any }) {
                 <button
                     key={srv}
                     onClick={() => setServer(srv)}
-                    className={`px-4 py-2 rounded-md text-xs font-bold transition ${server === srv ? 'bg-primary-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                    className={`px-4 py-2 rounded-md text-xs font-bold transition relative ${server === srv ? 'bg-primary-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
                 >
                     {srv.toUpperCase()}
+                    {item.original_language === 'ar' && (srv === 'embedsu' || srv === 'auto' || srv === 'vidsrcme') && (
+                        <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                             <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                        </span>
+                    )}
                 </button>
             ))}
           </div>
