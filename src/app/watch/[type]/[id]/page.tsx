@@ -50,6 +50,12 @@ export default function WatchPage({ params }: { params: any }) {
 
         const adsSnap = await getDoc(doc(db, "system", "ads"));
         if (adsSnap.exists()) setSidebarAd(adsSnap.data().sidebar || "");
+        if (resolvedItem.original_language === 'ar') {
+            setServer("embedsu");
+        }
+    } catch (err) {
+        console.error("Init Error:", err);
+    }
     }
     init();
   }, [params]);
@@ -175,15 +181,19 @@ export default function WatchPage({ params }: { params: any }) {
           )}
 
           <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 hide-scrollbar">
-            <span className="text-xs font-bold text-gray-500 flex items-center mr-2 uppercase tracking-widest">Servers:</span>
-            {Object.keys(SERVER_MAP).map((srv) => (
+            <span className="text-xs font-bold text-gray-500 flex items-center mr-2 uppercase tracking-widest">
+                {item.original_language === 'ar' ? "Arabic Optimized Servers:" : "Servers:"}
+            </span>
+            {Object.keys(SERVER_MAP)
+              .filter(srv => item.original_language !== 'ar' || ['embedsu', 'vidsrcme', 'auto'].includes(srv))
+              .map((srv) => (
                 <button
                     key={srv}
                     onClick={() => setServer(srv)}
                     className={`px-4 py-2 rounded-md text-xs font-bold transition relative ${server === srv ? 'bg-primary-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
                 >
                     {srv.toUpperCase()}
-                    {item.original_language === 'ar' && (srv === 'embedsu' || srv === 'auto' || srv === 'vidsrcme') && (
+                    {item.original_language === 'ar' && (
                         <span className="absolute -top-1 -right-1 flex h-2 w-2">
                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
