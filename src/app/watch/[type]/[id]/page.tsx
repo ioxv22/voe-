@@ -186,6 +186,7 @@ export default function WatchPage({ params }: { params: any }) {
                 {item.original_language === 'ar' ? "Arabic Optimized Servers:" : "Servers:"}
             </span>
             {Object.keys(SERVER_MAP)
+              .filter(srv => item?.original_language !== 'ar' || ['nebula', 'embedsu', 'vidsrcme', 'auto', 'alooy', 'xyz', 'vip'].includes(srv))
               .map((srv) => (
                 <button
                     key={srv}
