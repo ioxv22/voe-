@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { doc, onSnapshot, collection, addDoc, query, orderBy, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, collection, addDoc, query, orderBy, serverTimestamp, setDoc, updateDoc, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -14,6 +14,7 @@ export default function RoomDetailsPage({ params }: { params: any }) {
   const [room, setRoom] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [reactions, setReactions] = useState<any[]>([]);
   const [isJoined, setIsJoined] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -39,7 +40,12 @@ export default function RoomDetailsPage({ params }: { params: any }) {
       setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
 
-    return () => { unsubRoom(); unsubMessages(); };
+    const qReactions = query(collection(db, "rooms", roomId, "reactions"), orderBy("timestamp", "desc"), limit(20));
+    const unsubReactions = onSnapshot(qReactions, (snapshot) => {
+        setReactions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+
+    return () => { unsubRoom(); unsubMessages(); unsubReactions(); };
   }, [roomId]);
 
   useEffect(() => {
@@ -66,6 +72,16 @@ export default function RoomDetailsPage({ params }: { params: any }) {
       timestamp: serverTimestamp()
     });
     setNewMessage("");
+  };
+
+  const sendReaction = async (emoji: string) => {
+    if (!user || !roomId) return;
+    await addDoc(collection(db, "rooms", roomId, "reactions"), {
+        emoji,
+        userId: user.uid,
+        userName: user.displayName,
+        timestamp: serverTimestamp()
+    });
   };
 
   if (!room) return <div className="min-h-screen bg-black" />;
@@ -114,6 +130,36 @@ export default function RoomDetailsPage({ params }: { params: any }) {
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                     </span>
                     <span className="text-[10px] font-black uppercase tracking-widest text-white">Live Party: {room.name}</span>
+                </div>
+
+                {/* Floating Reactions Layer */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    <AnimatePresence>
+                        {reactions.map((r: any) => (
+                            <motion.div
+                                key={r.id}
+                                initial={{ opacity: 0, scale: 0.5, y: 100, x: Math.random() * 200 - 100 }}
+                                animate={{ opacity: [0, 1, 1, 0], scale: [0.5, 1.2, 1, 0.8], y: -400 }}
+                                transition={{ duration: 4, ease: "easeOut" }}
+                                className="absolute bottom-20 left-1/2 text-4xl select-none"
+                            >
+                                {r.emoji}
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </div>
+
+                {/* Reaction Controls */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-black/40 backdrop-blur-xl p-2 rounded-2xl border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    {['🔥', '😂', '🍿', '❤️', '😱', '👏'].map(emoji => (
+                        <button 
+                            key={emoji}
+                            onClick={() => sendReaction(emoji)}
+                            className="hover:scale-125 transition active:scale-95 text-xl p-2"
+                        >
+                            {emoji}
+                        </button>
+                    ))}
                 </div>
             </div>
 

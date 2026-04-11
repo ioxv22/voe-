@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, getDocs, doc, getDoc, setDoc, updateDoc, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, setDoc, updateDoc, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Users, Eye, Lock, Save, Key, Crown, LayoutDashboard, Terminal, BellPlus } from "lucide-react";
+import { Users, Eye, Lock, Save, Key, Crown, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings } from "lucide-react";
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -13,6 +13,8 @@ export default function AdminDashboard() {
   const [userList, setUserList] = useState<any[]>([]);
   const [adCodes, setAdCodes] = useState({ header: "", footer: "", sidebar: "" });
   const [isLoading, setIsLoading] = useState(false);
+  const [activeRooms, setActiveRooms] = useState<any[]>([]);
+  const [globalConfig, setGlobalConfig] = useState({ maintenance: false, alertBanner: "" });
 
   // Notification form
   const [notif, setNotif] = useState({ title: "", message: "", type: "movie" });
@@ -77,6 +79,15 @@ export default function AdminDashboard() {
         const requestsCount = requestsSnap.size;
         
         setStats({ users: usersSnap.size, views: totalVisits, likes: realViews });
+
+        // Fetch Global Config
+        const configSnap = await getDoc(doc(db, "system", "config"));
+        if (configSnap.exists()) {
+            setGlobalConfig({
+                maintenance: configSnap.data().maintenance || false,
+                alertBanner: configSnap.data().alertBanner || ""
+            });
+        }
     } catch (err: any) {
         console.error("Firebase Admin Error:", err);
         alert("فشل جلب البيانات. الرجاء التأكد من تحديث قواعد حماية فايربيس (Firestore Rules) إلى Test Mode لكي تعمل لوحة التحكم.");
@@ -84,8 +95,26 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    if (isAuthenticated) fetchAllData();
+    if (isAuthenticated) {
+        fetchAllData();
+        // Live listener for active rooms
+        const qRooms = query(collection(db, "rooms"), orderBy("createdAt", "desc"), limit(10));
+        const unsubRooms = onSnapshot(qRooms, (snapshot) => {
+            setActiveRooms(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        });
+        return () => unsubRooms();
+    }
   }, [isAuthenticated]);
+
+  const updateGlobalConfig = async (key: string, value: any) => {
+    try {
+        await setDoc(doc(db, "system", "config"), { [key]: value }, { merge: true });
+        setGlobalConfig(prev => ({ ...prev, [key]: value }));
+        alert(`${key} updated successfully.`);
+    } catch (e) {
+        alert("Failed to update system config.");
+    }
+  };
 
   const toggleVIP = async (userId: string, currentStatus: boolean) => {
     try {
@@ -131,14 +160,53 @@ export default function AdminDashboard() {
                 <StatCard icon={<Users />} label="Lifetime Users" value={stats.users} />
                 <StatCard icon={<Eye className="text-blue-500" />} label="Live Traffic" value={stats.views} />
                 <StatCard icon={<Terminal className="text-green-500" />} label="Total Playbacks" value={stats.likes} />
-                <StatCard icon={<Crown className="text-yellow-500" />} label="Requests" value={userList.filter(u => u.isVIP).length || stats.users > 0 ? 0 : 0} />
+                <StatCard icon={<Crown className="text-yellow-500" />} label="Active Rooms" value={activeRooms.length} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+                {/* Global Controls */}
+                <div className="rounded-3xl border border-white/5 bg-white/[0.02] p-10">
+                    <div className="flex items-center gap-3 mb-8 text-primary-500">
+                        <Settings size={24} />
+                        <h3 className="text-2xl font-black text-white">Platform Settings</h3>
+                    </div>
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between p-4 bg-black/40 rounded-xl border border-white/5">
+                            <div>
+                                <p className="font-bold text-sm">Maintenance Mode</p>
+                                <p className="text-[10px] text-gray-500">Block all access except admins</p>
+                            </div>
+                            <button 
+                                onClick={() => updateGlobalConfig('maintenance', !globalConfig.maintenance)}
+                                className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase transition ${globalConfig.maintenance ? 'bg-red-600 text-white' : 'bg-white/5 text-gray-400'}`}
+                            >
+                                {globalConfig.maintenance ? 'ACTIVE' : 'OFF'}
+                            </button>
+                        </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Global Alert Banner (Pushes to all users)</label>
+                            <div className="flex gap-2">
+                                <input 
+                                    className="flex-1 bg-black/40 border border-white/5 rounded-xl p-4 text-sm"
+                                    value={globalConfig.alertBanner}
+                                    onChange={(e) => setGlobalConfig({...globalConfig, alertBanner: e.target.value})}
+                                    placeholder="e.g. Server maintenance tonight at 12 PM..."
+                                />
+                                <button 
+                                    onClick={() => updateGlobalConfig('alertBanner', globalConfig.alertBanner)}
+                                    className="bg-primary-600 px-6 rounded-xl hover:bg-primary-500 transition"
+                                >
+                                    <Save size={18} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Notification Broadcaster */}
                 <div className="rounded-3xl border border-white/5 bg-white/[0.02] p-10">
                     <div className="flex items-center gap-3 mb-8 text-primary-500">
-                        <BellPlus size={24} />
+                        <Megaphone size={24} />
                         <h3 className="text-2xl font-black text-white">Broadcast Update</h3>
                     </div>
                     <div className="space-y-6">
@@ -188,6 +256,34 @@ export default function AdminDashboard() {
                         <textarea className="w-full bg-black/40 border border-white/5 rounded-2xl p-4 text-xs font-mono h-32" value={adCodes.sidebar} onChange={(e) => setAdCodes({...adCodes, sidebar: e.target.value})} placeholder="Sidebar Ad HTML..." />
                         <button onClick={handleUpdateAds} className="w-full bg-white/5 border border-white/10 py-4 rounded-2xl font-black hover:bg-white/10 transition">Save Ad Config</button>
                     </div>
+                </div>
+            </div>
+
+            {/* Active Rooms Table */}
+            <div className="mt-12 rounded-3xl border border-white/5 bg-white/[0.02] overflow-hidden">
+                <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Activity className="text-green-500" size={24} />
+                        <h3 className="text-2xl font-black">Live Inventory (Rooms)</h3>
+                    </div>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-white/5 text-gray-400 uppercase text-[10px] font-bold tracking-[0.3em]">
+                            <tr><th className="p-6">Room Name</th><th className="p-6">Host</th><th className="p-6">Content ID</th><th className="p-6 text-right">Created</th></tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {activeRooms.map(r => (
+                                <tr key={r.id}>
+                                    <td className="p-6 font-bold text-primary-500">{r.name}</td>
+                                    <td className="p-6">{r.hostName}</td>
+                                    <td className="p-6 text-gray-400">{r.currentMovie?.id} ({r.currentType})</td>
+                                    <td className="p-6 text-right text-[10px] text-gray-600">{(r.createdAt?.toDate()?.toLocaleTimeString()) || 'Just now'}</td>
+                                </tr>
+                            ))}
+                            {activeRooms.length === 0 && <tr><td colSpan={4} className="p-12 text-center text-gray-600 font-bold uppercase tracking-widest italic">No active parties found.</td></tr>}
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

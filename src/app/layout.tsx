@@ -42,6 +42,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import SecurityManager from "@/components/SecurityManager";
 import AdManager from "@/components/AdManager";
 import VisitorTracker from "@/components/VisitorTracker";
+import MaintenanceGuard from "@/components/MaintenanceGuard";
 
 export default function RootLayout({
   children,
@@ -72,8 +73,10 @@ export default function RootLayout({
           <SecurityManager />
           <AuthProvider>
             <ProfileProvider>
-              <AdManager />
-              {children}
+              <MaintenanceGuard>
+                <AdManager />
+                {children}
+              </MaintenanceGuard>
             </ProfileProvider>
           </AuthProvider>
         </ThemeProvider>

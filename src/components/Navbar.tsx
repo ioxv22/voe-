@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Bell, User as UserIcon, Sun, Moon, Crown, Share2 } from "lucide-react";
+import { Search, Bell, User as UserIcon, Sun, Moon, Crown, Share2, Radio, Users, Eye, Lock, Save, Key, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "@/context/AuthContext";
@@ -11,7 +11,8 @@ import SearchModal from "./SearchModal";
 import NotificationPanel from "./NotificationPanel";
 import RequestModal from "./RequestModal";
 import Logo from "./Logo";
-import { collection, query, limit, onSnapshot, orderBy } from "firebase/firestore";
+import { motion, AnimatePresence } from "framer-motion";
+import { collection, query, limit, onSnapshot, orderBy, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -26,6 +27,7 @@ export default function Navbar() {
   const [isRequestOpen, setIsRequestOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
+  const [alertBanner, setAlertBanner] = useState("");
   
   const { user, signInWithGoogle, logout } = useAuth();
   const { currentProfile } = useProfile();
@@ -41,9 +43,17 @@ export default function Navbar() {
         setNotifCount(snapshot.size);
     });
 
+    // Listen for global config
+    const unsubConfig = onSnapshot(doc(db, "system", "config"), (doc) => {
+        if (doc.exists()) {
+            setAlertBanner(doc.data().alertBanner || "");
+        }
+    });
+
     return () => {
         window.removeEventListener("scroll", handleScroll);
         unsubscribe();
+        unsubConfig();
     };
   }, []);
 
@@ -137,6 +147,21 @@ export default function Navbar() {
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
       <NotificationPanel isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
       <RequestModal isOpen={isRequestOpen} onClose={() => setIsRequestOpen(false)} />
+
+      {/* Global Alert Banner */}
+      <AnimatePresence>
+        {alertBanner && (
+            <motion.div 
+                initial={{ y: -50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -50, opacity: 0 }}
+                className="fixed top-20 left-1/2 -translate-x-1/2 z-[60] w-max max-w-[90vw] bg-primary-600 px-6 py-2 rounded-full shadow-2xl flex items-center gap-3 border border-white/20"
+            >
+                <Bell size={14} className="text-white animate-bounce" />
+                <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">{alertBanner}</span>
+            </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
