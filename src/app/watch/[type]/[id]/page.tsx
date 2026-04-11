@@ -23,7 +23,8 @@ export default function WatchPage({ params }: { params: any }) {
   const [activeSeasonTab, setActiveSeasonTab] = useState(1);
   const [key, setKey] = useState(0); 
   const [sidebarAd, setSidebarAd] = useState("");
-  const [adFreeMode, setAdFreeMode] = useState(true); // Default to Ad-Free as requested
+  const [adFreeMode, setAdFreeMode] = useState(true); 
+  const [routeParams, setRouteParams] = useState<{type: string, id: string} | null>(null);
   
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
 
@@ -31,6 +32,7 @@ export default function WatchPage({ params }: { params: any }) {
     async function init() {
       try {
         const resolvedParams = await params;
+        setRouteParams({ type: resolvedParams.type, id: resolvedParams.id });
         const [resolvedItem, resolvedSimilar] = await Promise.all([
           fetchTMDB(endpoints.details(resolvedParams.type, resolvedParams.id)),
           fetchTMDB(endpoints.similar(resolvedParams.type, resolvedParams.id)),
@@ -68,11 +70,18 @@ export default function WatchPage({ params }: { params: any }) {
     }
   };
 
-  if (!data) return <div className="min-h-screen bg-black" />;
-  const { item, similar } = data;
-  const type = item.title ? "movie" : "tv";
+  const currentType = routeParams?.type || "movie";
+  const currentId = routeParams?.id || "";
+  const playerUrl = getStreamUrl(currentType, currentId, season, episode, server, false, data?.item?.original_language || "en");
+
+  if (!routeParams) return <div className="min-h-screen bg-black" />;
+  
+  const item = data?.item;
+  const similar = data?.similar;
+  const type = currentType;
 
   const toggleWatchlist = () => {
+    if (!item) return;
     if (isInWatchlist(item.id)) {
       removeFromWatchlist(item.id);
     } else {
@@ -83,7 +92,7 @@ export default function WatchPage({ params }: { params: any }) {
   const router = useRouter();
 
   const handleStartParty = async () => {
-    if (!user) return alert("Please Sign In to start a party.");
+    if (!user || !item) return alert("Please Sign In to start a party.");
     try {
       const docRef = await addDoc(collection(db, "rooms"), {
         name: `${user.displayName}'s Cinema`,
@@ -98,8 +107,6 @@ export default function WatchPage({ params }: { params: any }) {
       alert("Failed to create party room.");
     }
   };
-
-  const playerUrl = getStreamUrl(type, item.id, season, episode, server, false, item.original_language);
 
   return (
     <main className="min-h-screen bg-[#020202]">
@@ -257,31 +264,32 @@ export default function WatchPage({ params }: { params: any }) {
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
                 <h1 className="text-3xl font-black text-white lg:text-5xl">
-                    {item.title || item.name}
+                    {item ? (item.title || item.name) : "Loading Title..."}
                 </h1>
                 <button 
                     onClick={toggleWatchlist}
-                    className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
+                    disabled={!item}
+                    className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10 disabled:opacity-50"
                 >
-                    {isInWatchlist(item.id) ? <Check /> : <Plus />}
+                    {(item && isInWatchlist(item.id)) ? <Check /> : <Plus />}
                 </button>
             </div>
             
             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-400">
                 <div className="flex items-center gap-1 text-yellow-500 font-bold">
-                    <Star size={16} fill="currentColor" /> {item.vote_average.toFixed(1)}
+                    <Star size={16} fill="currentColor" /> {item ? item.vote_average.toFixed(1) : "--"}
                 </div>
                 {type === "tv" && <div className="text-primary-600 font-bold uppercase tracking-widest">Season {season} Episode {episode}</div>}
                 <div className="flex items-center gap-1">
-                    <Clock size={16} /> {item.runtime || item.episode_run_time?.[0] || "--"} min
+                    <Clock size={16} /> {item ? (item.runtime || item.episode_run_time?.[0] || "--") : "--"} min
                 </div>
                 <div className="flex items-center gap-1">
-                    <Calendar size={16} /> {item.release_date?.slice(0, 4) || item.first_air_date?.slice(0, 4)}
+                    <Calendar size={16} /> {item ? (item.release_date?.slice(0, 4) || item.first_air_date?.slice(0, 4)) : "--"}
                 </div>
             </div>
 
             <p className="text-gray-300 leading-relaxed max-w-3xl">
-                {item.overview}
+                {item ? item.overview : <div className="h-20 w-full animate-pulse bg-white/5 rounded-lg" />}
             </p>
           </div>
 
@@ -294,7 +302,7 @@ export default function WatchPage({ params }: { params: any }) {
                             Season {activeSeasonTab} <ChevronDown size={14} />
                         </button>
                         <div className="absolute right-0 top-full mt-2 w-40 bg-[#0b0b0b] border border-white/10 rounded-md shadow-2xl scale-95 opacity-0 pointer-events-none group-hover:scale-100 group-hover:opacity-100 group-hover:pointer-events-auto transition z-50">
-                            {item.seasons?.map((s: any) => (
+                            {item?.seasons?.map((s: any) => (
                                 <button 
                                     key={s.id}
                                     onClick={() => loadEpisodes(item.id, s.season_number)}
@@ -308,14 +316,14 @@ export default function WatchPage({ params }: { params: any }) {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                    {episodes.map((ep: any) => (
+                    {episodes.length > 0 ? episodes.map((ep: any) => (
                         <div 
                             key={ep.id}
                             onClick={() => { setSeason(activeSeasonTab); setEpisode(ep.episode_number); window.scrollTo({top: 0, behavior: 'smooth'}); }}
                             className={`flex gap-4 p-3 rounded-xl border transition cursor-pointer group ${season === activeSeasonTab && episode === ep.episode_number ? 'bg-primary-600/20 border-primary-600/50' : 'bg-white/5 border-transparent hover:bg-white/10'}`}
                         >
                             <div className="relative h-20 w-32 flex-shrink-0 overflow-hidden rounded-lg">
-                                <img src={getImageUrl(ep.still_path || item.backdrop_path)} className="h-full w-full object-cover" />
+                                <img src={getImageUrl(ep.still_path || item?.backdrop_path)} className="h-full w-full object-cover" />
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition">
                                     <Play size={20} fill="white" />
                                 </div>
@@ -325,7 +333,11 @@ export default function WatchPage({ params }: { params: any }) {
                                 <p className="text-xs text-gray-400 line-clamp-2 mt-1">{ep.overview || "No overview available."}</p>
                             </div>
                         </div>
-                    ))}
+                    )) : (
+                        <div className="flex flex-col gap-4">
+                            {[1, 2, 3].map(i => <div key={i} className="h-20 w-full animate-pulse bg-white/5 rounded-xl" />)}
+                        </div>
+                    )}
                 </div>
               </div>
           )}
@@ -342,7 +354,7 @@ export default function WatchPage({ params }: { params: any }) {
             <div className="rounded-xl border border-white/10 bg-[#0a0a0a] p-6 shadow-2xl">
                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Star className="text-primary-600" size={18} fill="currentColor" /> Recommendations</h3>
                 <div className="grid grid-cols-2 gap-4">
-                    {similar.results.slice(0, 6).map((s: any) => (
+                    {similar ? similar.results.slice(0, 6).map((s: any) => (
                         <div key={s.id} className="group relative aspect-video overflow-hidden rounded-md cursor-pointer border border-white/5">
                             <img 
                                 src={getImageUrl(s.backdrop_path)} 
@@ -352,14 +364,16 @@ export default function WatchPage({ params }: { params: any }) {
                                 <p className="text-[10px] font-bold text-white line-clamp-2">{s.title || s.name}</p>
                             </div>
                         </div>
-                    ))}
+                    )) : (
+                        [1, 2, 3, 4].map(i => <div key={i} className="aspect-video w-full animate-pulse bg-white/5 rounded-md" />)
+                    )}
                 </div>
             </div>
         </div>
       </div>
 
       <div className="mt-12">
-        <MovieRow title="More like this" movies={similar.results} />
+        {similar && <MovieRow title="More like this" movies={similar.results} />}
       </div>
     </main>
   );
