@@ -3,7 +3,9 @@
 import Navbar from "@/components/Navbar";
 import MovieRow from "@/components/MovieRow";
 import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
-import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown, ShieldCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown, ShieldCheck, Radio, Users } from "lucide-react";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useEffect, useState } from "react";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
@@ -71,6 +73,25 @@ export default function WatchPage({ params }: { params: any }) {
       removeFromWatchlist(item.id);
     } else {
       addToWatchlist(item);
+    }
+  };
+
+  const router = useRouter();
+
+  const handleStartParty = async () => {
+    if (!user) return alert("Please Sign In to start a party.");
+    try {
+      const docRef = await addDoc(collection(db, "rooms"), {
+        name: `${user.displayName}'s Cinema`,
+        hostId: user.uid,
+        hostName: user.displayName,
+        createdAt: serverTimestamp(),
+        currentMovie: { id: item.id },
+        currentType: type
+      });
+      router.push(`/rooms/${docRef.id}`);
+    } catch (e) {
+      alert("Failed to create party room.");
     }
   };
 
@@ -178,6 +199,12 @@ export default function WatchPage({ params }: { params: any }) {
                   >
                     <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm4.462 8.357l-1.554 7.346c-.115.533-.426.66-.867.411l-2.368-1.745-1.141 1.1c-.126.126-.232.231-.476.231l.17-2.408 4.384-3.959c.191-.17-.042-.264-.297-.094l-5.418 3.41-2.333-.73c-.507-.158-.517-.507.106-.752l9.112-3.511c.421-.154.79.099.66.702z"/></svg>
                   </a>
+                  <button 
+                    onClick={handleStartParty}
+                    className="h-9 px-4 flex items-center justify-center gap-2 rounded-full bg-primary-600/10 text-primary-500 hover:bg-primary-600 hover:text-white transition text-[10px] font-black uppercase"
+                  >
+                     <Users size={16} /> Start Party
+                  </button>
                   <button 
                     onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Copied to clipboard!"); }}
                     className="h-9 w-9 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition"

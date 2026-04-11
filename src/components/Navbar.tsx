@@ -66,6 +66,7 @@ export default function Navbar() {
           <Link href="/"><li className="cursor-pointer transition hover:text-foreground">Home</li></Link>
           <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground">TV Shows</li></Link>
           <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground">Movies</li></Link>
+          <Link href="/rooms"><li className="cursor-pointer transition hover:text-primary-500 font-bold flex items-center gap-1.5"><Radio size={14} className="text-primary-500 animate-pulse" /> Watch Party</li></Link>
           <li onClick={() => setIsRequestOpen(true)} className="cursor-pointer transition hover:text-foreground group flex items-center gap-1.5">
              <span className="relative">
                 Request
