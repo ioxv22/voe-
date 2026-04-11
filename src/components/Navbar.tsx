@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Bell, User as UserIcon } from "lucide-react";
+import { Search, Bell, User as UserIcon, Sun, Moon, Crown, Share2 } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "@/context/AuthContext";
@@ -14,7 +14,6 @@ import Logo from "./Logo";
 import { collection, query, limit, onSnapshot, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useTheme } from "@/context/ThemeContext";
-import { Sun, Moon } from "lucide-react";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -112,7 +111,10 @@ export default function Navbar() {
                         <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
                         <div className="absolute right-0 top-full mt-2 w-48 z-50">
                             <div className="rounded-xl border border-white/10 bg-black/90 backdrop-blur-3xl p-2 shadow-2xl animate-in fade-in zoom-in duration-200">
-                                <p className="px-3 py-2 text-[10px] font-bold text-muted border-b border-white/5 truncate uppercase tracking-widest">{currentProfile.name}</p>
+                                <p className="px-3 py-2 text-[10px] font-bold text-muted border-b border-white/5 truncate uppercase tracking-widest flex items-center justify-between">
+                                    {currentProfile.name}
+                                    {(user?.isVIP || user?.isPremium) && <Crown size={12} className="text-yellow-500 fill-yellow-500" />}
+                                </p>
                                 <Link href="/profiles"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg mt-1">Switch Profiles</button></Link>
                                 <a href="https://t.me/iivoz" target="_blank"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg">Help Center</button></a>
                                 <button onClick={logout} className="w-full px-3 py-2 text-left text-xs font-bold text-primary transition hover:bg-primary/10 rounded-lg mt-1">Sign Out</button>
