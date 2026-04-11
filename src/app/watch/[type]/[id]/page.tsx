@@ -12,6 +12,7 @@ import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
 import { useAuth } from "@/context/AuthContext";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import AdSenseUnit from "@/components/AdSenseUnit";
 
 export default function WatchPage({ params }: { params: any }) {
   const { user, isPremium } = useAuth();
@@ -223,6 +224,8 @@ export default function WatchPage({ params }: { params: any }) {
                 </button>
             ))}
           </div>
+
+          <AdSenseUnit />
 
           {/* Interaction Bar: Share & Next Episode */}
           <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
