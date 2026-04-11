@@ -1,5 +1,7 @@
 const WORKERS = [
   "https://lucky-pond-0426.xhx1997.workers.dev",
+  "https://vidsrc.me",
+  "https://vidsrc.in"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
 
@@ -62,8 +64,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   const worker = WORKERS[0];
   const serverParam = SERVER_MAP[targetServer as keyof typeof SERVER_MAP] || "nebula";
   
-  // Try clean path (some workers use /movie/id, others use /embed/movie/id)
-  let path = type === "movie" ? `/movie/${id}` : `/tv/${id}/${season}/${episode}`;
+  // Restore /embed path for compatibility with common workers
+  let path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
   const extraParams = isRoom ? "&adblock=1&autoplay=1" : "";
   return `${worker}${path}?server=${serverParam}&token=${STREAM_TOKEN}${extraParams}`;
 };
