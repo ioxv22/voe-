@@ -41,6 +41,7 @@ import { ProfileProvider } from "@/context/ProfileContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import SecurityManager from "@/components/SecurityManager";
 import AdManager from "@/components/AdManager";
+import VisitorTracker from "@/components/VisitorTracker";
 
 export default function RootLayout({
   children,
@@ -67,6 +68,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
         <ThemeProvider>
+          <VisitorTracker />
           <SecurityManager />
           <AuthProvider>
             <ProfileProvider>

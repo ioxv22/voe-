@@ -70,12 +70,13 @@ export default function AdminDashboard() {
         if (adsSnap.exists()) setAdCodes(adsSnap.data() as any);
 
         const statsSnap = await getDoc(doc(db, "system", "stats"));
-        const realViews = statsSnap.exists() ? statsSnap.data().totalViews : 0;
+        const realViews = statsSnap.exists() ? (statsSnap.data().totalViews || 0) : 0;
+        const totalVisits = statsSnap.exists() ? (statsSnap.data().totalVisits || 0) : 0;
         
         const requestsSnap = await getDocs(collection(db, "requests"));
         const requestsCount = requestsSnap.size;
         
-        setStats({ users: usersSnap.size, views: realViews, likes: requestsCount });
+        setStats({ users: usersSnap.size, views: totalVisits, likes: realViews });
     } catch (err: any) {
         console.error("Firebase Admin Error:", err);
         alert("فشل جلب البيانات. الرجاء التأكد من تحديث قواعد حماية فايربيس (Firestore Rules) إلى Test Mode لكي تعمل لوحة التحكم.");
@@ -126,10 +127,11 @@ export default function AdminDashboard() {
                 <button onClick={() => setIsAuthenticated(false)} className="px-6 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-red-600/20 hover:text-red-500 transition text-[10px] font-black uppercase">Logout</button>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
                 <StatCard icon={<Users />} label="Lifetime Users" value={stats.users} />
-                <StatCard icon={<Eye className="text-blue-500" />} label="Actual Playbacks" value={stats.views} />
-                <StatCard icon={<Crown className="text-yellow-500" />} label="Movie Requests" value={stats.likes} />
+                <StatCard icon={<Eye className="text-blue-500" />} label="Live Traffic" value={stats.views} />
+                <StatCard icon={<Terminal className="text-green-500" />} label="Total Playbacks" value={stats.likes} />
+                <StatCard icon={<Crown className="text-yellow-500" />} label="Requests" value={userList.filter(u => u.isVIP).length || stats.users > 0 ? 0 : 0} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
