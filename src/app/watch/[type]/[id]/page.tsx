@@ -23,7 +23,7 @@ export default function WatchPage({ params }: { params: any }) {
   const [activeSeasonTab, setActiveSeasonTab] = useState(1);
   const [key, setKey] = useState(0); 
   const [sidebarAd, setSidebarAd] = useState("");
-  const [adFreeMode, setAdFreeMode] = useState(true); // Default to Ad-Free for everyone
+  const [adFreeMode, setAdFreeMode] = useState(false); // Default to Compatible mode to avoid lag and playback issues
   
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
 
