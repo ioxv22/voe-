@@ -1,7 +1,5 @@
 const WORKERS = [
   "https://lucky-pond-0426.xhx1997.workers.dev",
-  "https://vidsrc.me",
-  "https://vidsrc.in"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
 

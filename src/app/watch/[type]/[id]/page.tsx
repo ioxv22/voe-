@@ -16,7 +16,7 @@ import { db } from "@/lib/firebase";
 export default function WatchPage({ params }: { params: any }) {
   const { user, isPremium } = useAuth();
   const [data, setData] = useState<{item: any, similar: any} | null>(null);
-  const [server, setServer] = useState("nebula");
+  const [server, setServer] = useState("auto");
   const [season, setSeason] = useState(1);
   const [episode, setEpisode] = useState(1);
   const [episodes, setEpisodes] = useState<any[]>([]);
