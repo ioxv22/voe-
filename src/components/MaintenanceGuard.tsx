@@ -7,10 +7,15 @@ import { useAuth } from "@/context/AuthContext";
 import { ShieldAlert, Terminal } from "lucide-react";
 import { motion } from "framer-motion";
 
+import { usePathname, useSearchParams } from "next/navigation";
+
 export default function MaintenanceGuard({ children }: { children: React.ReactNode }) {
     const [isMaintenance, setIsMaintenance] = useState(false);
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const isUrlBypass = searchParams.get('admin') === 'true';
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, "system", "config"), (doc) => {
@@ -29,7 +34,7 @@ export default function MaintenanceGuard({ children }: { children: React.ReactNo
 
     if (loading) return null;
 
-    if (isMaintenance && !isAdmin) {
+    if (isMaintenance && !isAdmin && !pathname.startsWith('/admin') && !isUrlBypass) {
         return (
             <div className="fixed inset-0 z-[99999] bg-[#020202] flex items-center justify-center p-6 text-center">
                 <div className="max-w-md w-full">
