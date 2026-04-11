@@ -7,15 +7,20 @@ import { useAuth } from "@/context/AuthContext";
 import { ShieldAlert, Terminal } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export default function MaintenanceGuard({ children }: { children: React.ReactNode }) {
     const [isMaintenance, setIsMaintenance] = useState(false);
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
     const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const isUrlBypass = searchParams.get('admin') === 'true';
+    const [isUrlBypass, setIsUrlBypass] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            setIsUrlBypass(window.location.search.includes("admin=true"));
+        }
+    }, [pathname]);
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, "system", "config"), (doc) => {
