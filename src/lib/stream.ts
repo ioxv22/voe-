@@ -24,8 +24,7 @@ export const SERVER_MAP = {
   direct: "direct",
   alooy: "alooy",
   net: "net",
-  two: "two",
-  gomo: "gomo"
+  two: "two"
 };
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en") => {
