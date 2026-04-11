@@ -22,7 +22,6 @@ export const SERVER_MAP = {
   vip: "vip",
   pm: "pm",
   direct: "direct",
-  alooy: "alooy",
   net: "net",
   two: "two"
 };
