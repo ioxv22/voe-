@@ -46,15 +46,9 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   if (targetServer === "gomo") return `https://gomo.to/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "super") return `https://multiembed.mov/directstream.php/?video_id=${id}&tmdb=1${type === 'tv' ? `&s=${season}&e=${episode}` : ''}`;
 
-  // For Arabic content, if using Nebula and it fails, we fall back to SUPER or GOMO
   const worker = WORKERS[0];
   const serverParam = SERVER_MAP[targetServer as keyof typeof SERVER_MAP] || "nebula";
   
-  // Custom logic for Arabic: Nebula sometimes fails to find Arabic titles, so we use SUPER directly if the user didn't pick a specific server
-  if (lang === 'ar' && targetServer === "nebula") {
-     return `https://multiembed.mov/directstream.php/?video_id=${id}&tmdb=1${type === 'tv' ? `&s=${season}&e=${episode}` : ''}`;
-  }
-
   const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
   const extraParams = isRoom ? "&adblock=1&autoplay=1" : "";
   return `${worker}${path}?server=${serverParam}&token=${STREAM_TOKEN}${extraParams}`;

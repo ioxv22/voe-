@@ -127,9 +127,6 @@ export default function WatchPage({ params }: { params: any }) {
       <div className="pt-24 lg:pt-28 px-4 lg:px-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
             <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl group">
-             {/* Invisible Shield for Click-Jacking Prevention */}
-             <div className="absolute inset-0 z-10 bg-transparent cursor-pointer group-hover:hidden transition-all duration-700" title="Click to play safely" />
-             
              <iframe
                key={`${playerUrl}-${key}-${adFreeMode}`}
                src={playerUrl}
