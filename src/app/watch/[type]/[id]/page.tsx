@@ -138,7 +138,7 @@ export default function WatchPage({ params }: { params: any }) {
                referrerPolicy="no-referrer"
                sandbox={adFreeMode 
                  ? "allow-scripts allow-same-origin allow-forms allow-presentation allow-storage-access-by-user-activation allow-popups allow-modals" 
-                 : "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals allow-top-navigation allow-storage-access-by-user-activation"
+                 : undefined
                }
              />
             
