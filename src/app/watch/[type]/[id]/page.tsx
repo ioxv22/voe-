@@ -105,6 +105,16 @@ export default function WatchPage({ params }: { params: any }) {
                 </button>
             </div>
 
+            {/* Video Watermark Overlay (Rights) */}
+            <div className="absolute inset-0 pointer-events-none z-40 overflow-hidden select-none">
+                <div className="absolute top-8 left-8 opacity-20 text-[10px] font-black text-white uppercase tracking-[0.5em] italic">
+                    VOZ STREAM | OFFICIAL RIGHTS
+                </div>
+                <div className="absolute bottom-24 right-8 opacity-10 text-[40px] font-black text-white uppercase tracking-tighter italic select-none">
+                    VOZ STREAM
+                </div>
+            </div>
+
             {!isPremium && (
                 <div className="absolute top-4 right-4 z-40">
                     <a 
