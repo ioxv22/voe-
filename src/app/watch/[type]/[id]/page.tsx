@@ -36,6 +36,14 @@ export default function WatchPage({ params }: { params: any }) {
         return null;
     };
 
+    // Navigation Guard: Prevent ads from hijacking the top-level window
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+        e.preventDefault();
+        e.returnValue = "Are you sure you want to leave VOZ Stream?";
+        return e.returnValue;
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
     async function init() {
       try {
         const resolvedParams = await params;
@@ -63,7 +71,10 @@ export default function WatchPage({ params }: { params: any }) {
     }
     init();
 
-    return () => { window.open = originalOpen; };
+    return () => { 
+        window.open = originalOpen; 
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, [params]);
 
   const loadEpisodes = async (tvId: string, sNum: number) => {
