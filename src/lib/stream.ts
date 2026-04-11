@@ -17,7 +17,9 @@ export const SERVER_MAP = {
   zero: "zero",
   embedsu: "embedsu",
   vidsrcme: "vidsrcme",
-  auto: "auto"
+  auto: "auto",
+  xyz: "xyz",
+  vip: "vip"
 };
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en") => {
@@ -49,10 +51,19 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
     return `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914&autoplay=false`;
   }
 
+  if (targetServer === "xyz") {
+    return type === "movie" ? `https://vidsrc.xyz/embed/movie?tmdb=${id}` : `https://vidsrc.xyz/embed/tv?tmdb=${id}&s=${season}&e=${episode}`;
+  }
+
+  if (targetServer === "vip") {
+    return type === "movie" ? `https://vidsrc.vip/embed/movie/${id}` : `https://vidsrc.vip/embed/tv/${id}/${season}/${episode}`;
+  }
+
   const worker = WORKERS[0];
   const serverParam = SERVER_MAP[targetServer as keyof typeof SERVER_MAP] || "nebula";
   
-  let path = type === "movie" ? `/embed/movie/${id}` : type === "anime" ? `/embed/anime/${id}/${season}/${episode}/sub` : `/embed/tv/${id}/${season}/${episode}`;
+  // Try clean path (some workers use /movie/id, others use /embed/movie/id)
+  let path = type === "movie" ? `/movie/${id}` : `/tv/${id}/${season}/${episode}`;
   const extraParams = isRoom ? "&adblock=1&autoplay=1" : "";
   return `${worker}${path}?server=${serverParam}&token=${STREAM_TOKEN}${extraParams}`;
 };
