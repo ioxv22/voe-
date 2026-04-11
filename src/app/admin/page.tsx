@@ -14,6 +14,7 @@ export default function AdminDashboard() {
   const [adCodes, setAdCodes] = useState({ header: "", footer: "", sidebar: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [activeRooms, setActiveRooms] = useState<any[]>([]);
+  const [requestList, setRequestList] = useState<any[]>([]);
   const [globalConfig, setGlobalConfig] = useState({ maintenance: false, alertBanner: "" });
 
   // Notification form
@@ -80,6 +81,8 @@ export default function AdminDashboard() {
         const totalVisits = statsSnap.exists() ? (statsSnap.data().totalVisits || 0) : 0;
         
         const requestsSnap = await getDocs(collection(db, "requests"));
+        const requests = requestsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setRequestList(requests);
         const requestsCount = requestsSnap.size;
         
         setStats({ users: usersSnap.size, views: totalVisits, likes: realViews });
@@ -213,11 +216,16 @@ export default function AdminDashboard() {
                                 <tr><th className="p-4">Movie/Series Name</th><th className="p-4">Status</th><th className="p-4 text-right">Action</th></tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
-                                {userList.length > 0 && stats.likes > 0 && (
-                                    /* We reuse fetch logic to show requests here */
-                                    <tr className="animate-pulse"><td colSpan={3} className="p-10 text-center text-gray-600">Loading incoming requests...</td></tr>
-                                )}
-                                {/* This will be populated by the fetchAllData logic expansion below */}
+                                {requestList.map((r: any) => (
+                                    <tr key={r.id}>
+                                        <td className="p-4 font-bold text-white">{r.movieName}</td>
+                                        <td className="p-4 text-yellow-500 uppercase text-[10px] font-black">{r.status || "PENDING"}</td>
+                                        <td className="p-4 text-right">
+                                            <button onClick={() => deleteDoc(doc(db, "requests", r.id)).then(fetchAllData)} className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg">Terminate</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {requestList.length === 0 && <tr><td colSpan={3} className="p-10 text-center text-gray-600">No requests in queue.</td></tr>}
                             </tbody>
                         </table>
                     </div>
