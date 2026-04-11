@@ -34,6 +34,14 @@ export default function WatchPage({ params }: { params: any }) {
         ]);
         setData({ item: resolvedItem, similar: resolvedSimilar });
         
+        // Real-Time View Tracking Logic
+        try {
+            const statsRef = doc(db, "system", "stats");
+            const statsSnap = await getDoc(statsRef);
+            const currentViews = statsSnap.exists() ? (statsSnap.data().totalViews || 0) : 0;
+            await setDoc(statsRef, { totalViews: currentViews + 1 }, { merge: true });
+        } catch (e) { console.error("Stats Error:", e); }
+
         if (resolvedParams.type === "tv") {
             loadEpisodes(resolvedParams.id, 1);
         }

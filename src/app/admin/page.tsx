@@ -68,8 +68,14 @@ export default function AdminDashboard() {
         
         const adsSnap = await getDoc(doc(db, "system", "ads"));
         if (adsSnap.exists()) setAdCodes(adsSnap.data() as any);
+
+        const statsSnap = await getDoc(doc(db, "system", "stats"));
+        const realViews = statsSnap.exists() ? statsSnap.data().totalViews : 0;
         
-        setStats({ users: usersSnap.size, views: usersSnap.size * 18, likes: usersSnap.size * 7 });
+        const requestsSnap = await getDocs(collection(db, "requests"));
+        const requestsCount = requestsSnap.size;
+        
+        setStats({ users: usersSnap.size, views: realViews, likes: requestsCount });
     } catch (err: any) {
         console.error("Firebase Admin Error:", err);
         alert("فشل جلب البيانات. الرجاء التأكد من تحديث قواعد حماية فايربيس (Firestore Rules) إلى Test Mode لكي تعمل لوحة التحكم.");
@@ -121,9 +127,9 @@ export default function AdminDashboard() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                <StatCard icon={<Users />} label="Users" value={stats.users} />
-                <StatCard icon={<Crown className="text-yellow-500" />} label="Premium" value={userList.filter(u => u.isPremium || u.isVIP).length} />
-                <StatCard icon={<Eye className="text-blue-500" />} label="View Metric" value={stats.views} />
+                <StatCard icon={<Users />} label="Lifetime Users" value={stats.users} />
+                <StatCard icon={<Eye className="text-blue-500" />} label="Actual Playbacks" value={stats.views} />
+                <StatCard icon={<Crown className="text-yellow-500" />} label="Movie Requests" value={stats.likes} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">

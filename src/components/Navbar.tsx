@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useProfile } from "@/context/ProfileContext";
 import SearchModal from "./SearchModal";
 import NotificationPanel from "./NotificationPanel";
+import RequestModal from "./RequestModal";
 import Logo from "./Logo";
 import { collection, query, limit, onSnapshot, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -23,6 +24,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isRequestOpen, setIsRequestOpen] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
   
   const { user, signInWithGoogle, logout } = useAuth();
@@ -64,7 +66,15 @@ export default function Navbar() {
           <Link href="/"><li className="cursor-pointer transition hover:text-foreground">Home</li></Link>
           <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground">TV Shows</li></Link>
           <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground">Movies</li></Link>
-          <li className="cursor-pointer transition hover:text-foreground">New & Popular</li>
+          <li onClick={() => setIsRequestOpen(true)} className="cursor-pointer transition hover:text-foreground group flex items-center gap-1.5">
+             <span className="relative">
+                Request
+                <span className="absolute -right-2 -top-1 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+             </span>
+          </li>
           <li className="cursor-pointer transition hover:text-foreground">My List</li>
         </ul>
       </div>
@@ -81,7 +91,7 @@ export default function Navbar() {
         <button onClick={handleOpenNotif} className="relative cursor-pointer hover:text-foreground transition active:scale-90">
           <Bell size={20} strokeWidth={2.5} />
           {notifCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary-600 text-[10px] font-black text-white shadow-lg animate-bounce">
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-black text-white shadow-lg animate-bounce">
                 {notifCount}
             </span>
           )}
@@ -113,6 +123,7 @@ export default function Navbar() {
 
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
       <NotificationPanel isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
+      <RequestModal isOpen={isRequestOpen} onClose={() => setIsRequestOpen(false)} />
     </nav>
   );
 }
