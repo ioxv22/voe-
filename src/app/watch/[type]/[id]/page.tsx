@@ -29,6 +29,7 @@ export default function WatchPage({ params }: { params: any }) {
 
   useEffect(() => {
     async function init() {
+      try {
         const resolvedParams = await params;
         const [resolvedItem, resolvedSimilar] = await Promise.all([
           fetchTMDB(endpoints.details(resolvedParams.type, resolvedParams.id)),
@@ -53,9 +54,9 @@ export default function WatchPage({ params }: { params: any }) {
         if (resolvedItem.original_language === 'ar') {
             setServer("embedsu");
         }
-    } catch (err) {
-        console.error("Init Error:", err);
-    }
+      } catch (err) {
+          console.error("Init Error:", err);
+      }
     }
     init();
   }, [params]);
