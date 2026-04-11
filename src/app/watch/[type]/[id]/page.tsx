@@ -51,9 +51,6 @@ export default function WatchPage({ params }: { params: any }) {
 
         const adsSnap = await getDoc(doc(db, "system", "ads"));
         if (adsSnap.exists()) setSidebarAd(adsSnap.data().sidebar || "");
-        if (resolvedItem.original_language === 'ar') {
-            setServer("vidsrcme");
-        }
       } catch (err) {
           console.error("Init Error:", err);
       }
