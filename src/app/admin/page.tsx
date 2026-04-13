@@ -11,7 +11,6 @@ export default function AdminDashboard() {
   const [newPassword, setNewPassword] = useState("");
   const [stats, setStats] = useState({ users: 0, views: 0, likes: 0 });
   const [userList, setUserList] = useState<any[]>([]);
-  const [adCodes, setAdCodes] = useState({ header: "", footer: "", sidebar: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [activeRooms, setActiveRooms] = useState<any[]>([]);
   const [requestList, setRequestList] = useState<any[]>([]);
@@ -58,23 +57,13 @@ export default function AdminDashboard() {
       }
   };
 
-  const handleUpdateAds = async () => {
-    try {
-        await setDoc(doc(db, "system", "ads"), adCodes, { merge: true });
-        alert("Ad scripts updated globally.");
-    } catch (e) {
-        alert("فشل تحديث الإعلانات. تأكد من قواعد فايربيس.");
-    }
-  };
+
 
   const fetchAllData = async () => {
     try {
         const usersSnap = await getDocs(collection(db, "users"));
         const users = usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setUserList(users);
-        
-        const adsSnap = await getDoc(doc(db, "system", "ads"));
-        if (adsSnap.exists()) setAdCodes(adsSnap.data() as any);
 
         const statsSnap = await getDoc(doc(db, "system", "stats"));
         const realViews = statsSnap.exists() ? (statsSnap.data().totalViews || 0) : 0;
@@ -310,18 +299,7 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
-                {/* Ad Manager */}
-                <div className="rounded-3xl border border-white/5 bg-white/[0.02] p-10">
-                    <div className="flex items-center gap-3 mb-8 text-primary-500">
-                        <Save size={24} />
-                        <h3 className="text-2xl font-black text-white">Monetization</h3>
-                    </div>
-                    <div className="space-y-6">
-                        <textarea className="w-full bg-black/40 border border-white/5 rounded-2xl p-4 text-xs font-mono h-32" value={adCodes.header} onChange={(e) => setAdCodes({...adCodes, header: e.target.value})} placeholder="Header Ad Script..." />
-                        <textarea className="w-full bg-black/40 border border-white/5 rounded-2xl p-4 text-xs font-mono h-32" value={adCodes.sidebar} onChange={(e) => setAdCodes({...adCodes, sidebar: e.target.value})} placeholder="Sidebar Ad HTML..." />
-                        <button onClick={handleUpdateAds} className="w-full bg-white/5 border border-white/10 py-4 rounded-2xl font-black hover:bg-white/10 transition">Save Ad Config</button>
-                    </div>
-                </div>
+
             </div>
 
             {/* Active Rooms Table */}
