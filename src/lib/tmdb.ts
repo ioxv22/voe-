@@ -45,16 +45,19 @@ const BLACKLIST_KEYWORDS = [
   "xxx", "sexual", "vulgar", "dirty", "وصخ", "جنس", "اباحي", "أفلام للكبار"
 ];
 
+const WHITELIST_IDS = [76479, 360431, 114472]; // The Boys, The Boys (Movie), Gen V
+
 export const filterSafeContent = (items: any[]) => {
   if (!items) return [];
   return items.filter(item => {
+    // Always allow whitelisted content
+    if (WHITELIST_IDS.includes(item.id)) return true;
+    
     if (item.adult === true) return false;
     
     const text = `${item.title || item.name || ''} ${item.overview || ''}`.toLowerCase();
     const isDirty = BLACKLIST_KEYWORDS.some(word => text.includes(word));
     
-    // Also block based on genre IDs if known (e.g. 10749 is Romance, but usually safe unless combined)
-    // For now keyword and adult flag are most effective
     return !isDirty;
   });
 };
