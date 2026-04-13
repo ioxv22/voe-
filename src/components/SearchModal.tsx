@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Search, X, Play } from "lucide-react";
-import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
+import { fetchTMDB, endpoints, getImageUrl, filterSafeContent } from "@/lib/tmdb";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -21,7 +21,7 @@ export default function SearchModal({ isOpen, onClose, onSelect }: { isOpen: boo
       setLoading(true);
       try {
         const data = await fetchTMDB(endpoints.search, `query=${encodeURIComponent(query)}`);
-        setResults(data.results.filter((i: any) => i.poster_path).slice(0, 8));
+        setResults(filterSafeContent(data.results).filter((i: any) => i.poster_path).slice(0, 8));
       } catch (e) {
         console.error(e);
       } finally {

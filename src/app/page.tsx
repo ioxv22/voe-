@@ -8,7 +8,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import MovieRow from "@/components/MovieRow";
 import Footer from "@/components/Footer";
-import { fetchTMDB, endpoints } from "@/lib/tmdb";
+import { fetchTMDB, endpoints, filterSafeContent } from "@/lib/tmdb";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -35,7 +35,7 @@ export default function Home() {
 
                 // Fetch essential data for Hero
                 const trending = await fetchTMDB(endpoints.trending, isKids ? "with_genres=16" : "");
-                setData((prev: any) => ({ ...prev, trending }));
+                setData((prev: any) => ({ ...prev, trending: { ...trending, results: filterSafeContent(trending.results) } }));
                 setLoadingContent(false);
 
                 // Fetch Dedicated Rows
@@ -51,13 +51,13 @@ export default function Home() {
                 
                 setData((prev: any) => ({ 
                     ...prev, 
-                    latest: latest.results, 
-                    series: series.results, 
-                    arabicSeries: arabicSeries.results,
-                    kids: kids.results,
-                    action: action.results,
-                    horror: horror.results,
-                    kDrama: kDrama.results
+                    latest: filterSafeContent(latest.results), 
+                    series: filterSafeContent(series.results), 
+                    arabicSeries: filterSafeContent(arabicSeries.results),
+                    kids: filterSafeContent(kids.results),
+                    action: filterSafeContent(action.results),
+                    horror: filterSafeContent(horror.results),
+                    kDrama: filterSafeContent(kDrama.results)
                 }));
             } catch (err) {
                 console.error("Home Data Load Failure:", err);

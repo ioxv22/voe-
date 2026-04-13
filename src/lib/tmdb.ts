@@ -11,10 +11,11 @@ const IMAGE_BASE_URL = "https://image.tmdb.org/t/p";
 
 export const fetchTMDB = async (endpoint: string, params: string = "") => {
   const isServer = typeof window === "undefined";
+  const safetyParams = `include_adult=false&${params}`;
   
   if (isServer) {
     const TMDB_KEY = TMDB_KEYS[Math.floor(Math.random() * TMDB_KEYS.length)];
-    const res = await fetch(`${BASE_URL}${endpoint}?api_key=${TMDB_KEY}&${params}`, {
+    const res = await fetch(`${BASE_URL}${endpoint}?api_key=${TMDB_KEY}&${safetyParams}`, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) throw new Error("Failed to fetch TMDB data");
@@ -22,13 +23,13 @@ export const fetchTMDB = async (endpoint: string, params: string = "") => {
   } 
   
   try {
-    const res = await fetch(`/api/tmdb${endpoint}?${params}`);
+    const res = await fetch(`/api/tmdb${endpoint}?${safetyParams}`);
     if (!res.ok) throw new Error("Proxy error");
     return await res.json();
   } catch (error) {
     console.warn("Proxy Failed - Falling back to direct secure fetch", error);
     const TMDB_KEY = TMDB_KEYS[Math.floor(Math.random() * TMDB_KEYS.length)];
-    const fallbackRes = await fetch(`${BASE_URL}${endpoint}?api_key=${TMDB_KEY}&${params}`);
+    const fallbackRes = await fetch(`${BASE_URL}${endpoint}?api_key=${TMDB_KEY}&${safetyParams}`);
     if (!fallbackRes.ok) throw new Error("Complete TMDB Failure");
     return fallbackRes.json();
   }
@@ -37,6 +38,25 @@ export const fetchTMDB = async (endpoint: string, params: string = "") => {
 export const getImageUrl = (path: string, size: "w500" | "original" = "w500") => {
   if (!path) return "";
   return `${IMAGE_BASE_URL}/${size}${path}`;
+};
+
+const BLACKLIST_KEYWORDS = [
+  "sex", "porn", "erotic", "nude", "explicit", "adult content", 
+  "xxx", "sexual", "vulgar", "dirty", "وصخ", "جنس", "اباحي", "أفلام للكبار"
+];
+
+export const filterSafeContent = (items: any[]) => {
+  if (!items) return [];
+  return items.filter(item => {
+    if (item.adult === true) return false;
+    
+    const text = `${item.title || item.name || ''} ${item.overview || ''}`.toLowerCase();
+    const isDirty = BLACKLIST_KEYWORDS.some(word => text.includes(word));
+    
+    // Also block based on genre IDs if known (e.g. 10749 is Romance, but usually safe unless combined)
+    // For now keyword and adult flag are most effective
+    return !isDirty;
+  });
 };
 
 export const endpoints = {
