@@ -45,17 +45,21 @@ const BLACKLIST_KEYWORDS = [
   "xxx", "sexual", "vulgar", "dirty", "وصخ", "جنس", "اباحي", "أفلام للكبار"
 ];
 
-const WHITELIST_IDS = [76479, 360431, 114472]; // The Boys, The Boys (Movie), Gen V
+const WHITELIST_IDS = [76479, 360431, 114472, 130392]; 
+const WHITELIST_NAMES = ["The Boys", "Gen V", "Diabolical"];
 
 export const filterSafeContent = (items: any[]) => {
   if (!items) return [];
   return items.filter(item => {
-    // Always allow whitelisted content
+    const itemName = (item.title || item.name || '').toLowerCase();
+    
+    // Always allow whitelisted content by ID or Name
     if (WHITELIST_IDS.includes(item.id)) return true;
+    if (WHITELIST_NAMES.some(name => itemName.includes(name.toLowerCase()))) return true;
     
     if (item.adult === true) return false;
     
-    const text = `${item.title || item.name || ''} ${item.overview || ''}`.toLowerCase();
+    const text = `${itemName} ${item.overview || ''}`.toLowerCase();
     const isDirty = BLACKLIST_KEYWORDS.some(word => text.includes(word));
     
     return !isDirty;
