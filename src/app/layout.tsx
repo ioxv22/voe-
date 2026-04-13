@@ -40,7 +40,6 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ProfileProvider } from "@/context/ProfileContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import SecurityManager from "@/components/SecurityManager";
-import AdManager from "@/components/AdManager";
 import VisitorTracker from "@/components/VisitorTracker";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
 
@@ -56,35 +55,15 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-          <Script 
-            id="adsense-init"
-            async 
-            strategy="lazyOnload"
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8867564621500356" 
-            crossOrigin="anonymous" 
-          />
-          <Script 
-            id="amp-auto-ads-init"
-            async 
-            custom-element="amp-auto-ads"
-            src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js" 
-          />
-
           <link rel="apple-touch-icon" href="https://i.ibb.co/23Bkgcrx/image.png" />
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
-        <div dangerouslySetInnerHTML={{ __html: `
-          <amp-auto-ads type="adsense"
-                  data-ad-client="ca-pub-8867564621500356">
-          </amp-auto-ads>
-        `}} />
         <ThemeProvider>
           <VisitorTracker />
           <SecurityManager />
           <AuthProvider>
             <ProfileProvider>
               <MaintenanceGuard>
-                <AdManager />
                 {children}
               </MaintenanceGuard>
             </ProfileProvider>

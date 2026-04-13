@@ -8,7 +8,6 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import MovieRow from "@/components/MovieRow";
 import Footer from "@/components/Footer";
-import NativeAd from "@/components/NativeAd";
 import { fetchTMDB, endpoints } from "@/lib/tmdb";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -100,8 +99,6 @@ export default function Home() {
             />
         )}
         
-        <NativeAd />
-
         {/* NEW RELEASES */}
         {data?.latest && (
             <MovieRow 

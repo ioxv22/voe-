@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import MovieRow from "@/components/MovieRow";
 import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
 import { useRouter } from "next/navigation";
-import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown, ShieldCheck, Radio, Users } from "lucide-react";
+import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown, ShieldCheck, Radio, Users, Download } from "lucide-react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useEffect, useState } from "react";
@@ -12,7 +12,6 @@ import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
 import { useAuth } from "@/context/AuthContext";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import AdSenseUnit from "@/components/AdSenseUnit";
 
 export default function WatchPage({ params }: { params: any }) {
   const { user, isPremium } = useAuth();
@@ -22,9 +21,6 @@ export default function WatchPage({ params }: { params: any }) {
   const [episode, setEpisode] = useState(1);
   const [episodes, setEpisodes] = useState<any[]>([]);
   const [activeSeasonTab, setActiveSeasonTab] = useState(1);
-  const [key, setKey] = useState(0); 
-  const [sidebarAd, setSidebarAd] = useState("");
-  const [adFreeMode, setAdFreeMode] = useState(true); 
   const [paramsData, setParamsData] = useState<any>(null);
   
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
@@ -63,9 +59,6 @@ export default function WatchPage({ params }: { params: any }) {
         const statsSnap = await getDoc(statsRef);
         const currentViews = statsSnap.exists() ? (statsSnap.data().totalViews || 0) : 0;
         await setDoc(statsRef, { totalViews: currentViews + 1 }, { merge: true });
-
-        const adsSnap = await getDoc(doc(db, "system", "ads"));
-        if (adsSnap.exists()) setSidebarAd(adsSnap.data().sidebar || "");
       } catch (err) {
           console.error("Init Error:", err);
       }
@@ -129,25 +122,20 @@ export default function WatchPage({ params }: { params: any }) {
         <div className="lg:col-span-2 space-y-6">
             <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl group">
              <iframe
-               key={`${playerUrl}-${key}-${adFreeMode}`}
                src={playerUrl}
                className="h-full w-full relative z-0"
                allowFullScreen
                referrerPolicy="no-referrer"
-               sandbox={adFreeMode 
-                 ? "allow-scripts allow-same-origin allow-forms allow-presentation allow-storage-access-by-user-activation allow-popups allow-modals" 
-                 : undefined
-               }
+               sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-storage-access-by-user-activation allow-popups allow-modals"
              />
             
-            {/* Ad-Block Controls */}
+            {/* VOZ Shield: Persistent Protection */}
             <div className="absolute top-4 left-4 z-50 flex items-center gap-2">
-                <button 
-                    onClick={() => setAdFreeMode(!adFreeMode)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold border transition ${adFreeMode ? 'bg-green-600/20 text-green-500 border-green-600/30' : 'bg-red-600/20 text-red-500 border-red-600/30'}`}
+                <div 
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold border bg-green-600/20 text-green-500 border-green-600/30 backdrop-blur-md"
                 >
-                    <ShieldCheck size={12} /> {adFreeMode ? "AD-BLOCK ON" : "AD-BLOCK OFF (Compatible)"}
-                </button>
+                    <ShieldCheck size={12} /> VOZ SHIELD ACTIVE (AD-FREE)
+                </div>
             </div>
 
             {/* Video Watermark Overlay (Rights) */}
@@ -225,8 +213,6 @@ export default function WatchPage({ params }: { params: any }) {
             ))}
           </div>
 
-          <AdSenseUnit />
-
           {/* Interaction Bar: Share & Next Episode */}
           <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
               <div className="flex items-center gap-3">
@@ -245,6 +231,17 @@ export default function WatchPage({ params }: { params: any }) {
                   >
                     <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm4.462 8.357l-1.554 7.346c-.115.533-.426.66-.867.411l-2.368-1.745-1.141 1.1c-.126.126-.232.231-.476.231l.17-2.408 4.384-3.959c.191-.17-.042-.264-.297-.094l-5.418 3.41-2.333-.73c-.507-.158-.517-.507.106-.752l9.112-3.511c.421-.154.79.099.66.702z"/></svg>
                   </a>
+                  
+                  <a 
+                    href={type === "movie" 
+                      ? `https://vidsrc.me/download/movie?tmdb=${item.id}` 
+                      : `https://vidsrc.me/download/tv?tmdb=${item.id}&s=${season}&e=${episode}`} 
+                    target="_blank"
+                    className="h-9 px-4 flex items-center justify-center gap-2 rounded-full bg-green-600/10 text-green-500 hover:bg-green-600 hover:text-white transition text-[10px] font-black uppercase border border-green-600/20"
+                  >
+                     <Download size={16} /> {item.original_language === 'ar' ? "تنزيل الآن" : "Download Now"}
+                  </a>
+
                   <button 
                     onClick={handleStartParty}
                     className="h-9 px-4 flex items-center justify-center gap-2 rounded-full bg-primary-600/10 text-primary-500 hover:bg-primary-600 hover:text-white transition text-[10px] font-black uppercase"
@@ -360,12 +357,7 @@ export default function WatchPage({ params }: { params: any }) {
         </div>
 
         <div className="space-y-8">
-            {sidebarAd && (
-                <div 
-                    className="rounded-xl border border-white/10 bg-white/5 p-4 overflow-hidden flex items-center justify-center"
-                    dangerouslySetInnerHTML={{ __html: sidebarAd }}
-                />
-            )}
+
 
             <div className="rounded-xl border border-white/10 bg-[#0a0a0a] p-6 shadow-2xl">
                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Star className="text-primary-600" size={18} fill="currentColor" /> Recommendations</h3>
