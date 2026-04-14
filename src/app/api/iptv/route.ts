@@ -25,11 +25,16 @@ export async function GET(request: Request) {
             next: { revalidate: 60 }
         });
         
-        if (url.includes('.m3u8') || url.includes('.m3u')) {
+        const contentType = response.headers.get('content-type') || '';
+        const isPlaylist = url.includes('.m3u8') || url.includes('.m3u') || contentType.includes('mpegurl') || contentType.includes('application/x-mpegurl') || contentType.includes('text/plain');
+
+        if (isPlaylist) {
             let data = await response.text();
             
-            // Limit large playlists to first 2MB to prevent timeout and lag
-            if (data.length > 2000000) data = data.slice(0, 2000000); 
+            // Skip binary data misidentified as text
+            if (data.startsWith('\x7FELF') || data.startsWith('\x00\x00\x00')) {
+                 return new NextResponse(response.body, { headers: { 'Content-Type': 'application/octet-stream', 'Access-Control-Allow-Origin': '*' } });
+            }
 
             const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
             const lines = data.split('\n');
@@ -47,7 +52,7 @@ export async function GET(request: Request) {
                 headers: { 
                     'Content-Type': 'application/vnd.apple.mpegurl',
                     'Access-Control-Allow-Origin': '*',
-                    'Cache-Control': 'public, max-age=60'
+                    'Cache-Control': 'no-store'
                 }
             });
         } else {
@@ -55,7 +60,7 @@ export async function GET(request: Request) {
             return new NextResponse(response.body, {
                 status: response.status,
                 headers: { 
-                    'Content-Type': response.headers.get('content-type') || 'application/octet-stream',
+                    'Content-Type': contentType || 'application/octet-stream',
                     'Access-Control-Allow-Origin': '*',
                     'Cache-Control': 'public, max-age=3600'
                 }
