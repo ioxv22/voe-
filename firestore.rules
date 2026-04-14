@@ -4,7 +4,7 @@ service cloud.firestore {
     // 1. System Config: Only read by everyone (to check maintenance), write ONLY by admin
     match /system/config {
       allow read: if true;
-      allow write: if false; // Must be done via Firebase Console or special Admin role
+      allow write: if false; 
     }
 
     // 2. User Data: Only accessible by the owner
