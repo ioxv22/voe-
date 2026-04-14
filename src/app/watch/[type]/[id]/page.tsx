@@ -50,17 +50,25 @@ export default function WatchPage({ params }: { params: any }) {
         const [resolvedItem, resolvedSimilar] = await Promise.all([
           fetchTMDB(endpoints.details(resolvedParams.type, resolvedParams.id)),
           fetchTMDB(endpoints.similar(resolvedParams.type, resolvedParams.id)),
-        ]);
+        ]).catch(e => { console.error("TMDB Fetch Fail", e); return [null, null]; });
+
+        if (!resolvedItem) return;
         setData({ item: resolvedItem, similar: resolvedSimilar });
         
         if (resolvedParams.type === "tv") {
             loadEpisodes(resolvedParams.id, 1);
         }
 
-        const statsRef = doc(db, "system", "stats");
-        const statsSnap = await getDoc(statsRef);
-        const currentViews = statsSnap.exists() ? (statsSnap.data().totalViews || 0) : 0;
-        await setDoc(statsRef, { totalViews: currentViews + 1 }, { merge: true });
+        // SILENT Background stats update - No crash if failed
+        try {
+            const statsRef = doc(db, "system", "stats");
+            getDoc(statsRef).then(statsSnap => {
+                const currentViews = statsSnap.exists() ? (statsSnap.data().totalViews || 0) : 0;
+                setDoc(statsRef, { totalViews: currentViews + 1 }, { merge: true }).catch(() => {});
+            }).catch(() => {});
+        } catch (e) {
+            console.warn("Stats update failed - ignoring.");
+        }
       } catch (err) {
           console.error("Init Error:", err);
       }

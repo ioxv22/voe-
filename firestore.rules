@@ -1,17 +1,12 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TEMPORARY PROVISIONING RULES (ALLOW FOR SETUP)
-    // IMPORTANT: Once you set your isAdmin field in your user document, 
-    // restrict these rules back for better security.
+    // EMERGENCY OPEN MODE (FIX FOR PERMISSION DENIED)
+    // Allows any user (even guest) to read/write.
+    // Use this to verify site functionality, then lock it down.
     
     match /{document=**} {
-      allow read, write: if request.auth != null; 
-    }
-
-    // Keep system config readable by everyone for site basics
-    match /system/config {
-      allow read: if true;
+      allow read, write: if true; 
     }
   }
 }
