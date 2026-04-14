@@ -148,6 +148,11 @@ export default function LivePage() {
     const video = document.getElementById('live-player') as HTMLVideoElement;
     if (!video) return;
 
+    if (selectedChannel.url.startsWith('iframe:')) {
+        // Handle Iframe Mirror
+        return;
+    }
+
     // Video.js implementation
     const link = document.createElement('link');
     link.href = 'https://vjs.zencdn.net/8.10.0/video-js.css';
@@ -346,13 +351,22 @@ export default function LivePage() {
                 {selectedChannel ? (
                     <div className="space-y-6">
                         <div className="aspect-video w-full rounded-[32px] overflow-hidden bg-black border border-white/10 shadow-2xl relative group">
-                            <video 
-                                id="live-player"
-                                key={selectedChannel?.url || 'default'}
-                                className="video-js vjs-big-play-centered w-full h-full object-contain"
-                                poster={selectedChannel.logo}
-                                playsInline
-                            />
+                            {selectedChannel.url.startsWith('iframe:') ? (
+                                <iframe 
+                                    src={selectedChannel.url.replace('iframe:', '')}
+                                    className="w-full h-full border-none"
+                                    allowFullScreen
+                                    allow="autoplay; encrypted-media"
+                                />
+                            ) : (
+                                <video 
+                                    id="live-player"
+                                    key={selectedChannel?.url || 'default'}
+                                    className="video-js vjs-big-play-centered w-full h-full object-contain"
+                                    poster={selectedChannel.logo}
+                                    playsInline
+                                />
+                            )}
                             
                             {playerError && (
                                 <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500 z-50">

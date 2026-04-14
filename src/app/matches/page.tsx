@@ -10,10 +10,10 @@ import { motion } from "framer-motion";
 
 export default function MatchesPage() {
     const [matches, setMatches] = useState<any[]>([
-        { id: "m1", title: "Atletico Madrid vs Barcelona", time: "23:00", url: "https://v3.v-it.org/hls/101.m3u8", team1: "Atlético", team2: "Barcelona" },
-        { id: "m2", title: "Liverpool vs Paris Saint-Germain", time: "23:00", url: "https://v3.v-it.org/hls/102.m3u8", team1: "Liverpool", team2: "PSG" },
-        { id: "m3", title: "Al Nassr vs Al Khaleej", time: "21:00", url: "https://v3.v-it.org/hls/103.m3u8", team1: "Al Nassr", team2: "Al Khaleej" },
-        { id: "m4", title: "Al Ittihad vs Zed FC", time: "22:00", url: "https://v3.v-it.org/hls/104.m3u8", team1: "Al Ittihad", team2: "Zed FC" }
+        { id: "m1", title: "Atletico Madrid vs Barcelona", time: "23:00", url: "https://v3.v-it.org/hls/101.m3u8", mirrorUrl: "iframe:https://v3.v-it.org/embed/101", team1: "Atlético", team2: "Barcelona" },
+        { id: "m2", title: "Liverpool vs Paris Saint-Germain", time: "23:00", url: "https://v3.v-it.org/hls/102.m3u8", mirrorUrl: "iframe:https://v3.v-it.org/embed/102", team1: "Liverpool", team2: "PSG" },
+        { id: "m3", title: "Al Nassr vs Al Khaleej", time: "21:00", url: "https://v3.v-it.org/hls/103.m3u8", mirrorUrl: "iframe:https://v3.v-it.org/embed/103", team1: "Al Nassr", team2: "Al Khaleej" },
+        { id: "m4", title: "Al Ittihad vs Zed FC", time: "22:00", url: "https://v3.v-it.org/hls/104.m3u8", mirrorUrl: "iframe:https://v3.v-it.org/embed/104", team1: "Al Ittihad", team2: "Zed FC" }
     ]);
     const [loading, setLoading] = useState(false);
 
@@ -95,16 +95,28 @@ export default function MatchesPage() {
                                             </div>
                                         </div>
 
-                                        <button 
-                                            onClick={() => {
-                                                localStorage.setItem('voz_live_tab', 'sports');
-                                                localStorage.setItem('voz_target_match_url', match.url);
-                                                window.location.href = `/live`;
-                                            }}
-                                            className="w-full bg-green-600 py-5 rounded-[24px] text-black font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-green-600/20 hover:bg-green-500 transition-all transform active:scale-95 flex items-center justify-center gap-3"
-                                        >
-                                            <Play size={16} fill="currentColor" /> Enter Broadcast Channel
-                                        </button>
+                                        <div className="flex flex-col gap-3">
+                                            <button 
+                                                onClick={() => {
+                                                    localStorage.setItem('voz_live_tab', 'sports');
+                                                    localStorage.setItem('voz_target_match_url', match.url);
+                                                    window.location.href = `/live`;
+                                                }}
+                                                className="w-full bg-white/5 border border-white/10 py-4 rounded-[24px] text-white font-black uppercase text-[10px] tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-3"
+                                            >
+                                                Main Server
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    localStorage.setItem('voz_live_tab', 'sports');
+                                                    localStorage.setItem('voz_target_match_url', match.mirrorUrl || match.url);
+                                                    window.location.href = `/live`;
+                                                }}
+                                                className="w-full bg-green-600 py-4 rounded-[24px] text-black font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-green-600/20 hover:bg-green-500 transition-all transform active:scale-95 flex items-center justify-center gap-3"
+                                            >
+                                                <Play size={14} fill="currentColor" /> Mirror Server (Fast)
+                                            </button>
+                                        </div>
                                     </div>
                                 </motion.div>
                             ))}
