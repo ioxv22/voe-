@@ -3,14 +3,20 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Radio, Play, Tv, Film, Search, ChevronRight, Info } from "lucide-react";
+import { Radio, Play, Tv, Film, Search, ChevronRight, Info, Activity } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const STREAMS = {
-  live: "http://hlaamart.site:80/playlist/hamad201011@2727/hamad201011@2727/m3u?output=hls&key=live",
-  series: "http://hlaamart.site:80/playlist/hamad201011@2727/hamad201011@2727/m3u?output=hls&key=series",
-  movies: "http://hlaamart.site:80/playlist/hamad201011@2727/hamad201011@2727/m3u?output=hls&key=movie"
+  unified: "http://hlaamart.site:80/playlist/hamad201011@2727/hamad201011@2727/m3u?output=hls&key=live,movie,created_live,radio_streams,series"
 };
+
+const CATEGORIES = [
+    { id: 'live', name: 'Live TV', icon: <Radio size={14} />, color: 'bg-red-600' },
+    { id: 'sports', name: 'Sports | كورة', icon: <Activity size={14} />, color: 'bg-green-600' },
+    { id: 'series', name: 'Series | مسلسلات', icon: <Tv size={14} />, color: 'bg-primary-600' },
+    { id: 'movies', name: 'Movies | أفلام', icon: <Film size={14} />, color: 'bg-blue-600' },
+    { id: 'radio', name: 'Radio', icon: <Radio size={14} />, color: 'bg-purple-600' }
+];
 
 interface Channel {
   name: string;
@@ -20,7 +26,7 @@ interface Channel {
 }
 
 export default function LivePage() {
-  const [activeTab, setActiveTab] = useState<keyof typeof STREAMS>("live");
+  const [activeTab, setActiveTab] = useState("live");
   const [channels, setChannels] = useState<Channel[]>([]);
   const [filteredChannels, setFilteredChannels] = useState<Channel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,12 +37,27 @@ export default function LivePage() {
     async function fetchM3U() {
       setLoading(true);
       try {
-        // Since we might hit CORS, we'll try to use a simple proxy or direct fetch if allowed
-        const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(STREAMS[activeTab])}`);
+        const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(STREAMS.unified)}`);
         const text = await response.text();
-        const parsed = parseM3U(text);
-        setChannels(parsed);
-        setFilteredChannels(parsed);
+        const allChannels = parseM3U(text);
+        
+        // Filter by category
+        let filtered = allChannels;
+        if (activeTab === 'sports') {
+           filtered = allChannels.filter(c => c.group?.toLowerCase().includes('sport') || c.name.toLowerCase().includes('bein') || c.name.toLowerCase().includes('kora') || c.name.includes('كورة'));
+        } else if (activeTab === 'series') {
+           filtered = allChannels.filter(c => c.group?.toLowerCase().includes('series') || c.name.toLowerCase().includes('drama') || c.name.includes('مسلسل'));
+        } else if (activeTab === 'movies') {
+           filtered = allChannels.filter(c => c.group?.toLowerCase().includes('movie') || c.name.includes('فيلم'));
+        } else if (activeTab === 'radio') {
+           filtered = allChannels.filter(c => c.group?.toLowerCase().includes('radio') || c.name.includes('اذاعة'));
+        } else {
+           // Live TV default
+           filtered = allChannels.filter(c => c.group?.toLowerCase().includes('live') || (!c.group?.toLowerCase().includes('movie') && !c.group?.toLowerCase().includes('series')));
+        }
+
+        setChannels(filtered);
+        setFilteredChannels(filtered);
       } catch (err) {
         console.error("Failed to fetch M3U:", err);
       } finally {
@@ -125,25 +146,16 @@ export default function LivePage() {
                 <p className="text-primary-500 font-black text-[10px] mt-1 uppercase tracking-[0.3em]">VOZ STREAM | HAMAD AL-ABDOULI RIGHTS</p>
             </div>
 
-            <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10 backdrop-blur-3xl w-full lg:w-auto">
-                <button 
-                    onClick={() => setActiveTab('live')}
-                    className={`flex-1 lg:flex-none px-6 py-3 rounded-xl text-xs font-black uppercase transition flex items-center justify-center gap-2 ${activeTab === 'live' ? 'bg-red-600 text-white shadow-xl shadow-red-600/20' : 'text-gray-500 hover:text-white'}`}
-                >
-                    <Radio size={14} /> Live
-                </button>
-                <button 
-                    onClick={() => setActiveTab('series')}
-                    className={`flex-1 lg:flex-none px-6 py-3 rounded-xl text-xs font-black uppercase transition flex items-center justify-center gap-2 ${activeTab === 'series' ? 'bg-primary-600 text-white shadow-xl shadow-primary-600/20' : 'text-gray-500 hover:text-white'}`}
-                >
-                    <Tv size={14} /> Series
-                </button>
-                <button 
-                    onClick={() => setActiveTab('movies')}
-                    className={`flex-1 lg:flex-none px-6 py-3 rounded-xl text-xs font-black uppercase transition flex items-center justify-center gap-2 ${activeTab === 'movies' ? 'bg-primary-600 text-white shadow-xl shadow-primary-600/20' : 'text-gray-500 hover:text-white'}`}
-                >
-                    <Film size={14} /> Movies
-                </button>
+            <div className="flex flex-wrap bg-white/5 p-1.5 rounded-2xl border border-white/10 backdrop-blur-3xl w-full lg:w-auto gap-2">
+                {CATEGORIES.map(cat => (
+                    <button 
+                        key={cat.id}
+                        onClick={() => setActiveTab(cat.id)}
+                        className={`flex-1 lg:flex-none px-6 py-3 rounded-xl text-xs font-black uppercase transition flex items-center justify-center gap-2 ${activeTab === cat.id ? `${cat.color} text-white shadow-xl` : 'text-gray-500 hover:text-white'}`}
+                    >
+                        {cat.icon} {cat.name}
+                    </button>
+                ))}
             </div>
         </div>
 
