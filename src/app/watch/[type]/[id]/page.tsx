@@ -249,7 +249,6 @@ export default function WatchPage({ params }: { params: any }) {
                 </Link>
             )}
           </div>
-          </div>
 
           {/* Interaction Bar: Share & Next Episode */}
           <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
