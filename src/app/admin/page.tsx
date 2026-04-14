@@ -3,12 +3,39 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Users, Eye, Lock, Save, Key, Crown, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings, Film } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Users, Eye, Lock, Save, Key, Crown, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings, Film, ShieldCheck } from "lucide-react";
 
 export default function AdminDashboard() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [passwordInput, setPasswordInput] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const { user, signInWithGoogle, loading: authLoading } = useAuth();
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (user) {
+        // Securely check for admin role in Firestore
+        const checkAdmin = async () => {
+            try {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists() && userDoc.data().isAdmin === true) {
+                    setIsAdmin(true);
+                } else {
+                    setIsAdmin(false);
+                }
+            } catch (err) {
+                console.error("Admin check failed:", err);
+                setIsAdmin(false);
+            }
+        };
+        checkAdmin();
+    } else if (!authLoading) {
+        setIsAdmin(false);
+    }
+  }, [user, authLoading]);
+
+  const handleAdminLogin = async () => {
+      await signInWithGoogle();
+  };
+
   const [stats, setStats] = useState({ users: 0, views: 0, likes: 0 });
   const [userList, setUserList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -16,41 +43,11 @@ export default function AdminDashboard() {
   const [requestList, setRequestList] = useState<any[]>([]);
   const [globalConfig, setGlobalConfig] = useState({ maintenance: false, alertBanner: "" });
 
-  // Notification form
   const [notif, setNotif] = useState({ title: "", message: "", type: "movie" });
   const [tgConfig, setTgConfig] = useState({ 
     token: "8640789206:AAGHTPEsXEQRKBFMg6nyJZrgazeuVja9Hcc", 
     chatId: "-1003910077563" 
   });
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-        const configSnap = await getDoc(doc(db, "system", "config"));
-        if (!configSnap.exists() || !configSnap.data().adminPassword) {
-            alert("Security Warning: No admin password set in Firestore (system/config). Please contact the developer to initialize the core config.");
-            setIsLoading(false);
-            return;
-        }
-        const storedPass = configSnap.data().adminPassword;
-        if (passwordInput === storedPass) {
-          setIsAuthenticated(true);
-          localStorage.setItem("voz_admin_auth", "true");
-        } else {
-          alert("Unauthorized Access Key.");
-        }
-    } catch (err: any) {
-        console.error(err);
-        if (err.message?.includes("matching domain") || err.message?.includes("CORS")) {
-             alert("خطأ في الاتصال: النطاق (IP) الحالي غير مسموح له بالوصول لبيانات فايربيس. يرجى إضافة IP هذا الجهاز في 'Authorized Domains' في Firebase Settings.");
-        } else {
-             alert("فشل الدخول. تأكد من إعدادات قواعد حماية Firestore للسماح بالوصول لمجموعة system/config.");
-        }
-    } finally {
-        setIsLoading(false);
-    }
-  };
 
   const handlePostNotification = async () => {
       if (!notif.title || !notif.message) return alert("Fill all fields");
@@ -115,16 +112,7 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    const isAuth = localStorage.getItem("voz_admin_auth") === "true";
-    if (isAuth) {
-        setIsAuthenticated(true);
-    } else {
-        setIsAuthenticated(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isAuthenticated) {
+    if (isAdmin) {
         fetchAllData();
         // Live listener for active rooms
         const qRooms = query(collection(db, "rooms"), orderBy("createdAt", "desc"), limit(10));
@@ -133,11 +121,10 @@ export default function AdminDashboard() {
         });
         return () => unsubRooms();
     }
-  }, [isAuthenticated]);
+  }, [isAdmin]);
 
   const handleLogout = () => {
-    localStorage.removeItem("voz_admin_auth");
-    setIsAuthenticated(false);
+    // Standard logout from context
   };
 
   const updateGlobalConfig = async (key: string, value: any) => {
@@ -171,17 +158,24 @@ export default function AdminDashboard() {
     }
   };
 
-  if (isAuthenticated === null) return <div className="min-h-screen bg-black" />;
+  if (isAdmin === null || authLoading) return <div className="min-h-screen bg-black" />;
 
-  if (!isAuthenticated) {
+  if (!isAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#020202] px-6">
-        <form onSubmit={handleLogin} className="w-full max-w-sm space-y-6 rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-3xl p-10">
-          <div className="flex justify-center"><div className="h-20 w-20 rounded-2xl bg-primary-600/10 flex items-center justify-center border border-primary-600/20"><Terminal size={40} className="text-primary-600 animate-pulse" /></div></div>
-          <h2 className="text-center text-2xl font-black text-white tracking-widest uppercase">Admin Terminal</h2>
-          <input type="password" placeholder="ACCESS_KEY" className="w-full rounded-xl border border-white/10 bg-black/40 p-4 text-white text-center outline-none focus:border-primary-600 transition" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} />
-          <button className="w-full rounded-xl bg-primary-600 py-4 font-black text-white transition hover:bg-primary-700">{isLoading ? "AUTHORIZING..." : "LOGIN"}</button>
-        </form>
+        <div className="w-full max-w-sm space-y-6 rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-3xl p-10 text-center">
+          <div className="flex justify-center"><div className="h-20 w-20 rounded-2xl bg-primary-600/10 flex items-center justify-center border border-primary-600/20"><ShieldAlert size={40} className="text-primary-600 animate-pulse" /></div></div>
+          <h2 className="text-2xl font-black text-white tracking-widest uppercase">Admin Verification</h2>
+          <p className="text-xs text-gray-500 font-bold">This terminal is restricted to authorized personnel. Use your admin-linked account to gain access.</p>
+          <button 
+            onClick={handleAdminLogin}
+            className="w-full rounded-xl bg-primary-600 py-4 font-black text-white transition hover:bg-primary-700 flex items-center justify-center gap-2"
+          >
+            <ShieldCheck size={18} /> VERIFY IDENTITY
+          </button>
+          {!user && <p className="text-[10px] text-gray-700 uppercase font-black">Authentication via Google Neural Link</p>}
+          {user && !isAdmin && <p className="text-[10px] text-red-500 uppercase font-black">Access Denied: UID Not Authorized</p>}
+        </div>
       </div>
     );
   }
