@@ -24,8 +24,8 @@ export async function GET(request: Request) {
         if (url.includes('.m3u8') || url.includes('.m3u')) {
             let data = await response.text();
             
-            // Limit large playlists to first 5000 lines to prevent timeout
-            if (data.length > 5000000) data = data.slice(0, 5000000); 
+            // Limit large playlists to first 2MB to prevent timeout and lag
+            if (data.length > 2000000) data = data.slice(0, 2000000); 
 
             const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
             const lines = data.split('\n');

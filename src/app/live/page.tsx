@@ -127,8 +127,8 @@ export default function LivePage() {
            );
         }
 
-        setChannels(filtered);
-        setFilteredChannels(filtered);
+        setChannels(filtered.slice(0, 500));
+        setFilteredChannels(filtered.slice(0, 500));
         if (filtered.length > 0) setSelectedChannel(null); // Reset player on tab change
       } catch (err) {
         console.error("Failed to fetch IPTV:", err);
