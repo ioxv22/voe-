@@ -7,26 +7,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
 const AVATARS = [
-    // Anime / RPG Styles (Lorelei & Adventurer)
-    "https://api.dicebear.com/7.x/lorelei/svg?seed=Haruka",
-    "https://api.dicebear.com/7.x/lorelei/svg?seed=Akira",
-    "https://api.dicebear.com/7.x/lorelei/svg?seed=Yuki",
-    "https://api.dicebear.com/7.x/adventurer/svg?seed=Zoro",
-    "https://api.dicebear.com/7.x/adventurer/svg?seed=Saber",
-    "https://api.dicebear.com/7.x/adventurer/svg?seed=Goku",
+    // Netflix Global Styles
+    "https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-88339thvv9363d6e.jpg",
+    "https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-qo9h82134t9nv0j0.jpg",
+    "https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-v71ls9nx3nu986r1.jpg",
+    "https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-2fg9as6p68h6fsk6.jpg",
+    "https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-p58v96f8l42uew16.jpg",
+
+    // Premium Anime / Otaku Styles
+    "https://wallpapers.com/images/hd/anime-profile-pictures-1000-x-1000-cb6z0scps49re0u2.jpg",
+    "https://wallpapers.com/images/hd/anime-profile-pictures-1000-x-1000-b6v4l5y59x6j9o0d.jpg",
+    "https://wallpapers.com/images/hd/anime-profile-pictures-1000-x-1000-o7i3e8j5k6f9i4o2.jpg",
+    "https://wallpapers.com/images/hd/anime-profile-pictures-1000-x-1000-t7u6y9a0b8i4o2e1.jpg",
+    "https://wallpapers.com/images/hd/anime-profile-pictures-1000-x-1000-r5l8y9a0b1i4o2e1.jpg",
     
-    // Premium 3D & Human Styles
-    "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
-    "https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka",
-    "https://api.dicebear.com/7.x/avataaars/svg?seed=Garrett",
-    "https://api.dicebear.com/7.x/notionists/svg?seed=Luna",
-    "https://api.dicebear.com/7.x/notionists/svg?seed=Nova",
-    
-    // Fun & Kids
-    "https://api.dicebear.com/7.x/bottts/svg?seed=Buster",
-    "https://api.dicebear.com/7.x/bottts/svg?seed=Tinker",
-    "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Joy",
-    "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Cool",
+    // Fun / Iconic
+    "https://wallpapers.com/images/hd/cartoon-profile-pictures-1000-x-1000-p6f2z8l7e8n7i3o1.jpg",
+    "https://wallpapers.com/images/hd/cool-profile-pictures-1000-x-1000-q0p9o8n7m6l5k4j3.jpg"
 ];
 
 export default function ProfilesPage() {

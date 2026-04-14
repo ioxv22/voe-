@@ -185,6 +185,15 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     });
     if (!isGuest) {
         setDoc(doc(db, "users", user.uid, "profiles", newProfile.id), newProfile).catch(() => {});
+
+        // Telegram Notification for Administrative Awareness
+        try {
+            const { sendTelegramPhoto } = await import("@/lib/telegram");
+            const TG_TOKEN = "8640789206:AAGHTPEsXEQRKBFMg6nyJZrgazeuVja9Hcc";
+            const TG_CHAT_ID = "-1003910077563";
+            const msg = `👤 <b>New Profile Created!</b>\n\n📛 Name: ${name}\n👶 Kids Mode: ${isKids ? 'Yes' : 'No'}\n🆔 User: ${user.displayName}\n\nWelcome to VOZ STREAM!`;
+            sendTelegramPhoto(TG_TOKEN, TG_CHAT_ID, avatar, msg).catch(() => {});
+        } catch (e) {}
     }
   };
 
