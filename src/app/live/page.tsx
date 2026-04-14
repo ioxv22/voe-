@@ -52,7 +52,18 @@ export default function LivePage() {
       setLoading(true);
       try {
         const response = await fetch(`/api/iptv?url=${encodeURIComponent(STREAMS.unified)}`);
+        if (!response.ok) {
+            console.error("IPTV Proxy failed", response.status);
+            setLoading(false);
+            return;
+        }
+        
         const text = await response.text();
+        if (!text || text.includes('{"error":')) {
+            console.warn("Invalid IPTV data received");
+            setLoading(false);
+            return;
+        }
         
         let allChannels = parseM3U(text);
         

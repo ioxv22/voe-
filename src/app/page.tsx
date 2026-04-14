@@ -96,14 +96,14 @@ export default function Home() {
 
             <Link href="/live?tab=sports">
                 <div className="group flex items-center gap-2 bg-green-600 px-4 py-2.5 rounded-full shadow-lg hover:bg-green-500 transition active:scale-95">
-                    <Activity size={14} className="animate-bounce" />
+                    <Activity size={14} className="animate-pulse" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-white">المباريات 🔥</span>
                 </div>
             </Link>
 
             <Link href="/search/ai">
                 <div className="group flex items-center gap-2 bg-primary-600 px-4 py-2.5 rounded-full shadow-lg hover:bg-primary-500 transition active:scale-95">
-                    <Sparkles size={14} className="animate-spin-slow" />
+                    <Sparkles size={14} className="animate-spin" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-white">Search AI</span>
                 </div>
             </Link>
