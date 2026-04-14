@@ -32,6 +32,7 @@ export default function LivePage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
+  const [useProxy, setUseProxy] = useState(true);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -161,7 +162,7 @@ export default function LivePage() {
             responsive: true,
             fluid: true,
             sources: [{
-                src: `/api/iptv?url=${encodeURIComponent(selectedChannel.url)}`,
+                src: useProxy ? `/api/iptv?url=${encodeURIComponent(selectedChannel.url)}` : selectedChannel.url,
                 type: 'application/x-mpegURL'
             }]
         });
@@ -176,7 +177,7 @@ export default function LivePage() {
         });
     };
     document.body.appendChild(script);
-  }, [selectedChannel]);
+  }, [selectedChannel, useProxy]);
 
   useEffect(() => {
     const filtered = channels.filter(c => 
@@ -355,6 +356,12 @@ export default function LivePage() {
                                 </div>
                             </div>
                             <div className="flex gap-4">
+                                <button 
+                                    onClick={() => setUseProxy(!useProxy)}
+                                    className={`h-12 px-6 rounded-full text-[10px] font-black uppercase tracking-widest transition border ${useProxy ? 'bg-blue-600/20 border-blue-600 text-blue-500' : 'bg-green-600/20 border-green-600 text-green-500'}`}
+                                >
+                                    {useProxy ? "Using US Proxy" : "Using Direct Play"}
+                                </button>
                                 <button className="h-12 w-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
                                     <Info size={20} />
                                 </button>

@@ -18,6 +18,7 @@ export async function GET(request: Request) {
                 'Referer': `http://${targetHost}/`,
                 'Connection': 'keep-alive'
             },
+            redirect: 'follow',
             next: { revalidate: 60 }
         });
         
