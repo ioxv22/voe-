@@ -273,7 +273,7 @@ export default function LivePage() {
                     />
                 </div>
 
-                <div className="h-[600px] overflow-y-auto pr-2 custom-scrollbar space-y-2">
+                <div className="h-[600px] overflow-y-auto pr-2 space-y-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                     {loading ? (
                         [1,2,3,4,5,6].map(i => <div key={i} className="h-16 w-full bg-white/5 rounded-xl animate-pulse" />)
                     ) : filteredChannels.map((chan, idx) => (
@@ -308,10 +308,10 @@ export default function LivePage() {
                         <div className="aspect-video w-full rounded-[32px] overflow-hidden bg-black border border-white/10 shadow-2xl relative group">
                             <video 
                                 id="live-player"
-                                key={selectedChannel.url}
+                                key={selectedChannel?.url || 'default'}
                                 controls 
                                 autoPlay
-                                className="w-full h-full"
+                                className="w-full h-full object-contain"
                                 poster={selectedChannel.logo}
                             />
                             

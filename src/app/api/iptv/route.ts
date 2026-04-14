@@ -17,7 +17,7 @@ export async function GET(request: Request) {
             next: { revalidate: 60 } // Reduce cache to 1 minute for faster debugging
         });
         
-        if (url.includes('.m3u8')) {
+        if (url.includes('.m3u8') || url.includes('.m3u')) {
             let data = await response.text();
             const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
 
