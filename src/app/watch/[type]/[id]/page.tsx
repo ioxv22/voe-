@@ -214,7 +214,6 @@ export default function WatchPage({ params }: { params: any }) {
                 {item.original_language === 'ar' ? "Arabic Optimized Servers:" : "Servers:"}
             </span>
             {Object.keys(SERVER_MAP)
-              .filter(srv => item?.original_language !== 'ar' || ['nebula', 'embedsu', 'vidsrcme', 'auto', 'xyz', 'vip', 'super'].includes(srv))
               .map((srv) => {
                 const isVIPSrv = ["vip", "direct", "net"].includes(srv);
                 const canAccess = isPremium || !isVIPSrv;

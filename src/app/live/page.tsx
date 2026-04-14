@@ -152,10 +152,10 @@ export default function LivePage() {
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
         if (line.startsWith("#EXTINF:")) {
-            const info = line.split(",")[1];
-            const name = info || "Unknown Channel";
+            // More robust name extraction: find last comma or end of string
+            const lastCommaIdx = line.lastIndexOf(",");
+            const name = lastCommaIdx !== -1 ? line.substring(lastCommaIdx + 1).trim() : "Unknown Channel";
             
-            // Extract logo if exists
             const logoMatch = line.match(/tvg-logo="([^"]+)"/);
             const groupMatch = line.match(/group-title="([^"]+)"/);
             
@@ -166,7 +166,9 @@ export default function LivePage() {
             };
         } else if (line.startsWith("http")) {
             currentChannel.url = line;
-            if (currentChannel.name && currentChannel.url) {
+            if (currentChannel.url) {
+                // Ensure we have a name
+                if (!currentChannel.name) currentChannel.name = "Channel " + line.split('/').pop();
                 result.push(currentChannel as Channel);
             }
             currentChannel = {};
