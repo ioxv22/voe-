@@ -7,7 +7,7 @@ import { Radio, Play, Tv, Film, Search, ChevronRight, Info, Activity } from "luc
 import { motion, AnimatePresence } from "framer-motion";
 
 const STREAMS = {
-  unified: "http://hlaamart.site:80/playlist/hamad201011@2727/hamad201011@2727/webtvlist?output=hls&key=live,movie,created_live,radio_streams,series"
+  unified: "http://hlaamart.site:80/playlist/hamad201011@2727/hamad201011@2727/spark?output=hls&key=live,movie,created_live,radio_streams,series"
 };
 
 const CATEGORIES = [
