@@ -75,7 +75,12 @@ export default function LivePage() {
         // Final fallback for simple line-based lists
         if (allChannels.length === 0 && text.includes('http')) {
             const rawLines = text.split('\n');
-            allChannels = rawLines.filter(l => l.startsWith('http')).map(l => ({ name: 'Channel ' + l.split('/').pop(), url: l }));
+            const fallback: Channel[] = rawLines.filter(l => l.startsWith('http')).map(l => ({ 
+                name: 'Channel ' + l.split('/').pop(), 
+                url: l,
+                group: 'General'
+            }));
+            allChannels = fallback;
         }
 
         // Filter by category
@@ -84,9 +89,10 @@ export default function LivePage() {
            filtered = allChannels.filter(c => 
                 c.group?.toLowerCase().includes('sport') || 
                 c.name.toLowerCase().includes('bein') || 
-                c.name.includes('كورة') ||
-                c.group?.toLowerCase().includes('كورة') ||
-                c.name.toLowerCase().includes('sport')
+                c.name.includes('مباريات') ||
+                c.group?.toLowerCase().includes('مباريات') ||
+                c.name.toLowerCase().includes('sport') ||
+                c.group?.toLowerCase().includes('كورة')
            );
         } else if (activeTab === 'series') {
            filtered = allChannels.filter(c => 
