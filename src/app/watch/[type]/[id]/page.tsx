@@ -15,6 +15,7 @@ import { db } from "@/lib/firebase";
 
 export default function WatchPage({ params }: { params: any }) {
   const { user, isPremium } = useAuth();
+  const { saveProgress } = useContinueWatching();
   const [data, setData] = useState<{item: any, similar: any} | null>(null);
   const [server, setServer] = useState("nebula");
   const [season, setSeason] = useState(1);
