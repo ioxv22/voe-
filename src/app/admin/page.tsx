@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { Users, Eye, Lock, Save, Key, Crown, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings, Film, ShieldCheck } from "lucide-react";
+import { Users, Eye, Lock, Save, Key, Crown, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings, Film, ShieldCheck, Trophy } from "lucide-react";
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -14,6 +14,7 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeRooms, setActiveRooms] = useState<any[]>([]);
   const [requestList, setRequestList] = useState<any[]>([]);
+  const [matchList, setMatchList] = useState<any[]>([]);
   const [globalConfig, setGlobalConfig] = useState({ maintenance: false, alertBanner: "" });
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -86,6 +87,9 @@ export default function AdminDashboard() {
         const requestsSnap = await getDocs(collection(db, "requests"));
         const requests = requestsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setRequestList(requests);
+
+        const matchesSnap = await getDocs(collection(db, "matches"));
+        setMatchList(matchesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         const requestsCount = requestsSnap.size;
         
         setStats({ users: usersSnap.size, views: totalVisits, likes: realViews });
@@ -190,6 +194,7 @@ export default function AdminDashboard() {
             <h2 className="text-white font-black text-xl mb-16 tracking-tighter">VOZ_PANEL</h2>
             <nav className="space-y-4">
                 <div className="bg-primary-600/10 text-primary-500 p-4 rounded-xl flex items-center gap-4 font-bold border border-primary-600/20"><LayoutDashboard size={20} /> Dashboard</div>
+                <div className="text-gray-500 p-4 hover:text-white transition flex items-center gap-4 font-bold"><Trophy size={20} /> Match Manager</div>
             </nav>
         </div>
 
@@ -415,6 +420,41 @@ export default function AdminDashboard() {
                             {activeRooms.length === 0 && <tr><td colSpan={4} className="p-12 text-center text-gray-600 font-bold uppercase tracking-widest italic">No active parties found.</td></tr>}
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <div className="mt-12 rounded-3xl border border-white/5 bg-white/[0.02] overflow-hidden">
+                <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Trophy className="text-yellow-500" size={24} />
+                        <h3 className="text-2xl font-black italic">Live Match Schedule</h3>
+                    </div>
+                </div>
+                <div className="p-8 bg-black/40">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                        <input className="bg-white/5 border border-white/10 rounded-xl p-3 text-xs" placeholder="Match Title (e.g. Al Ahly vs Al Hilal)" value={newMatch.title} onChange={(e) => setNewMatch({...newMatch, title: e.target.value})} />
+                        <input className="bg-white/5 border border-white/10 rounded-xl p-3 text-xs" placeholder="Time (e.g. 10:00 PM)" value={newMatch.time} onChange={(e) => setNewMatch({...newMatch, time: e.target.value})} />
+                        <input className="bg-white/5 border border-white/10 rounded-xl p-3 text-xs md:col-span-2" placeholder="IPTV M3U8 URL" value={newMatch.url} onChange={(e) => setNewMatch({...newMatch, url: e.target.value})} />
+                        <button onClick={handleAddMatch} className="md:col-span-4 bg-primary-600 py-3 rounded-xl font-black text-black">ADD LIVE MATCH</button>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-white/5 text-gray-400 uppercase text-[10px] font-bold tracking-[0.3em]">
+                                <tr><th className="p-4">Match</th><th className="p-4 text-center">Time</th><th className="p-4 text-right">Operation</th></tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {matchList.map((m: any) => (
+                                    <tr key={m.id}>
+                                        <td className="p-4 font-bold">{m.title}</td>
+                                        <td className="p-4 text-center">{m.time}</td>
+                                        <td className="p-4 text-right">
+                                            <button onClick={() => handleDeleteMatch(m.id)} className="p-2 text-red-500">Delete</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 

@@ -44,6 +44,12 @@ export default function LivePage() {
             setActiveTab(savedTab);
             localStorage.removeItem('voz_live_tab');
         }
+
+        const targetUrl = localStorage.getItem('voz_target_match_url');
+        if (targetUrl) {
+            setSelectedChannel({ name: "DIRECT MATCH FEED", url: targetUrl, group: "Live Sports" });
+            localStorage.removeItem('voz_target_match_url');
+        }
     }
   }, []);
 

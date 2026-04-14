@@ -12,6 +12,7 @@ import { fetchTMDB, endpoints, filterSafeContent } from "@/lib/tmdb";
 import { useContinueWatching } from "@/hooks/useContinueWatching";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import MatchSchedule from "@/components/MatchSchedule";
 import Link from "next/link";
 import { Radio, Activity, Sparkles, Search } from "lucide-react";
 
@@ -108,6 +109,8 @@ export default function Home() {
                 </div>
             </Link>
         </div>
+
+        <MatchSchedule />
         
         {/* MY LIST - PERSISTENT COLLECTION */}
         {currentProfile.myList && currentProfile.myList.length > 0 && (
