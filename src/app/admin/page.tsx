@@ -171,6 +171,40 @@ export default function AdminDashboard() {
     }
   };
 
+  const [newMatch, setNewMatch] = useState({ title: "", team1: "", team2: "", url: "", time: "" });
+  
+  const handleAddMatch = async () => {
+      if (!newMatch.title || !newMatch.url) return alert("Fill Name and URL");
+      await addDoc(collection(db, "matches"), { ...newMatch, createdAt: serverTimestamp() });
+      setNewMatch({ title: "", team1: "", team2: "", url: "", time: "" });
+      alert("Match Added!");
+      fetchAllData();
+  };
+
+  const handlePullMatches = async () => {
+      setIsLoading(true);
+      try {
+          const res = await fetch('/api/matches/pull');
+          const data = await res.json();
+          if (data.matches) {
+              for (const m of data.matches.slice(0, 5)) {
+                  await addDoc(collection(db, "matches"), { ...m, createdAt: serverTimestamp() });
+              }
+              alert("Successfully pulled top 5 matches from YallaKora!");
+              fetchAllData();
+          }
+      } catch (e) {
+          alert("Failed to pull matches.");
+      } finally {
+          setIsLoading(false);
+      }
+  };
+
+  const handleDeleteMatch = async (id: string) => {
+      await deleteDoc(doc(db, "matches", id));
+      fetchAllData();
+  };
+
   if (isAuthenticated === null) return <div className="min-h-screen bg-black" />;
 
   if (!isAuthenticated) {
@@ -429,6 +463,12 @@ export default function AdminDashboard() {
                         <Trophy className="text-yellow-500" size={24} />
                         <h3 className="text-2xl font-black italic">Live Match Schedule</h3>
                     </div>
+                    <button 
+                        onClick={handlePullMatches}
+                        className="px-6 py-2 bg-green-600/10 text-green-500 border border-green-500/20 rounded-xl text-[10px] font-black uppercase hover:bg-green-600 hover:text-white transition"
+                    >
+                        {isLoading ? "PULLING..." : "Auto-Pull from YallaKora"}
+                    </button>
                 </div>
                 <div className="p-8 bg-black/40">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
