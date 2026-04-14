@@ -28,6 +28,8 @@ export function useContinueWatching() {
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setItems(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }, (error) => {
+      console.warn("Continue Watching Sync Failed (Permissions):", error.message);
     });
 
     return () => unsubscribe();
