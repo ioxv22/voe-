@@ -34,6 +34,7 @@ export default function LivePage() {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [useProxy, setUseProxy] = useState(true);
   const [useExternal, setUseExternal] = useState(false);
+  const [playerError, setPlayerError] = useState<string | null>(null);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -175,11 +176,13 @@ export default function LivePage() {
         player.on('error', () => {
              const error = player.error();
              console.error("VideoJS Error:", error);
+             setPlayerError(`Error ${error.code}: ${error.message}`);
              if (useProxy) {
                 // If proxy failed, try direct immediately
                 player.src({ src: selectedChannel.url, type: 'application/x-mpegURL' });
              }
         });
+        player.on('loadeddata', () => setPlayerError(null));
     };
     document.body.appendChild(script);
 
@@ -350,6 +353,22 @@ export default function LivePage() {
                                 poster={selectedChannel.logo}
                                 playsInline
                             />
+                            
+                            {playerError && (
+                                <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500 z-50">
+                                    <Activity className="text-red-500 mb-4 animate-bounce" size={48} />
+                                    <h3 className="text-xl font-black uppercase text-red-500 italic tracking-tighter">Signal Blocked</h3>
+                                    <p className="text-[10px] text-gray-400 mt-2 max-w-xs uppercase tracking-widest leading-relaxed">The ISP has blocked this protocol node. Attempting secondary bypass...</p>
+                                    <div className="bg-red-600/10 border border-red-600/20 p-2 rounded mt-4">
+                                        <p className="text-[10px] text-red-500 font-mono font-bold uppercase">{playerError}</p>
+                                    </div>
+                                    <div className="mt-8 flex flex-wrap justify-center gap-3">
+                                        <button onClick={() => setUseProxy(!useProxy)} className="px-6 py-3 bg-white/10 border border-white/10 rounded-full text-[9px] font-black uppercase hover:bg-white/20 transition backdrop-blur-3xl">Switch Node</button>
+                                        <button onClick={() => setUseExternal(!useExternal)} className="px-6 py-3 bg-purple-600 rounded-full text-[9px] font-black uppercase hover:bg-purple-700 transition shadow-xl shadow-purple-600/20 animate-pulse">Force Bypass</button>
+                                        <button onClick={() => window.location.reload()} className="px-6 py-3 bg-red-600 rounded-full text-[9px] font-black uppercase hover:bg-red-700 transition">Hard Reset</button>
+                                    </div>
+                                </div>
+                            )}
                             
                             {/* Watermark */}
                             <div className="absolute top-8 left-8 pointer-events-none opacity-20 select-none">
