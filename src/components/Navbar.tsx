@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Bell, User as UserIcon, Sun, Moon, Crown, Share2, Radio, Users, Eye, Lock, Save, Key, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings } from "lucide-react";
+import { Search, Bell, User as UserIcon, Sun, Moon, Crown, Share2, Radio, Users, Eye, Lock, Save, Key, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings, Trophy } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "@/context/AuthContext";
@@ -77,6 +77,7 @@ export default function Navbar() {
           <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground">TV Shows</li></Link>
           <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground">Movies</li></Link>
           <Link href="/live"><li className="cursor-pointer transition hover:text-foreground flex items-center gap-1.5"><Radio size={14} className="text-red-500 animate-pulse" /> Live TV</li></Link>
+          <Link href="/matches"><li className="cursor-pointer transition hover:text-foreground flex items-center gap-1.5"><Trophy size={14} className="text-green-500" /> Matches</li></Link>
           <Link href="/rooms"><li className="cursor-pointer transition hover:text-primary-500 font-bold flex items-center gap-1.5"><Radio size={14} className="text-primary-500 animate-pulse" /> Watch Party</li></Link>
           <li onClick={() => setIsRequestOpen(true)} className="cursor-pointer transition hover:text-foreground group flex items-center gap-1.5">
              <span className="relative">

@@ -95,7 +95,7 @@ export default function Home() {
                 </div>
             </Link>
 
-            <Link href="/live?tab=sports">
+            <Link href="/matches">
                 <div className="group flex items-center gap-2 bg-green-600 px-4 py-2.5 rounded-full shadow-lg hover:bg-green-500 transition active:scale-95">
                     <Activity size={14} className="animate-pulse" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-white">المباريات 🔥</span>
