@@ -145,29 +145,37 @@ export default function LivePage() {
     const video = document.getElementById('live-player') as HTMLVideoElement;
     if (!video) return;
 
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = `/api/iptv?url=${encodeURIComponent(selectedChannel.url)}`;
-    } else {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
-        script.onload = () => {
-            // @ts-ignore
-            if (window.Hls.isSupported()) {
-                // @ts-ignore
-                const hls = new window.Hls();
-                hls.loadSource(`/api/iptv?url=${encodeURIComponent(selectedChannel.url)}`);
-                hls.attachMedia(video);
-                // @ts-ignore
-                hls.on(window.Hls.Events.ERROR, (event: any, data: any) => {
-                    if (data.fatal) {
-                        console.error("HLS Fatal Error:", data);
-                        alert("Stream Error: " + data.type + " - " + data.details);
-                    }
-                });
-            }
-        };
-        document.body.appendChild(script);
-    }
+    // Video.js implementation
+    const link = document.createElement('link');
+    link.href = 'https://vjs.zencdn.net/8.10.0/video-js.css';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+
+    const script = document.createElement('script');
+    script.src = 'https://vjs.zencdn.net/8.10.0/video.min.js';
+    script.onload = () => {
+        // @ts-ignore
+        const player = window.videojs(video, {
+            autoplay: true,
+            controls: true,
+            responsive: true,
+            fluid: true,
+            sources: [{
+                src: `/api/iptv?url=${encodeURIComponent(selectedChannel.url)}`,
+                type: 'application/x-mpegURL'
+            }]
+        });
+
+        player.on('error', () => {
+             console.error("VideoJS Error");
+             // Fallback to direct URL if proxy fails
+             player.src({
+                src: selectedChannel.url,
+                type: 'application/x-mpegURL'
+             });
+        });
+    };
+    document.body.appendChild(script);
   }, [selectedChannel]);
 
   useEffect(() => {
@@ -326,14 +334,9 @@ export default function LivePage() {
                             <video 
                                 id="live-player"
                                 key={selectedChannel?.url || 'default'}
-                                controls 
-                                autoPlay
-                                className="w-full h-full object-contain"
+                                className="video-js vjs-big-play-centered w-full h-full object-contain"
                                 poster={selectedChannel.logo}
-                                onError={(e) => {
-                                    console.error("Video element error", e);
-                                    // alert("Video Player Error. Try another channel.");
-                                }}
+                                playsInline
                             />
                             
                             {/* Watermark */}
