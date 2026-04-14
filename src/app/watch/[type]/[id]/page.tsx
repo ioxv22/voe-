@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import MovieRow from "@/components/MovieRow";
 import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Star, Clock, Calendar, Play, Plus, Check, ChevronDown, ShieldCheck, Radio, Users, Download, Lock } from "lucide-react";
 import { addDoc, collection, serverTimestamp, doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 import { useWatchlist } from "@/hooks/useWatchlist";
