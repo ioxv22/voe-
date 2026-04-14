@@ -157,6 +157,7 @@ export default function LivePage() {
                 const hls = new window.Hls();
                 hls.loadSource(`/api/iptv?url=${encodeURIComponent(selectedChannel.url)}`);
                 hls.attachMedia(video);
+                // @ts-ignore
                 hls.on(window.Hls.Events.ERROR, (event: any, data: any) => {
                     if (data.fatal) {
                         console.error("HLS Fatal Error:", data);
