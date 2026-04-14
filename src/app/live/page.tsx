@@ -157,6 +157,12 @@ export default function LivePage() {
                 const hls = new window.Hls();
                 hls.loadSource(`/api/iptv?url=${encodeURIComponent(selectedChannel.url)}`);
                 hls.attachMedia(video);
+                hls.on(window.Hls.Events.ERROR, (event: any, data: any) => {
+                    if (data.fatal) {
+                        console.error("HLS Fatal Error:", data);
+                        alert("Stream Error: " + data.type + " - " + data.details);
+                    }
+                });
             }
         };
         document.body.appendChild(script);
@@ -323,6 +329,10 @@ export default function LivePage() {
                                 autoPlay
                                 className="w-full h-full object-contain"
                                 poster={selectedChannel.logo}
+                                onError={(e) => {
+                                    console.error("Video element error", e);
+                                    // alert("Video Player Error. Try another channel.");
+                                }}
                             />
                             
                             {/* Watermark */}

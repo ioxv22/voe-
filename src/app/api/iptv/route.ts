@@ -23,16 +23,18 @@ export async function GET(request: Request) {
         
         if (url.includes('.m3u8') || url.includes('.m3u')) {
             let data = await response.text();
-            const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
+            
+            // Limit large playlists to first 5000 lines to prevent timeout
+            if (data.length > 5000000) data = data.slice(0, 5000000); 
 
-            // Rewrite relative URLs to absolute via proxy
+            const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
             const lines = data.split('\n');
             const rewrittenLines = lines.map(line => {
                 if (line.startsWith('#') || line.trim() === '') return line;
                 
                 let absoluteUrl = line.trim();
                 if (!absoluteUrl.startsWith('http')) {
-                    absoluteUrl = baseUrl + absoluteUrl;
+                    absoluteUrl = baseUrl + absoluteUrl.substring(absoluteUrl.startsWith('/') ? 1 : 0);
                 }
                 return `/api/iptv?url=${encodeURIComponent(absoluteUrl)}`;
             });
@@ -40,16 +42,18 @@ export async function GET(request: Request) {
             return new NextResponse(rewrittenLines.join('\n'), {
                 headers: { 
                     'Content-Type': 'application/vnd.apple.mpegurl',
-                    'Access-Control-Allow-Origin': '*' 
+                    'Access-Control-Allow-Origin': '*',
+                    'Cache-Control': 'public, max-age=60'
                 }
             });
         } else {
-            // Binary segment (.ts)
-            const buffer = await response.arrayBuffer();
-            return new NextResponse(buffer, {
+            // Streaming binary data for performance
+            return new NextResponse(response.body, {
+                status: response.status,
                 headers: { 
-                    'Content-Type': response.headers.get('content-type') || 'video/MP2T',
-                    'Access-Control-Allow-Origin': '*' 
+                    'Content-Type': response.headers.get('content-type') || 'application/octet-stream',
+                    'Access-Control-Allow-Origin': '*',
+                    'Cache-Control': 'public, max-age=3600'
                 }
             });
         }
