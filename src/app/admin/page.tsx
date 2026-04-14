@@ -41,12 +41,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const [stats, setStats] = useState({ users: 0, views: 0, likes: 0 });
-  const [userList, setUserList] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [activeRooms, setActiveRooms] = useState<any[]>([]);
-  const [requestList, setRequestList] = useState<any[]>([]);
-  const [globalConfig, setGlobalConfig] = useState({ maintenance: false, alertBanner: "" });
 
   const [notif, setNotif] = useState({ title: "", message: "", type: "movie" });
   const [tgConfig, setTgConfig] = useState({ 
