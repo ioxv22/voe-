@@ -17,26 +17,38 @@ export async function GET(request: Request) {
             next: { revalidate: 60 } // Reduce cache to 1 minute for faster debugging
         });
         
-        const data = await response.text();
-        
-        // Detailed logging for debugging
-        console.log(`Proxy Fetch from ${url} status: ${response.status}`);
-        
-        // ISP Block check
-        if (data.includes("etisalat.ae") || data.includes("blocked") || data.includes("safe.etisalat")) {
-            return NextResponse.json({ 
-                error: "Regional Block Detected", 
-                details: "Provider is blocked by Etisalat/Du. Attempting bypass...",
-                html: data.slice(0, 500)
-            }, { status: 403 });
-        }
+        if (url.includes('.m3u8')) {
+            let data = await response.text();
+            const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
 
-        return new NextResponse(data, {
-            headers: { 
-                'Content-Type': 'application/vnd.apple.mpegurl',
-                'Access-Control-Allow-Origin': '*' 
-            }
-        });
+            // Rewrite relative URLs to absolute via proxy
+            const lines = data.split('\n');
+            const rewrittenLines = lines.map(line => {
+                if (line.startsWith('#') || line.trim() === '') return line;
+                
+                let absoluteUrl = line.trim();
+                if (!absoluteUrl.startsWith('http')) {
+                    absoluteUrl = baseUrl + absoluteUrl;
+                }
+                return `/api/iptv?url=${encodeURIComponent(absoluteUrl)}`;
+            });
+            
+            return new NextResponse(rewrittenLines.join('\n'), {
+                headers: { 
+                    'Content-Type': 'application/vnd.apple.mpegurl',
+                    'Access-Control-Allow-Origin': '*' 
+                }
+            });
+        } else {
+            // Binary segment (.ts)
+            const buffer = await response.arrayBuffer();
+            return new NextResponse(buffer, {
+                headers: { 
+                    'Content-Type': response.headers.get('content-type') || 'video/MP2T',
+                    'Access-Control-Allow-Origin': '*' 
+                }
+            });
+        }
     } catch (err: any) {
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
