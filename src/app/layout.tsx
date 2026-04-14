@@ -90,8 +90,8 @@ export default function RootLayout({
           <SecurityManager />
           <AuthProvider>
             <GlobalAds />
-            <Navbar />
             <ProfileProvider>
+              <Navbar />
               <MaintenanceGuard>
                 <IOSInstallPrompt />
                 {children}
