@@ -15,8 +15,32 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VOZ Stream | Watch Movies, TV Series & Anime Online in HD",
-  description: "VOZ Stream is a premium entertainment discovery platform for movies, TV series, and anime in HD.",
+  title: "VOZ Stream - Premium Entertainment Discovery Protocol",
+  description: "Watch the latest movies, TV series, and anime in HD. VOZ Stream is a high-speed, ad-free discovery platform for global audiences.",
+  keywords: ["movies", "streaming", "anime", "TV series", "watch online", "HD streaming", "VOZ Stream"],
+  authors: [{ name: "VOZ Team" }],
+  openGraph: {
+    title: "VOZ Stream | The Future of Streaming",
+    description: "Experience ultra-fast streaming world-wide. No ads, just entertainment.",
+    url: "https://voz-stream.vercel.app", // Replace with actual domain if known
+    siteName: "VOZ Stream",
+    images: [
+      {
+        url: "https://i.ibb.co/23Bkgcrx/image.png", // Use the app icon or a better banner
+        width: 1200,
+        height: 630,
+        alt: "VOZ Stream Preview",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "VOZ Stream | Watch Movies & TV",
+    description: "The fastest streaming discovery platform on the web.",
+    images: ["https://i.ibb.co/23Bkgcrx/image.png"],
+  },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -42,6 +66,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import SecurityManager from "@/components/SecurityManager";
 import VisitorTracker from "@/components/VisitorTracker";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
+import IOSInstallPrompt from "@/components/IOSInstallPrompt";
 
 export default function RootLayout({
   children,
@@ -64,6 +89,7 @@ export default function RootLayout({
           <AuthProvider>
             <ProfileProvider>
               <MaintenanceGuard>
+                <IOSInstallPrompt />
                 {children}
               </MaintenanceGuard>
             </ProfileProvider>

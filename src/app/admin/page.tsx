@@ -40,9 +40,13 @@ export default function AdminDashboard() {
         } else {
           alert("Unauthorized Access Key.");
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error(err);
-        alert("Authorization failed. Ensure Firestore rules allow access to system/config for the login process.");
+        if (err.message?.includes("matching domain") || err.message?.includes("CORS")) {
+             alert("خطأ في الاتصال: النطاق (IP) الحالي غير مسموح له بالوصول لبيانات فايربيس. يرجى إضافة IP هذا الجهاز في 'Authorized Domains' في Firebase Settings.");
+        } else {
+             alert("فشل الدخول. تأكد من إعدادات قواعد حماية Firestore للسماح بالوصول لمجموعة system/config.");
+        }
     } finally {
         setIsLoading(false);
     }
@@ -100,7 +104,13 @@ export default function AdminDashboard() {
         }
     } catch (err: any) {
         console.error("Firebase Admin Error:", err);
-        alert("فشل جلب البيانات. الرجاء التأكد من تحديث قواعد حماية فايربيس (Firestore Rules) إلى Test Mode لكي تعمل لوحة التحكم.");
+        if (err.code === "permission-denied") {
+            alert("خطأ: تم رفض الوصول. تأكد من تحديث قواعد Firestore (Rules) للسماح بقراءة مجموعات 'system' و 'users'.");
+        } else if (err.message?.includes("matching domain")) {
+            alert("خطأ في النطاق (Domain Error): هذا الجهاز/النطاق غير مضاف في قائمة 'Authorized Domains' في إعدادات Firebase Console. يرجى إضافة IP الجهاز هناك.");
+        } else {
+            alert(`فشل جلب البيانات: ${err.message || "حدث خطأ غير معروف"}. تأكد من الاتصال بالإنترنت ومن إعدادات Firebase.`);
+        }
     }
   };
 
@@ -196,9 +206,21 @@ export default function AdminDashboard() {
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
                 <StatCard icon={<Users />} label="Lifetime Users" value={stats.users} />
-                <StatCard icon={<Eye className="text-blue-500" />} label="Live Traffic" value={stats.views} />
-                <StatCard icon={<Terminal className="text-green-500" />} label="Total Playbacks" value={stats.likes} />
+                <StatCard icon={<Eye className="text-blue-500" />} label="Total Visits" value={stats.views} />
+                <StatCard icon={<Activity className="text-green-500" />} label="Content Interactions" value={stats.likes} />
                 <StatCard icon={<Crown className="text-yellow-500" />} label="Active Rooms" value={activeRooms.length} />
+            </div>
+
+            {/* LIVE FEED PROPOSAL (Coming Soon) */}
+            <div className="mt-8 p-6 rounded-[2rem] bg-gradient-to-r from-primary-600/10 to-transparent border border-primary-600/20 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="h-3 w-3 rounded-full bg-primary-500 animate-ping" />
+                    <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500">System Command Center Active</p>
+                        <p className="text-sm font-bold text-gray-400">Monitoring real-time traffic and node stability across ALL platforms.</p>
+                    </div>
+                </div>
+                <button className="px-6 py-2 bg-primary-600 text-black text-[10px] font-black uppercase rounded-full hover:bg-primary-500 transition">Hardening Active</button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
