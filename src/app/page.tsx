@@ -12,6 +12,8 @@ import { fetchTMDB, endpoints, filterSafeContent } from "@/lib/tmdb";
 import { useContinueWatching } from "@/hooks/useContinueWatching";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Radio, Activity, Sparkles, Search } from "lucide-react";
 
 export default function Home() {
   const { user, loading: authLoading, signInWithGoogle, signInAsGuest } = useAuth();
@@ -82,7 +84,57 @@ export default function Home() {
       
       {featured && <Hero movie={featured} />}
 
-      <div className="relative z-30 -mt-16 lg:-mt-24 space-y-16">
+      <div className="relative z-30 -mt-16 lg:-mt-24 space-y-16 px-4 lg:px-12">
+        {/* QUICK ACCESS BUTTONS */}
+        <div className="flex flex-wrap items-center gap-4 lg:gap-6 justify-center lg:justify-start">
+            <Link href="/live">
+                <div className="group relative overflow-hidden bg-red-600 px-8 py-5 rounded-[24px] shadow-2xl shadow-red-600/20 cursor-pointer transition hover:scale-105 active:scale-95 flex items-center gap-4 min-w-[240px]">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent" />
+                    <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center text-white relative z-10">
+                        <Radio size={24} className="animate-pulse" />
+                    </div>
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 leading-none mb-1">Live Protocol</p>
+                        <h3 className="text-lg font-black italic uppercase tracking-tighter text-white leading-none">Bثوث مبايرة TV</h3>
+                    </div>
+                    <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition">
+                        <Activity size={80} />
+                    </div>
+                </div>
+            </Link>
+
+            <Link href="/live">
+                <div className="group relative overflow-hidden bg-green-600 px-8 py-5 rounded-[24px] shadow-2xl shadow-green-600/20 cursor-pointer transition hover:scale-105 active:scale-95 flex items-center gap-4 min-w-[240px]" onClick={() => { localStorage.setItem('voz_live_tab', 'sports') }}>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent" />
+                    <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center text-white relative z-10">
+                        <Activity size={24} className="animate-bounce" />
+                    </div>
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 leading-none mb-1">Real-time Stream</p>
+                        <h3 className="text-lg font-black italic uppercase tracking-tighter text-white leading-none">بثوث كورة LIVE</h3>
+                    </div>
+                    <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition">
+                        <Radio size={80} />
+                    </div>
+                </div>
+            </Link>
+
+            <Link href="/search/ai">
+                <div className="group relative overflow-hidden bg-primary-600 px-8 py-5 rounded-[24px] shadow-2xl shadow-primary-600/20 cursor-pointer transition hover:scale-105 active:scale-95 flex items-center gap-4 min-w-[240px]">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent" />
+                    <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center text-white relative z-10">
+                        <Sparkles size={24} className="animate-spin-slow" />
+                    </div>
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 leading-none mb-1">Natural Language</p>
+                        <h3 className="text-lg font-black italic uppercase tracking-tighter text-white leading-none">البحث الذكي AI</h3>
+                    </div>
+                    <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition">
+                        <Search size={80} />
+                    </div>
+                </div>
+            </Link>
+        </div>
         
         {/* MY LIST - PERSISTENT COLLECTION */}
         {currentProfile.myList && currentProfile.myList.length > 0 && (

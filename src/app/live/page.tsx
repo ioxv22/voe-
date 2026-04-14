@@ -34,6 +34,14 @@ export default function LivePage() {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
 
   useEffect(() => {
+    const savedTab = localStorage.getItem('voz_live_tab');
+    if (savedTab) {
+        setActiveTab(savedTab);
+        localStorage.removeItem('voz_live_tab'); // Use once
+    }
+  }, []);
+
+  useEffect(() => {
     async function fetchM3U() {
       setLoading(true);
       try {
@@ -44,20 +52,42 @@ export default function LivePage() {
         // Filter by category
         let filtered = allChannels;
         if (activeTab === 'sports') {
-           filtered = allChannels.filter(c => c.group?.toLowerCase().includes('sport') || c.name.toLowerCase().includes('bein') || c.name.toLowerCase().includes('kora') || c.name.includes('كورة'));
+           filtered = allChannels.filter(c => 
+                c.group?.toLowerCase().includes('sport') || 
+                c.name.toLowerCase().includes('bein') || 
+                c.name.toLowerCase().includes('kora') || 
+                c.name.includes('كورة') ||
+                c.group?.toLowerCase().includes('كورة')
+           );
         } else if (activeTab === 'series') {
-           filtered = allChannels.filter(c => c.group?.toLowerCase().includes('series') || c.name.toLowerCase().includes('drama') || c.name.includes('مسلسل'));
+           filtered = allChannels.filter(c => 
+                c.group?.toLowerCase().includes('series') || 
+                c.name.toLowerCase().includes('drama') || 
+                c.name.includes('مسلسل') ||
+                c.group?.toLowerCase().includes('مسلسل')
+           );
         } else if (activeTab === 'movies') {
-           filtered = allChannels.filter(c => c.group?.toLowerCase().includes('movie') || c.name.includes('فيلم'));
+           filtered = allChannels.filter(c => 
+                c.group?.toLowerCase().includes('movie') || 
+                c.name.includes('فيلم') ||
+                c.group?.toLowerCase().includes('فيلم')
+           );
         } else if (activeTab === 'radio') {
-           filtered = allChannels.filter(c => c.group?.toLowerCase().includes('radio') || c.name.includes('اذاعة'));
+           filtered = allChannels.filter(c => 
+                c.group?.toLowerCase().includes('radio') || 
+                c.name.includes('اذاعة')
+           );
         } else {
            // Live TV default
-           filtered = allChannels.filter(c => c.group?.toLowerCase().includes('live') || (!c.group?.toLowerCase().includes('movie') && !c.group?.toLowerCase().includes('series')));
+           filtered = allChannels.filter(c => 
+                c.group?.toLowerCase().includes('live') || 
+                (!c.group?.toLowerCase().includes('movie') && !c.group?.toLowerCase().includes('series'))
+           );
         }
 
         setChannels(filtered);
         setFilteredChannels(filtered);
+        if (filtered.length > 0) setSelectedChannel(null); // Reset player on tab change
       } catch (err) {
         console.error("Failed to fetch M3U:", err);
       } finally {
