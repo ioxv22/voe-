@@ -1,7 +1,10 @@
 import { Send, Terminal } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) return null;
   return (
     <footer className="relative z-30 border-t border-white/10 bg-[#020202] py-20 px-6 lg:px-12">
       <div className="mx-auto max-w-7xl">

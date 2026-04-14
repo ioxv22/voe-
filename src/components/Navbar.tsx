@@ -16,12 +16,17 @@ import { collection, query, limit, onSnapshot, orderBy, doc } from "firebase/fir
 import { db } from "@/lib/firebase";
 import { useTheme } from "@/context/ThemeContext";
 
+import { usePathname } from "next/navigation";
+
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  if (pathname?.startsWith("/admin")) return null;
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isRequestOpen, setIsRequestOpen] = useState(false);
