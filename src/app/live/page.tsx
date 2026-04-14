@@ -33,6 +33,7 @@ export default function LivePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [useProxy, setUseProxy] = useState(true);
+  const [useExternal, setUseExternal] = useState(false);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -152,32 +153,42 @@ export default function LivePage() {
     link.rel = 'stylesheet';
     document.head.appendChild(link);
 
+    let player: any = null;
+
     const script = document.createElement('script');
     script.src = 'https://vjs.zencdn.net/8.10.0/video.min.js';
+    script.async = true;
     script.onload = () => {
+        if (!video) return;
         // @ts-ignore
-        const player = window.videojs(video, {
+        player = window.videojs(video, {
             autoplay: true,
             controls: true,
-            responsive: true,
+            preload: 'auto',
             fluid: true,
             sources: [{
-                src: useProxy ? `/api/iptv?url=${encodeURIComponent(selectedChannel.url)}` : selectedChannel.url,
+                src: useProxy ? `/api/iptv?url=${encodeURIComponent(selectedChannel.url)}${useExternal ? '&external=true' : ''}` : selectedChannel.url,
                 type: 'application/x-mpegURL'
             }]
         });
 
         player.on('error', () => {
-             console.error("VideoJS Error");
-             // Fallback to direct URL if proxy fails
-             player.src({
-                src: selectedChannel.url,
-                type: 'application/x-mpegURL'
-             });
+             const error = player.error();
+             console.error("VideoJS Error:", error);
+             if (useProxy) {
+                // If proxy failed, try direct immediately
+                player.src({ src: selectedChannel.url, type: 'application/x-mpegURL' });
+             }
         });
     };
     document.body.appendChild(script);
-  }, [selectedChannel, useProxy]);
+
+    return () => {
+        if (player) {
+            player.dispose();
+        }
+    };
+  }, [selectedChannel, useProxy, useExternal]);
 
   useEffect(() => {
     const filtered = channels.filter(c => 
@@ -361,6 +372,12 @@ export default function LivePage() {
                                     className={`h-12 px-6 rounded-full text-[10px] font-black uppercase tracking-widest transition border ${useProxy ? 'bg-blue-600/20 border-blue-600 text-blue-500' : 'bg-green-600/20 border-green-600 text-green-500'}`}
                                 >
                                     {useProxy ? "Using US Proxy" : "Using Direct Play"}
+                                </button>
+                                <button 
+                                    onClick={() => setUseExternal(!useExternal)}
+                                    className={`h-12 px-6 rounded-full text-[10px] font-black uppercase tracking-widest transition border ${useExternal ? 'bg-purple-600/20 border-purple-600 text-purple-500 animate-pulse' : 'bg-white/5 border-white/10 text-white'}`}
+                                >
+                                    {useExternal ? "Bypass Active" : "Bypass Block"}
                                 </button>
                                 <button className="h-12 w-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
                                     <Info size={20} />

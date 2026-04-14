@@ -8,9 +8,12 @@ export async function GET(request: Request) {
 
     if (!url) return NextResponse.json({ error: "No URL provided" }, { status: 400 });
 
+    const useExternal = searchParams.get('external') === 'true';
+    const finalUrl = useExternal ? `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}` : url;
+
     try {
         const targetHost = new URL(url).host;
-        const response = await fetch(url, {
+        const response = await fetch(finalUrl, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept': '*/*',
@@ -37,7 +40,7 @@ export async function GET(request: Request) {
                 if (!absoluteUrl.startsWith('http')) {
                     absoluteUrl = baseUrl + absoluteUrl.substring(absoluteUrl.startsWith('/') ? 1 : 0);
                 }
-                return `/api/iptv?url=${encodeURIComponent(absoluteUrl)}`;
+                return `/api/iptv?url=${encodeURIComponent(absoluteUrl)}${useExternal ? '&external=true' : ''}`;
             });
             
             return new NextResponse(rewrittenLines.join('\n'), {
