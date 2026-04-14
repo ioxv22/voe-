@@ -12,6 +12,8 @@ import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
 import { useAuth } from "@/context/AuthContext";
 import { useContinueWatching } from "@/hooks/useContinueWatching";
 import { db } from "@/lib/firebase";
+import AdManager from "@/components/AdManager";
+import PremiumPromo from "@/components/PremiumPromo";
 
 // Bulletproof Error Boundary
 class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: boolean}> {
@@ -107,6 +109,9 @@ function WatchContent({ params }: { params: any }) {
       <div className="pt-28 px-4 lg:px-12 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
           <div className="lg:col-span-3 space-y-10">
+            <div className="mb-8 w-full">
+                <AdManager />
+            </div>
             <div className="relative aspect-video w-full rounded-[40px] overflow-hidden bg-black border border-white/5 shadow-2xl">
                 <iframe src={playerUrl} className="w-full h-full" allowFullScreen frameBorder="0" />
             </div>
@@ -142,6 +147,7 @@ function WatchContent({ params }: { params: any }) {
           </div>
 
           <div className="space-y-10">
+            <PremiumPromo />
             <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5">
               <h3 className="text-xs font-black uppercase tracking-widest text-primary-500 mb-6">PROTOCOLS_ENG</h3>
               <div className="grid grid-cols-2 gap-3">
