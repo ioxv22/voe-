@@ -85,53 +85,26 @@ export default function Home() {
       {featured && <Hero movie={featured} />}
 
       <div className="relative z-30 -mt-16 lg:-mt-24 space-y-16 px-4 lg:px-12">
-        {/* QUICK ACCESS BUTTONS */}
-        <div className="flex flex-wrap items-center gap-4 lg:gap-6 justify-center lg:justify-start">
+        {/* QUICK ACCESS BUTTONS (COMPACT) */}
+        <div className="flex flex-wrap items-center gap-3 justify-center lg:justify-start">
             <Link href="/live">
-                <div className="group relative overflow-hidden bg-red-600 px-8 py-5 rounded-[24px] shadow-2xl shadow-red-600/20 cursor-pointer transition hover:scale-105 active:scale-95 flex items-center gap-4 min-w-[240px]">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent" />
-                    <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center text-white relative z-10">
-                        <Radio size={24} className="animate-pulse" />
-                    </div>
-                    <div className="relative z-10">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 leading-none mb-1">Live Protocol</p>
-                        <h3 className="text-lg font-black italic uppercase tracking-tighter text-white leading-none">Bثوث مبايرة TV</h3>
-                    </div>
-                    <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition">
-                        <Activity size={80} />
-                    </div>
+                <div className="group flex items-center gap-2 bg-red-600 px-4 py-2.5 rounded-full shadow-lg hover:bg-red-500 transition active:scale-95">
+                    <Radio size={14} className="animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white">Live TV</span>
                 </div>
             </Link>
 
-            <Link href="/live">
-                <div className="group relative overflow-hidden bg-green-600 px-8 py-5 rounded-[24px] shadow-2xl shadow-green-600/20 cursor-pointer transition hover:scale-105 active:scale-95 flex items-center gap-4 min-w-[240px]" onClick={() => { localStorage.setItem('voz_live_tab', 'sports') }}>
-                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent" />
-                    <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center text-white relative z-10">
-                        <Activity size={24} className="animate-bounce" />
-                    </div>
-                    <div className="relative z-10">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 leading-none mb-1">Real-time Stream</p>
-                        <h3 className="text-lg font-black italic uppercase tracking-tighter text-white leading-none">بثوث كورة LIVE</h3>
-                    </div>
-                    <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition">
-                        <Radio size={80} />
-                    </div>
+            <Link href="/live?tab=sports">
+                <div className="group flex items-center gap-2 bg-green-600 px-4 py-2.5 rounded-full shadow-lg hover:bg-green-500 transition active:scale-95">
+                    <Activity size={14} className="animate-bounce" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white">المباريات 🔥</span>
                 </div>
             </Link>
 
             <Link href="/search/ai">
-                <div className="group relative overflow-hidden bg-primary-600 px-8 py-5 rounded-[24px] shadow-2xl shadow-primary-600/20 cursor-pointer transition hover:scale-105 active:scale-95 flex items-center gap-4 min-w-[240px]">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent" />
-                    <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center text-white relative z-10">
-                        <Sparkles size={24} className="animate-spin-slow" />
-                    </div>
-                    <div className="relative z-10">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 leading-none mb-1">Natural Language</p>
-                        <h3 className="text-lg font-black italic uppercase tracking-tighter text-white leading-none">البحث الذكي AI</h3>
-                    </div>
-                    <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition">
-                        <Search size={80} />
-                    </div>
+                <div className="group flex items-center gap-2 bg-primary-600 px-4 py-2.5 rounded-full shadow-lg hover:bg-primary-500 transition active:scale-95">
+                    <Sparkles size={14} className="animate-spin-slow" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white">Search AI</span>
                 </div>
             </Link>
         </div>

@@ -7,7 +7,7 @@ import { Radio, Play, Tv, Film, Search, ChevronRight, Info, Activity } from "luc
 import { motion, AnimatePresence } from "framer-motion";
 
 const STREAMS = {
-  unified: "http://hlaamart.site:80/playlist/hamad201011@2727/hamad201011@2727/m3u?output=hls&key=live,movie,created_live,radio_streams,series"
+  unified: "http://hlaamart.site:80/playlist/hamad201011@2727/hamad201011@2727/webtvlist?output=hls&key=live,movie,created_live,radio_streams,series"
 };
 
 const CATEGORIES = [
@@ -34,10 +34,16 @@ export default function LivePage() {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
 
   useEffect(() => {
-    const savedTab = localStorage.getItem('voz_live_tab');
-    if (savedTab) {
-        setActiveTab(savedTab);
-        localStorage.removeItem('voz_live_tab'); // Use once
+    const searchParams = new URLSearchParams(window.location.search);
+    const tabParam = searchParams.get('tab');
+    if (tabParam) {
+        setActiveTab(tabParam);
+    } else {
+        const savedTab = localStorage.getItem('voz_live_tab');
+        if (savedTab) {
+            setActiveTab(savedTab);
+            localStorage.removeItem('voz_live_tab');
+        }
     }
   }, []);
 
