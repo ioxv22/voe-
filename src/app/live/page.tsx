@@ -65,11 +65,15 @@ export default function LivePage() {
             return;
         }
         
-        let allChannels = parseM3U(text);
+        let allChannels = [];
+        if (text.trim().startsWith('<?xml') || text.includes('<webtvs>')) {
+            allChannels = parseXML(text);
+        } else {
+            allChannels = parseM3U(text);
+        }
         
-        // If parsing failed (maybe it's not M3U format from webtvlist)
+        // Final fallback for simple line-based lists
         if (allChannels.length === 0 && text.includes('http')) {
-            // Primitive fallback parser for simple list
             const rawLines = text.split('\n');
             allChannels = rawLines.filter(l => l.startsWith('http')).map(l => ({ name: 'Channel ' + l.split('/').pop(), url: l }));
         }
@@ -154,6 +158,32 @@ export default function LivePage() {
     );
     setFilteredChannels(filtered);
   }, [searchTerm, channels]);
+
+  const parseXML = (data: string) => {
+    const result: Channel[] = [];
+    try {
+        // Primitive XML-tag parser for safety without heavy libraries
+        const tags = data.match(/<webtv [^>]+>/g) || [];
+        tags.forEach(tag => {
+            const titleMatch = tag.match(/title="([^"]+)"/);
+            const urlMatch = tag.match(/url="([^"]+)"/);
+            const iconMatch = tag.match(/icon="([^"]+)"/);
+            const groupMatch = tag.match(/group="([^"]+)"/);
+
+            if (titleMatch && urlMatch) {
+                result.push({
+                    name: titleMatch[1],
+                    url: urlMatch[1],
+                    logo: iconMatch ? iconMatch[1] : undefined,
+                    group: groupMatch ? groupMatch[1] : undefined
+                });
+            }
+        });
+    } catch (e) {
+        console.error("XML Parse Fail", e);
+    }
+    return result;
+  };
 
   const parseM3U = (data: string) => {
     const lines = data.split("\n");
