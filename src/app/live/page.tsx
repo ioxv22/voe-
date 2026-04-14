@@ -51,25 +51,34 @@ export default function LivePage() {
     async function fetchM3U() {
       setLoading(true);
       try {
-        const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(STREAMS.unified)}`);
+        const response = await fetch(`/api/iptv?url=${encodeURIComponent(STREAMS.unified)}`);
         const text = await response.text();
-        const allChannels = parseM3U(text);
         
+        let allChannels = parseM3U(text);
+        
+        // If parsing failed (maybe it's not M3U format from webtvlist)
+        if (allChannels.length === 0 && text.includes('http')) {
+            // Primitive fallback parser for simple list
+            const rawLines = text.split('\n');
+            allChannels = rawLines.filter(l => l.startsWith('http')).map(l => ({ name: 'Channel ' + l.split('/').pop(), url: l }));
+        }
+
         // Filter by category
         let filtered = allChannels;
         if (activeTab === 'sports') {
            filtered = allChannels.filter(c => 
                 c.group?.toLowerCase().includes('sport') || 
                 c.name.toLowerCase().includes('bein') || 
-                c.name.toLowerCase().includes('kora') || 
                 c.name.includes('كورة') ||
-                c.group?.toLowerCase().includes('كورة')
+                c.group?.toLowerCase().includes('كورة') ||
+                c.name.toLowerCase().includes('sport')
            );
         } else if (activeTab === 'series') {
            filtered = allChannels.filter(c => 
                 c.group?.toLowerCase().includes('series') || 
                 c.name.toLowerCase().includes('drama') || 
                 c.name.includes('مسلسل') ||
+                c.name.includes('عربي') ||
                 c.group?.toLowerCase().includes('مسلسل')
            );
         } else if (activeTab === 'movies') {
@@ -95,7 +104,7 @@ export default function LivePage() {
         setFilteredChannels(filtered);
         if (filtered.length > 0) setSelectedChannel(null); // Reset player on tab change
       } catch (err) {
-        console.error("Failed to fetch M3U:", err);
+        console.error("Failed to fetch IPTV:", err);
       } finally {
         setLoading(false);
       }
