@@ -68,7 +68,6 @@ import VisitorTracker from "@/components/VisitorTracker";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
 import IOSInstallPrompt from "@/components/IOSInstallPrompt";
 import Navbar from "@/components/Navbar";
-import GlobalAds from "@/components/GlobalAds";
 
 export default function RootLayout({
   children,
@@ -89,7 +88,6 @@ export default function RootLayout({
           <VisitorTracker />
           <SecurityManager />
           <AuthProvider>
-            <GlobalAds />
             <ProfileProvider>
               <Navbar />
               <MaintenanceGuard>
