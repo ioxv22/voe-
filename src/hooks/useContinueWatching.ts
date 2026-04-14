@@ -33,17 +33,45 @@ export function useContinueWatching() {
     return () => unsubscribe();
   }, [user]);
 
-  const saveProgress = async (movie: any, progress: number = 0) => {
-    if (!user) return;
+  const saveProgress = async (movie: any, mediaType: string, season?: number, episode?: number) => {
+    if (!user) {
+        // ... (local storage fallback remains the same)
+        const history = JSON.parse(localStorage.getItem("voz_history") || "[]");
+        const newItem = {
+            id: movie.id,
+            media_type: mediaType,
+            title: movie.title || movie.name,
+            name: movie.title || movie.name,
+            poster_path: movie.poster_path,
+            backdrop_path: movie.backdrop_path,
+            season,
+            episode,
+            lastWatched: new Date().toISOString(),
+        };
+        const filtered = history.filter((h: any) => h.id !== movie.id).slice(0, 19);
+        localStorage.setItem("voz_history", JSON.stringify([newItem, ...filtered]));
+        return;
+    }
+
     try {
-      await setDoc(doc(db, "users", user.uid, "history", String(movie.id)), {
+      const historyRef = doc(db, "users", user.uid, "history", String(movie.id));
+      await setDoc(historyRef, {
         id: movie.id,
+        media_type: mediaType,
         title: movie.title || movie.name,
+        name: movie.title || movie.name,
         poster_path: movie.poster_path,
         backdrop_path: movie.backdrop_path,
-        progress,
+        season: season || null,
+        episode: episode || null,
         lastWatched: new Date().toISOString(),
-      });
+      }, { merge: true });
+
+      // Track specific episode
+      if (mediaType === 'tv' && season && episode) {
+          const epRef = doc(db, "users", user.uid, "history", String(movie.id), "watched_episodes", `s${season}e${episode}`);
+          await setDoc(epRef, { watched: true, timestamp: new Date().toISOString() });
+      }
     } catch (e) {
       console.error("Error saving progress", e);
     }

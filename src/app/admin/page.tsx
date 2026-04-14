@@ -18,25 +18,31 @@ export default function AdminDashboard() {
 
   // Notification form
   const [notif, setNotif] = useState({ title: "", message: "", type: "movie" });
+  const [tgConfig, setTgConfig] = useState({ 
+    token: "8640789206:AAGHTPEsXEQRKBFMg6nyJZrgazeuVja9Hcc", 
+    chatId: "-1003910077563" 
+  });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
         const configSnap = await getDoc(doc(db, "system", "config"));
-        const storedPass = configSnap.exists() ? configSnap.data().adminPassword : "hamadk2010@@";
-        if (passwordInput === storedPass || passwordInput === "hamadk2010@@") {
+        if (!configSnap.exists() || !configSnap.data().adminPassword) {
+            alert("Security Warning: No admin password set in Firestore (system/config). Please contact the developer to initialize the core config.");
+            setIsLoading(false);
+            return;
+        }
+        const storedPass = configSnap.data().adminPassword;
+        if (passwordInput === storedPass) {
           setIsAuthenticated(true);
           localStorage.setItem("voz_admin_auth", "true");
         } else {
           alert("Unauthorized Access Key.");
         }
     } catch (err) {
-        if (passwordInput === "hamadk2010@@") {
-            setIsAuthenticated(true);
-            localStorage.setItem("voz_admin_auth", "true");
-        }
-        else alert("Connection error.");
+        console.error(err);
+        alert("Authorization failed. Ensure Firestore rules allow access to system/config for the login process.");
     } finally {
         setIsLoading(false);
     }
@@ -49,6 +55,14 @@ export default function AdminDashboard() {
               ...notif,
               date: serverTimestamp()
           });
+          
+          // Send Telegram Notification
+          if (tgConfig.token && tgConfig.chatId) {
+             const { sendTelegramNotification } = await import("@/lib/telegram");
+             const msg = `🚀 <b>New Content on VOZ Stream!</b>\n\n🎬 <b>${notif.title}</b>\n📝 ${notif.message}\n\n🍿 Enjoy watching on VOZ!`;
+             await sendTelegramNotification(tgConfig.token, tgConfig.chatId, msg);
+          }
+
           alert("Notification Sent Successfully!");
           setNotif({ title: "", message: "", type: "movie" });
       } catch (err) {
@@ -224,6 +238,21 @@ export default function AdminDashboard() {
                                 </button>
                             </div>
                         </div>
+                        <div className="space-y-3 pt-4 border-t border-white/5">
+                            <label className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Telegram Bot Config (Automates additions)</label>
+                            <input 
+                                className="w-full bg-black/40 border border-white/5 rounded-xl p-4 text-sm mb-2"
+                                value={tgConfig.token}
+                                onChange={(e) => setTgConfig({...tgConfig, token: e.target.value})}
+                                placeholder="BOT_TOKEN"
+                            />
+                            <input 
+                                className="w-full bg-black/40 border border-white/5 rounded-xl p-4 text-sm"
+                                value={tgConfig.chatId}
+                                onChange={(e) => setTgConfig({...tgConfig, chatId: e.target.value})}
+                                placeholder="CHAT_ID (e.g. -100123...)"
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -244,10 +273,49 @@ export default function AdminDashboard() {
                             <tbody className="divide-y divide-white/5">
                                 {requestList.map((r: any) => (
                                     <tr key={r.id}>
-                                        <td className="p-4 font-bold text-white">{r.movieName}</td>
-                                        <td className="p-4 text-yellow-500 uppercase text-[10px] font-black">{r.status || "PENDING"}</td>
+                                        <td className="p-4">
+                                            <div className="font-bold text-white">{r.movieName}</div>
+                                            <div className="text-[10px] text-gray-500">By: {r.userName || "Anonymous"}</div>
+                                            {r.reply && (
+                                                <div className="mt-2 text-[11px] bg-green-500/10 text-green-400 p-2 rounded-lg border border-green-500/20">
+                                                    <span className="font-black uppercase">Our Reply:</span> {r.reply}
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td className="p-4">
+                                            <span className={`uppercase text-[10px] font-black ${r.status === 'resolved' ? 'text-green-500' : 'text-yellow-500'}`}>
+                                                {r.status || "PENDING"}
+                                            </span>
+                                        </td>
                                         <td className="p-4 text-right">
-                                            <button onClick={() => deleteDoc(doc(db, "requests", r.id)).then(fetchAllData)} className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg">Terminate</button>
+                                            <div className="flex justify-end gap-2">
+                                                <button 
+                                                    onClick={() => {
+                                                        const reply = prompt("Enter your reply to the user:");
+                                                        if (reply) {
+                                                            updateDoc(doc(db, "requests", r.id), { 
+                                                                reply, 
+                                                                status: "resolved",
+                                                                repliedAt: serverTimestamp()
+                                                            }).then(() => {
+                                                                // Also add to a global notification if you want, or just let them see it in their request history
+                                                                addDoc(collection(db, "user_notifications"), {
+                                                                    userId: r.userId,
+                                                                    title: "Request Updated!",
+                                                                    message: `Your request for "${r.movieName}" has been handled: ${reply}`,
+                                                                    timestamp: serverTimestamp(),
+                                                                    read: false
+                                                                });
+                                                                fetchAllData();
+                                                            });
+                                                        }
+                                                    }}
+                                                    className="px-3 py-1 bg-primary-600/10 text-primary-500 rounded-lg text-[10px] font-black uppercase hover:bg-primary-600 hover:text-white transition"
+                                                >
+                                                    Reply
+                                                </button>
+                                                <button onClick={() => deleteDoc(doc(db, "requests", r.id)).then(fetchAllData)} className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg">Terminate</button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

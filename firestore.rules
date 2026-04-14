@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functionality
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isVIP == true); // Flexible for this project
+    }
+
+    // Default: Locked
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Profiles Section
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      
+      // History & Progress Subcollection
+      match /history/{movieId} {
+        allow read, write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+        
+        // Track specific episodes watched
+        match /watched_episodes/{epId} {
+          allow read, write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+        }
+      }
+    }
+
+    // Content Requests
+    match /requests/{requestId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+    // Global Notifications
+    match /notifications/{notifId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // User-specific Notifications (Replies)
+    match /user_notifications/{notifId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // System Dashboard Config
+    match /system/config {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Global Stats
+    match /system/stats {
+      allow read: if true;
+      allow write: if true; // Public view increments
+    }
+
+    // Watch Parties (Rooms)
+    match /rooms/{roomId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (resource.data.hostId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin() || (resource.data.hostId == request.auth.uid);
+      
+      match /messages/{msgId} {
+        allow read: if true;
+        allow create: if isAuthenticated();
+      }
+    }
+  }
+}

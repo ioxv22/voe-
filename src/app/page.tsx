@@ -9,12 +9,14 @@ import Hero from "@/components/Hero";
 import MovieRow from "@/components/MovieRow";
 import Footer from "@/components/Footer";
 import { fetchTMDB, endpoints, filterSafeContent } from "@/lib/tmdb";
+import { useContinueWatching } from "@/hooks/useContinueWatching";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
   const { user, loading: authLoading, signInWithGoogle, signInAsGuest } = useAuth();
   const { currentProfile, loading: profileLoading } = useProfile();
+  const { history } = useContinueWatching();
   const [data, setData] = useState<any>(null);
   const [loadingContent, setLoadingContent] = useState(true);
   const router = useRouter();
@@ -96,6 +98,15 @@ export default function Home() {
             <MovieRow 
                 title={currentProfile.isKids ? "Hot Animations" : "Trending on VOZ"} 
                 movies={data.trending.results} 
+            />
+        )}
+        
+        {/* CONTINUE WATCHING */}
+        {(history && history.length > 0) && (
+            <MovieRow 
+                title="Continue Watching" 
+                movies={history}
+                isHighlighted
             />
         )}
         

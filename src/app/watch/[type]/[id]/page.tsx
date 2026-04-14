@@ -10,6 +10,7 @@ import { useWatchlist } from "@/hooks/useWatchlist";
 import { useEffect, useState } from "react";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
 import { useAuth } from "@/context/AuthContext";
+import { useContinueWatching } from "@/hooks/useContinueWatching";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -71,6 +72,17 @@ export default function WatchPage({ params }: { params: any }) {
     };
   }, [params]);
 
+  const [watchedEpisodes, setWatchedEpisodes] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (user && paramsData?.id && paramsData?.type === 'tv') {
+        const unsub = onSnapshot(collection(db, "users", user.uid, "history", String(paramsData.id), "watched_episodes"), (snap) => {
+            setWatchedEpisodes(snap.docs.map(doc => doc.id));
+        });
+        return () => unsub();
+    }
+  }, [user, paramsData]);
+
   const loadEpisodes = async (tvId: string, sNum: number) => {
     try {
         const seasonData = await fetchTMDB(`/tv/${tvId}/season/${sNum}`);
@@ -113,6 +125,12 @@ export default function WatchPage({ params }: { params: any }) {
       alert("Failed to create party room.");
     }
   };
+
+  // Continue Watching Logic
+  useEffect(() => {
+    if (!item) return;
+    saveProgress(item, type, season, episode);
+  }, [item, season, episode, type, saveProgress]);
 
   return (
     <main className="min-h-screen bg-[#020202]">
@@ -196,21 +214,41 @@ export default function WatchPage({ params }: { params: any }) {
             </span>
             {Object.keys(SERVER_MAP)
               .filter(srv => item?.original_language !== 'ar' || ['nebula', 'embedsu', 'vidsrcme', 'auto', 'xyz', 'vip', 'super'].includes(srv))
-              .map((srv) => (
-                <button
-                    key={srv}
-                    onClick={() => setServer(srv)}
-                    className={`px-4 py-2 rounded-md text-xs font-bold transition relative ${server === srv ? 'bg-primary-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
-                >
-                    {srv.toUpperCase()}
-                    {item.original_language === 'ar' && (
-                        <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                             <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                        </span>
-                    )}
-                </button>
-            ))}
+              .map((srv) => {
+                const isVIPSrv = ["vip", "direct", "net"].includes(srv);
+                const canAccess = isPremium || !isVIPSrv;
+
+                return (
+                    <button
+                        key={srv}
+                        disabled={!canAccess}
+                        onClick={() => setServer(srv)}
+                        className={`px-4 py-2 rounded-md text-xs font-bold transition relative flex items-center gap-2 ${
+                            server === srv ? 'bg-primary-600 text-white' : 
+                            !canAccess ? 'bg-white/5 text-gray-700 cursor-not-allowed' : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                        }`}
+                    >
+                        {srv.toUpperCase()}
+                        {!canAccess && <Lock size={10} />}
+                        {item.original_language === 'ar' && (
+                            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                            </span>
+                        )}
+                    </button>
+                );
+              })}
+            
+            {/* Custom Arabic IPTV Integration */}
+            {item.original_language === 'ar' && type === 'tv' && (
+                <Link href="/live">
+                    <button className="px-4 py-2 rounded-md text-xs font-black bg-gradient-to-r from-red-600 to-red-800 text-white transition hover:scale-105 flex items-center gap-2 shadow-lg shadow-red-600/20">
+                        <Radio size={14} className="animate-pulse" /> IPTV VIP SERVER
+                    </button>
+                </Link>
+            )}
+          </div>
           </div>
 
           {/* Interaction Bar: Share & Next Episode */}
@@ -342,7 +380,14 @@ export default function WatchPage({ params }: { params: any }) {
                                 </div>
                             </div>
                             <div className="flex flex-col justify-center overflow-hidden">
-                                <h4 className="font-bold text-white truncate text-sm">EP{ep.episode_number}: {ep.name}</h4>
+                                <div className="flex items-center gap-2">
+                                    <h4 className="font-bold text-white truncate text-sm">EP{ep.episode_number}: {ep.name}</h4>
+                                    {watchedEpisodes.includes(`s${activeSeasonTab}e${ep.episode_number}`) && (
+                                        <div className="h-4 w-4 rounded-full bg-green-500 flex items-center justify-center text-black">
+                                            <Check size={10} strokeWidth={4} />
+                                        </div>
+                                    )}
+                                </div>
                                 <p className="text-xs text-gray-400 line-clamp-2 mt-1">{ep.overview || "No overview available."}</p>
                             </div>
                         </div>

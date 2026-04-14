@@ -1,30 +1,58 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, limit, onSnapshot, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { motion, AnimatePresence } from "framer-motion";
-import { Film, Tv, PlayCircle, Info, X } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Film, Tv, PlayCircle, Info, X, Bell } from "lucide-react";
 
 interface Notification {
     id: string;
     title: string;
     message: string;
-    type: 'movie' | 'tv' | 'system';
+    type: 'movie' | 'tv' | 'system' | 'personal';
     date: any;
 }
 
 export default function NotificationPanel({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    const q = query(collection(db, "notifications"), orderBy("date", "desc"), limit(10));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        const n = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
-        setNotifications(n);
+    // Fetch global notifications
+    const qGlobal = query(collection(db, "notifications"), orderBy("date", "desc"), limit(5));
+    const unsubGlobal = onSnapshot(qGlobal, (snapshot) => {
+        const globals = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+        setNotifications(prev => {
+            const others = prev.filter(n => n.type === 'personal');
+            return [...globals, ...others].sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
+        });
     });
-    return () => unsubscribe();
-  }, []);
+
+    // Fetch personal notifications
+    let unsubPersonal = () => {};
+    if (user?.uid) {
+        const qPersonal = query(collection(db, "user_notifications"), where("userId", "==", user.uid), orderBy("timestamp", "desc"), limit(5));
+        unsubPersonal = onSnapshot(qPersonal, (snapshot) => {
+            const personals = snapshot.docs.map(doc => ({ 
+                id: doc.id, 
+                ...doc.data(), 
+                type: 'personal', 
+                date: doc.data().timestamp 
+            } as Notification));
+            setNotifications(prev => {
+                const others = prev.filter(n => n.type !== 'personal');
+                return [...personals, ...others].sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
+            });
+        });
+    }
+
+    return () => {
+        unsubGlobal();
+        unsubPersonal();
+    };
+  }, [user]);
 
   return (
     <AnimatePresence>
@@ -48,14 +76,19 @@ export default function NotificationPanel({ isOpen, onClose }: { isOpen: boolean
                         <div key={n.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition flex gap-4 cursor-default group">
                             <div className={`h-10 w-10 flex-shrink-0 rounded-full flex items-center justify-center ${
                                 n.type === 'movie' ? 'bg-primary-600/20 text-primary-600' : 
-                                n.type === 'tv' ? 'bg-blue-600/20 text-blue-500' : 'bg-gray-600/20 text-gray-400'
+                                n.type === 'tv' ? 'bg-blue-600/20 text-blue-500' : 
+                                n.type === 'personal' ? 'bg-green-600/20 text-green-500' : 'bg-gray-600/20 text-gray-400'
                             }`}>
-                                {n.type === 'movie' ? <Film size={18} /> : n.type === 'tv' ? <Tv size={18} /> : <Info size={18} />}
+                                {n.type === 'movie' ? <Film size={18} /> : 
+                                 n.type === 'tv' ? <Tv size={18} /> : 
+                                 n.type === 'personal' ? <Bell size={18} /> : <Info size={18} />}
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm font-bold text-white group-hover:text-primary-500 transition">{n.title}</p>
                                 <p className="text-[11px] text-gray-500 leading-relaxed line-clamp-2">{n.message}</p>
-                                <p className="text-[9px] text-gray-700 font-bold uppercase tracking-widest">Just Added • VOZ STREAM</p>
+                                <p className="text-[9px] text-gray-700 font-bold uppercase tracking-widest">
+                                    {n.type === 'personal' ? 'Direct Reply' : 'Just Added'} • VOZ STREAM
+                                </p>
                             </div>
                         </div>
                     ))

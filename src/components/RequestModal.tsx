@@ -4,11 +4,13 @@ import { useState } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 import { X, Send, Film } from "lucide-react";
 
 export default function RequestModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const [movieName, setMovieName] = useState("");
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,6 +21,8 @@ export default function RequestModal({ isOpen, onClose }: { isOpen: boolean, onC
       await addDoc(collection(db, "requests"), {
         movieName,
         status: "pending",
+        userId: user?.uid || "anonymous",
+        userName: user?.displayName || user?.email || "Anonymous",
         timestamp: serverTimestamp()
       });
       alert("Movie request submitted! We'll add it soon.");

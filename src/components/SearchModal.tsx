@@ -64,6 +64,25 @@ export default function SearchModal({ isOpen, onClose, onSelect }: { isOpen: boo
             </div>
 
             <div className="max-h-[60vh] overflow-y-auto p-4 custom-scrollbar">
+              {!loading && !query && (
+                <Link href="/search/ai" onClick={onClose}>
+                    <div className="mb-4 group relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary-600/20 to-purple-600/20 p-6 border border-primary-600/20 hover:border-primary-600/50 transition">
+                        <div className="flex items-center justify-between relative z-10">
+                            <div className="flex items-center gap-4">
+                                <div className="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-white shadow-xl">
+                                    <Search size={20} />
+                                </div>
+                                <div className="text-left">
+                                    <h4 className="font-black italic uppercase tracking-tighter text-sm">Neural AI Search</h4>
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Describe what you want to watch!</p>
+                                </div>
+                            </div>
+                            <div className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-primary-600/20 text-primary-500 rounded-full">New</div>
+                        </div>
+                    </div>
+                </Link>
+              )}
+
               {loading && <div className="py-20 text-center text-gray-400">Searching the metaverse...</div>}
               
               {!loading && results.length > 0 && (
