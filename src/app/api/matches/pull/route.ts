@@ -22,9 +22,9 @@ export async function GET() {
 
         matchBlocks.forEach(block => {
             try {
-                const teamAMatch = block.match(/<div class="teams teamA">.*?<p>(.*?)<\/p>/s);
-                const teamBMatch = block.match(/<div class="teams teamB">.*?<p>(.*?)<\/p>/s);
-                const timeMatch = block.match(/<span class="time">(.*?)<\/span>/s);
+                const teamAMatch = block.match(/<div class="teams teamA">[\s\S]*?<p>([\s\S]*?)<\/p>/);
+                const teamBMatch = block.match(/<div class="teams teamB">[\s\S]*?<p>([\s\S]*?)<\/p>/);
+                const timeMatch = block.match(/<span class="time">([\s\S]*?)<\/span>/);
 
                 if (teamAMatch && teamBMatch) {
                     const teamA = teamAMatch[1].trim();
