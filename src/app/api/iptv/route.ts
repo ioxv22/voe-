@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 
         return new NextResponse(data, {
             headers: { 
-                'Content-Type': 'text/plain',
+                'Content-Type': 'application/vnd.apple.mpegurl',
                 'Access-Control-Allow-Origin': '*' 
             }
         });

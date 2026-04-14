@@ -146,7 +146,7 @@ export default function LivePage() {
     if (!video) return;
 
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = selectedChannel.url;
+        video.src = `/api/iptv?url=${encodeURIComponent(selectedChannel.url)}`;
     } else {
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
@@ -155,7 +155,7 @@ export default function LivePage() {
             if (window.Hls.isSupported()) {
                 // @ts-ignore
                 const hls = new window.Hls();
-                hls.loadSource(selectedChannel.url);
+                hls.loadSource(`/api/iptv?url=${encodeURIComponent(selectedChannel.url)}`);
                 hls.attachMedia(video);
             }
         };
