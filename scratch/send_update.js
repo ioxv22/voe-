@@ -1,32 +1,38 @@
-const BOT_TOKEN = "8640789206:AAGHTPEsXEQRKBFMg6nyJZrgazeuVja9Hcc";
-const CHAT_ID = "-1003910077563";
+const token = "8640789206:AAGHTPEsXEQRKBFMg6nyJZrgazeuVja9Hcc";
+const chatId = "-1003910077563";
+const message = `🚀 <b>VOZ Stream - GLOBAL UPDATE v4.5</b>
 
-async function sendUpdateNotification() {
-    const message = `🚀 <b>VOZ STREAM : الكود المصدري الجديد جاهز!</b>\n\n` +
-        `🛠 <b>قائمة التحديثات والميزات الجديدة:</b>\n\n` +
-        `🛡 <b>تأمين الموقع (Security):</b> تم سد كافة الثغرات وإزالة كلمات المرور الافتراضية.\n` +
-        `🧠 <b>البحث الذكي (AI Search):</b> ابحث عن الأفلام بوصفها (مثال: فيلم فضائي حزين).\n` +
-        `⚽ <b>البث المباشر (IPTV):</b> قسم كامل للقنوات الرياضية، المسلسلات، والتمثيليات.\n` +
-        `✅ <b>تتبع المشاهدة:</b> ظهور علامة صح على الحلقات التي شاهدتها سابقاً.\n` +
-        `💎 <b>اشتراكات VIP:</b> تفعيل سيرفرات VIP عالية السرعة حصرياً للأعضاء.\n` +
-        `🔧 <b>تحسين الأداء:</b> إصلاح أخطاء البرمجة (Build Fixes) وتسريع استجابة الخوادم.\n\n` +
-        `📺 شاهد الآن: https://vozstream.vercel.app/`;
+The platform has been officially upgraded with high-end protocols:
 
+✅ <b>Bulletproof Security</b>: No more unauthorized database access. Firestore Rules have been locked down and the Admin Terminal is now identity-verified via Google SSL.
+✅ <b>Native iOS App Protocol</b>: Improved PWA support for iPhone. Users will now be guided to "Add to Home Screen" to use VOZ as a full native app.
+✅ <b>Neural Social Engine</b>: Upgraded SEO and OpenGraph metadata. When you share links on Twitter or Discord, they will show premium high-res previews.
+✅ <b>GitHub Sync</b>: The latest source code is now live and synchronized for production.
+
+🍿 Enjoy the premium streaming experience now!
+🔗 <b>URL:</b> https://voz-stream.vercel.app/`;
+
+async function send() {
     try {
-        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-        await fetch(url, {
+        const url = `https://api.telegram.org/bot${token}/sendMessage`;
+        const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                chat_id: CHAT_ID,
+                chat_id: chatId,
                 text: message,
                 parse_mode: 'HTML'
             })
         });
-        console.log("Update notification sent to Telegram!");
+        const data = await response.json();
+        if (data.ok) {
+            console.log("Update sent to Telegram successfully!");
+        } else {
+            console.error("Failed to send update:", data);
+        }
     } catch (err) {
-        console.error("Error sending update", err.message);
+        console.error("Error connecting to Telegram:", err);
     }
 }
 
-sendUpdateNotification();
+send();

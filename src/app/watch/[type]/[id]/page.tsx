@@ -58,9 +58,8 @@ function WatchContent({ params }: { params: any }) {
 
             if (item) {
                 setData({ item, similar });
-                if (resolvedParams.type === "tv") {
-                   fetchTMDB(`/tv/${resolvedParams.id}/season/1`).then(d => setEpisodes(d.episodes || [])).catch(() => {});
-                }
+                // Remove the one-time fetch here, we'll use a dedicated useEffect for seasons
+                
                 // Background Stats
                 try {
                     const sRef = doc(db, "system", "stats");
@@ -71,6 +70,15 @@ function WatchContent({ params }: { params: any }) {
     }
     init();
   }, [params]);
+
+  // Dedicated useEffect to load episodes for the active season
+  useEffect(() => {
+    if (paramsData?.id && paramsData?.type === "tv") {
+        fetchTMDB(`/tv/${paramsData.id}/season/${season}`)
+            .then(d => setEpisodes(d.episodes || []))
+            .catch(() => setEpisodes([]));
+    }
+  }, [season, paramsData]);
 
   useEffect(() => {
     if (user && paramsData?.id && paramsData?.type === 'tv') {
@@ -146,15 +154,34 @@ function WatchContent({ params }: { params: any }) {
             </div>
 
             {watchType === "tv" && (
-                <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5">
-                    <h3 className="text-xs font-black uppercase mb-6 text-primary-500">EPISODES_LOG</h3>
-                    <div className="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar">
-                        {episodes.map(ep => (
-                            <button key={ep.id} onClick={() => { setSeason(ep.season_number); setEpisode(ep.episode_number); }} className={`w-full p-4 rounded-2xl flex justify-between items-center text-left transition border ${episode === ep.episode_number ? 'bg-red-600/20 border-red-500/50 text-white' : 'bg-white/5 border-white/5 text-gray-500'}`}>
-                                <span className="text-[10px] font-black uppercase truncate max-w-[140px]">E{ep.episode_number}: {ep.name}</span>
-                                {watchedEpisodes.includes(String(ep.id)) && "✓"}
-                            </button>
-                        ))}
+                <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5 space-y-8">
+                    {/* Season Selector */}
+                    <div>
+                        <h3 className="text-xs font-black uppercase mb-4 text-primary-500">SELECT_SEASON</h3>
+                        <div className="flex flex-wrap gap-2">
+                            {item.seasons?.filter((s: any) => s.season_number > 0).map((s: any) => (
+                                <button 
+                                    key={s.id} 
+                                    onClick={() => { setSeason(s.season_number); setEpisode(1); }}
+                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition border ${season === s.season_number ? 'bg-primary-600 border-primary-500 text-black' : 'bg-white/5 border-white/5 text-gray-500 hover:text-white'}`}
+                                >
+                                    S{s.season_number}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Episode List */}
+                    <div>
+                        <h3 className="text-xs font-black uppercase mb-4 text-primary-500">S{season}: EPISODES_LOG</h3>
+                        <div className="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar">
+                            {episodes.map(ep => (
+                                <button key={ep.id} onClick={() => { setEpisode(ep.episode_number); }} className={`w-full p-4 rounded-2xl flex justify-between items-center text-left transition border ${episode === ep.episode_number ? 'bg-red-600/20 border-red-500/50 text-white' : 'bg-white/5 border-white/5 text-gray-500'}`}>
+                                    <span className="text-[10px] font-black uppercase truncate max-w-[140px]">E{ep.episode_number}: {ep.name}</span>
+                                    {watchedEpisodes.includes(String(ep.id)) && "✓"}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             )}
