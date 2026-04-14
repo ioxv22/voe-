@@ -24,6 +24,15 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
+
+    match /matches/{matchId} {
+      allow read: if true;
+      allow write: if true; // Temporary for Sync
+    }
+
+    match /rooms/{roomId} {
+      allow read, write: if true;
+    }
     
     // 4. Default: Lock everything else
     match /{document=**} {

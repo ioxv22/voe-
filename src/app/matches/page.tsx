@@ -9,14 +9,20 @@ import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 
 export default function MatchesPage() {
-    const [matches, setMatches] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [matches, setMatches] = useState<any[]>([
+        { id: "m1", title: "Atletico Madrid vs Barcelona", time: "23:00", url: "https://v3.v-it.org/hls/101.m3u8", team1: "Atlético", team2: "Barcelona" },
+        { id: "m2", title: "Liverpool vs Paris Saint-Germain", time: "23:00", url: "https://v3.v-it.org/hls/102.m3u8", team1: "Liverpool", team2: "PSG" },
+        { id: "m3", title: "Al Nassr vs Al Khaleej", time: "21:00", url: "https://v3.v-it.org/hls/103.m3u8", team1: "Al Nassr", team2: "Al Khaleej" },
+        { id: "m4", title: "Al Ittihad vs Zed FC", time: "22:00", url: "https://v3.v-it.org/hls/104.m3u8", team1: "Al Ittihad", team2: "Zed FC" }
+    ]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const q = query(collection(db, "matches"), orderBy("createdAt", "desc"));
         const unsub = onSnapshot(q, (snap) => {
-            setMatches(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            setLoading(false);
+            if (snap.docs.length > 0) {
+                setMatches(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            }
         });
         return () => unsub();
     }, []);
