@@ -9,12 +9,16 @@ export async function GET(request: Request) {
     if (!url) return NextResponse.json({ error: "No URL provided" }, { status: 400 });
 
     try {
+        const targetHost = new URL(url).host;
         const response = await fetch(url, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept': '*/*',
+                'Host': targetHost,
+                'Referer': `http://${targetHost}/`,
+                'Connection': 'keep-alive'
             },
-            next: { revalidate: 60 } // Reduce cache to 1 minute for faster debugging
+            next: { revalidate: 60 }
         });
         
         if (url.includes('.m3u8') || url.includes('.m3u')) {

@@ -204,25 +204,35 @@ export default function LivePage() {
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
+        if (!line) continue;
+
         if (line.startsWith("#EXTINF:")) {
-            // More robust name extraction: find last comma or end of string
-            const lastCommaIdx = line.lastIndexOf(",");
-            const name = lastCommaIdx !== -1 ? line.substring(lastCommaIdx + 1).trim() : "Unknown Channel";
+            const info = line.split("#EXTINF:")[1];
+            const lastCommaIdx = info.lastIndexOf(",");
+            const name = lastCommaIdx !== -1 ? info.substring(lastCommaIdx + 1).trim() : "Unknown Channel";
             
-            const logoMatch = line.match(/tvg-logo="([^"]+)"/);
-            const groupMatch = line.match(/group-title="([^"]+)"/);
+            const logoMatch = info.match(/tvg-logo="([^"]+)"/);
+            const groupMatch = info.match(/group-title="([^"]+)"/);
             
             currentChannel = { 
-                name, 
+                name: name.replace(/\"/g, ""), // Clean quotes
                 logo: logoMatch ? logoMatch[1] : undefined,
-                group: groupMatch ? groupMatch[1] : undefined
+                group: groupMatch ? groupMatch[1] : "General"
             };
-        } else if (line.startsWith("http")) {
-            currentChannel.url = line;
-            if (currentChannel.url) {
-                // Ensure we have a name
-                if (!currentChannel.name) currentChannel.name = "Channel " + line.split('/').pop();
-                result.push(currentChannel as Channel);
+        } else if (line.startsWith("http") || (line.includes("/") && !line.startsWith("#"))) {
+            // It's a URL
+            let url = line;
+            if (url.startsWith("/")) {
+                 // Might be a relative URL from the source
+                 const baseUrl = new URL(STREAMS.unified).origin;
+                 url = baseUrl + url;
+            }
+            
+            if (currentChannel.name) {
+                result.push({ ...currentChannel, url } as Channel);
+            } else {
+                // Orphan URL
+                result.push({ name: "Channel " + url.split("/").pop(), url, group: "Other" });
             }
             currentChannel = {};
         }
