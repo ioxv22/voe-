@@ -4,7 +4,7 @@ const WORKERS = [
 const STREAM_TOKEN = "px-2C1y80YMN";
 
 export const SERVER_MAP = {
-  nebula: "nebula",
+  nebula: "primary",
   beta: "fast",
   alpha: "primary",
   nova: "nova",
