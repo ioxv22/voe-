@@ -32,8 +32,6 @@ class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: bo
   }
 }
 
-import AdManager from "@/components/AdManager";
-
 function WatchContent({ params }: { params: any }) {
   const { user, isPremium } = useAuth();
   const { saveProgress } = useContinueWatching();
@@ -111,7 +109,6 @@ function WatchContent({ params }: { params: any }) {
       <div className="pt-28 px-4 lg:px-12 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
           <div className="lg:col-span-3 space-y-10">
-            <AdManager />
             <div className="relative group aspect-video w-full rounded-[40px] overflow-hidden bg-black border border-white/5 shadow-2xl">
                 <iframe 
                     key={playerKey}

@@ -16,12 +16,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "VOZ Stream - Premium Entertainment Protocol",
-  description: "Watch the latest movies, TV series, and anime in HD. VOZ Stream is a high-speed discovery platform for global audiences.",
+  description: "Watch the latest movies, TV series, and anime in HD. VOZ Stream is a high-speed, ad-free discovery platform for global audiences.",
   keywords: ["movies", "streaming", "anime", "TV series", "watch online", "HD streaming", "VOZ Stream"],
   authors: [{ name: "VOZ Team" }],
   openGraph: {
     title: "VOZ Stream | The Future of Streaming",
-    description: "Experience ultra-fast streaming world-wide. High quality entertainment.",
+    description: "Experience ultra-fast streaming world-wide. No ads, just entertainment.",
     url: "https://voz-stream.vercel.app", // Replace with actual domain if known
     siteName: "VOZ Stream",
     images: [
@@ -68,7 +68,6 @@ import VisitorTracker from "@/components/VisitorTracker";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
 import IOSInstallPrompt from "@/components/IOSInstallPrompt";
 import Navbar from "@/components/Navbar";
-import GlobalAds from "@/components/GlobalAds";
 
 export default function RootLayout({
   children,
@@ -93,7 +92,6 @@ export default function RootLayout({
               <Navbar />
               <MaintenanceGuard>
                 <IOSInstallPrompt />
-                <GlobalAds />
                 {children}
               </MaintenanceGuard>
             </ProfileProvider>

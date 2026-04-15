@@ -16,8 +16,6 @@ import MatchSchedule from "@/components/MatchSchedule";
 import Link from "next/link";
 import { Radio, Activity, Sparkles, Search } from "lucide-react";
 
-import AdManager from "@/components/AdManager";
-
 export default function Home() {
   const { user, loading: authLoading, signInWithGoogle, signInAsGuest } = useAuth();
   const { currentProfile, loading: profileLoading } = useProfile();
@@ -86,9 +84,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#020202] pb-20 overflow-x-hidden selection:bg-primary-600 selection:text-white">
       <Navbar />
-      <div className="pt-24 px-4 overflow-hidden">
-        <AdManager />
-      </div>
       
       {featured && <Hero movie={featured} />}
 
