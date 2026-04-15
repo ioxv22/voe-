@@ -60,7 +60,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                     setSeason(firstSeason.season_number);
                 }
                 if (type === 'movie') {
-                    saveProgress(item, { season: 0, episode: 0 });
+                    saveProgress(item, 'movie');
                 }
             }
         } catch (err) {
