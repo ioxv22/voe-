@@ -116,6 +116,7 @@ function WatchContent({ params }: { params: any }) {
                     className="w-full h-full" 
                     allowFullScreen 
                     frameBorder="0" 
+                    sandbox="allow-scripts allow-same-origin allow-forms"
                 />
                 
                 {/* Custom Overlay for help */}
