@@ -1,5 +1,4 @@
 const WORKERS = [
-  "https://nebula.iivoz.workers.dev",
   "https://lucky-pond-0426.xhx1997.workers.dev",
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
