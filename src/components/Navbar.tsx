@@ -12,7 +12,7 @@ import NotificationPanel from "./NotificationPanel";
 import RequestModal from "./RequestModal";
 import Logo from "./Logo";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, query, limit, onSnapshot, orderBy, doc } from "firebase/firestore";
+import { collection, query, limit, onSnapshot, orderBy, doc, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useTheme } from "@/context/ThemeContext";
 
