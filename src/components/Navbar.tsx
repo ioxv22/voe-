@@ -155,20 +155,6 @@ export default function Navbar() {
       <NotificationPanel isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
       <RequestModal isOpen={isRequestOpen} onClose={() => setIsRequestOpen(false)} />
 
-      {/* Global Alert Banner */}
-      <AnimatePresence>
-        {alertBanner && (
-            <motion.div 
-                initial={{ y: -50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -50, opacity: 0 }}
-                className="fixed top-20 left-1/2 -translate-x-1/2 z-[60] w-max max-w-[90vw] bg-primary-600 px-6 py-2 rounded-full shadow-2xl flex items-center gap-3 border border-white/20"
-            >
-                <Bell size={14} className="text-white animate-bounce" />
-                <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">{alertBanner}</span>
-            </motion.div>
-        )}
-      </AnimatePresence>
     </nav>
   );
 }
