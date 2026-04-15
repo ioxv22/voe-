@@ -20,8 +20,13 @@ export default function NotificationPanel({ isOpen, onClose }: { isOpen: boolean
   const { user } = useAuth();
 
   useEffect(() => {
-    // Fetch global notifications
-    const qGlobal = query(collection(db, "notifications"), orderBy("date", "desc"), limit(5));
+    // Fetch global notifications (limit to last 12h)
+    const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
+    const qGlobal = query(
+        collection(db, "notifications"), 
+        where("date", ">=", twelveHoursAgo),
+        orderBy("date", "desc")
+    );
     const unsubGlobal = onSnapshot(qGlobal, (snapshot) => {
         const globals = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
         setNotifications(prev => {

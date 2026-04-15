@@ -42,16 +42,30 @@ export default function Navbar() {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener("scroll", handleScroll);
     
-    // Listen for notification changes
-    const q = query(collection(db, "notifications"), orderBy("date", "desc"), limit(5));
+    // Listen for notification changes (limit to last 12h)
+    const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
+    const q = query(
+        collection(db, "notifications"), 
+        where("date", ">=", twelveHoursAgo),
+        orderBy("date", "desc")
+    );
     const unsubscribe = onSnapshot(q, (snapshot) => {
         setNotifCount(snapshot.size);
     });
 
     // Listen for global config
-    const unsubConfig = onSnapshot(doc(db, "system", "config"), (doc) => {
-        if (doc.exists()) {
-            setAlertBanner(doc.data().alertBanner || "");
+    const unsubConfig = onSnapshot(doc(db, "system", "config"), (snapshot) => {
+        if (snapshot.exists()) {
+            const data = snapshot.data();
+            const timestamp = data.alertTimestamp?.toDate();
+            const now = new Date();
+            const diffHours = timestamp ? (now.getTime() - timestamp.getTime()) / (1000 * 60 * 60) : 0;
+            
+            if (data.alertBanner && (!timestamp || diffHours < 12)) {
+                setAlertBanner(data.alertBanner);
+            } else {
+                setAlertBanner("");
+            }
         }
     });
 
@@ -155,6 +169,20 @@ export default function Navbar() {
       <NotificationPanel isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
       <RequestModal isOpen={isRequestOpen} onClose={() => setIsRequestOpen(false)} />
 
+      {/* Global Alert Banner with 12h expiry */}
+      <AnimatePresence>
+        {alertBanner && (
+            <motion.div 
+                initial={{ y: -50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -50, opacity: 0 }}
+                className="fixed top-20 left-1/2 -translate-x-1/2 z-[60] w-max max-w-[90vw] bg-primary-600 px-6 py-2 rounded-full shadow-2xl flex items-center gap-3 border border-white/20"
+            >
+                <Bell size={14} className="text-white animate-bounce" />
+                <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">{alertBanner}</span>
+            </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
