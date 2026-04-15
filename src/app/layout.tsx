@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "VOZ Stream | The Future of Streaming",
     description: "Experience ultra-fast streaming world-wide. No ads, just entertainment.",
-    url: "https://voz-stream.vercel.app", // Replace with actual domain if known
+    url: "https://vozstream.vercel.app", // Updated to correct domain
     siteName: "VOZ Stream",
     images: [
       {
