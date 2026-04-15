@@ -17,6 +17,7 @@ interface AuthContextType {
   loading: boolean;
   isGuest: boolean;
   isPremium: boolean;
+  isAdmin: boolean;
   signInWithGoogle: () => Promise<void>;
   signUpWithEmail: (email: string, pass: string) => Promise<void>;
   signInWithEmail: (email: string, pass: string) => Promise<void>;
@@ -30,6 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
   const [isGuest, setIsGuest] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -53,17 +55,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   const userDocRef = doc(db, "users", firebaseUser.uid);
                   const userDoc = await getDoc(userDocRef);
                   if (userDoc.exists()) {
-                      setIsPremium(!!userDoc.data().isVIP || !!userDoc.data().isPremium);
+                      const data = userDoc.data();
+                      setIsPremium(!!data.isVIP || !!data.isPremium);
+                      setIsAdmin(!!data.isAdmin || firebaseUser.email === "admin@voz.stream"); // Fallback check
                   } else {
                       setDoc(userDocRef, { 
                           email: firebaseUser.email, 
                           displayName: firebaseUser.displayName,
-                          isPremium: false 
+                          isPremium: false,
+                          isAdmin: firebaseUser.email === "admin@voz.stream"
                       }, { merge: true }).catch(() => {});
                   }
               } catch (err) {
                   console.warn("Auth sync offline - continuing as standard user.");
                   setIsPremium(false);
+                  setIsAdmin(false);
               }
           };
           syncUser();
@@ -71,10 +77,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else if (guestSession) {
           setIsGuest(true);
           setIsPremium(false);
+          setIsAdmin(false);
           setUser({ displayName: "Guest User", uid: "guest_id", photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest" });
           setLoading(false);
       } else {
           setUser(null);
+          setIsAdmin(false);
           setLoading(false);
       }
     });
@@ -108,7 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       const cred = await createUserWithEmailAndPassword(auth, email, pass);
-      setDoc(doc(db, "users", cred.user.uid), { email, isPremium: false }).catch(() => {});
+      setDoc(doc(db, "users", cred.user.uid), { email, isPremium: false, isAdmin: email === "admin@voz.stream" }).catch(() => {});
       localStorage.removeItem("voz_guest_session");
     } catch (error) {
       setLoading(false);
@@ -133,12 +141,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!isGuest) await signOut(auth);
     setUser(null);
     setIsGuest(false);
+    setIsAdmin(false);
     setLoading(false);
     window.location.href = "/";
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, isGuest, isPremium, signInWithGoogle, signUpWithEmail, signInWithEmail, signInAsGuest, logout }}>
+    <AuthContext.Provider value={{ user, loading, isGuest, isPremium, isAdmin, signInWithGoogle, signUpWithEmail, signInWithEmail, signInAsGuest, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -149,3 +158,4 @@ export const useAuth = () => {
   if (context === undefined) throw new Error("useAuth missing");
   return context;
 };
+

@@ -40,7 +40,7 @@ export default function PremiumPromo() {
                     target="_blank"
                     className="block w-full text-center bg-yellow-500 py-4 rounded-3xl text-black font-black uppercase text-xs tracking-widest hover:bg-yellow-400 transition transform active:scale-95 shadow-xl shadow-yellow-500/30"
                 >
-                    Upgrade Now - $4.99/mo
+                    Upgrade Now - 15 AED / MONTH
                 </a>
                 
                 <p className="mt-4 text-[10px] text-gray-500 text-center font-bold uppercase tracking-widest italic animate-pulse">

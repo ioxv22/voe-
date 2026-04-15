@@ -42,7 +42,9 @@ export const getImageUrl = (path: string, size: "w500" | "original" = "w500") =>
 
 const BLACKLIST_KEYWORDS = [
   "sex", "porn", "erotic", "nude", "explicit", "adult content", 
-  "xxx", "sexual", "vulgar", "dirty", "وصخ", "جنس", "اباحي", "أفلام للكبار"
+  "xxx", "sexual", "vulgar", "dirty", "وصخ", "جنس", "اباحي", "أفلام للكبار",
+  "hentai", "ecchi", "softcore", "sensual", "lust", "incest", "rape", "fetish", 
+  "أفلام جنسية", "إثارة جنسية", "بورن", "فلم وصخ", "انمي وصخ", "انمي للكبار", "افلام للكبار فقط"
 ];
 
 const WHITELIST_IDS = [76479, 360431, 114472, 130392]; 
@@ -57,7 +59,11 @@ export const filterSafeContent = (items: any[]) => {
     if (WHITELIST_IDS.includes(item.id)) return true;
     if (WHITELIST_NAMES.some(name => itemName.includes(name.toLowerCase()))) return true;
     
+    // Check if TMDB explicitly flags it as adult
     if (item.adult === true) return false;
+
+    // Check genres (some adult genres exist but might not be flagged 'adult')
+    // We already use include_adult=false in API calls, but this is an extra layer.
     
     const text = `${itemName} ${item.overview || ''}`.toLowerCase();
     const isDirty = BLACKLIST_KEYWORDS.some(word => text.includes(word));

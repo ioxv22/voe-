@@ -16,6 +16,8 @@ import MatchSchedule from "@/components/MatchSchedule";
 import Link from "next/link";
 import { Radio, Activity, Sparkles, Search } from "lucide-react";
 
+import AdManager from "@/components/AdManager";
+
 export default function Home() {
   const { user, loading: authLoading, signInWithGoogle, signInAsGuest } = useAuth();
   const { currentProfile, loading: profileLoading } = useProfile();
@@ -44,13 +46,14 @@ export default function Home() {
                 setLoadingContent(false);
 
                 // Fetch Dedicated Rows
-                const [latest, series, arabicSeries, kids, action, horror, kDrama] = await Promise.all([
+                const [latest, series, arabicSeries, anime, action, horror, topRated, kDrama] = await Promise.all([
                     fetchTMDB(endpoints.movies, `${kidsParams}&sort_by=primary_release_date.desc`),
                     fetchTMDB(endpoints.series, kidsParams),
                     fetchTMDB("/discover/tv", `with_original_language=ar&sort_by=popularity.desc`), // Broad Arabic Series
                     fetchTMDB(endpoints.anime, "with_genres=16&with_original_language=ja"),
                     fetchTMDB("/discover/movie", "with_genres=28&sort_by=popularity.desc"), // Action
                     fetchTMDB("/discover/movie", "with_genres=27&sort_by=popularity.desc"), // Horror
+                    fetchTMDB(endpoints.topRated, kidsParams),
                     fetchTMDB("/discover/tv", "with_original_language=ko&sort_by=popularity.desc") // K-Drama
                 ]);
                 
@@ -59,9 +62,10 @@ export default function Home() {
                     latest: filterSafeContent(latest.results), 
                     series: filterSafeContent(series.results), 
                     arabicSeries: filterSafeContent(arabicSeries.results),
-                    kids: filterSafeContent(kids.results),
+                    anime: filterSafeContent(anime.results),
                     action: filterSafeContent(action.results),
                     horror: filterSafeContent(horror.results),
+                    topRated: filterSafeContent(topRated.results),
                     kDrama: filterSafeContent(kDrama.results)
                 }));
             } catch (err) {
@@ -82,6 +86,9 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#020202] pb-20 overflow-x-hidden selection:bg-primary-600 selection:text-white">
       <Navbar />
+      <div className="pt-24 px-4 overflow-hidden">
+        <AdManager />
+      </div>
       
       {featured && <Hero movie={featured} />}
 
@@ -155,11 +162,19 @@ export default function Home() {
             />
         )}
 
-        {/* K-DRAMA */}
-        {data?.kDrama && (
+        {/* TOP RATED */}
+        {data?.topRated && (
             <MovieRow 
-                title="Korean Dramas | مسلسلات كورية" 
-                movies={data.kDrama} 
+                title="Cinematic Masterpieces | الأعلى تقييماً" 
+                movies={data.topRated} 
+            />
+        )}
+
+        {/* ANIME */}
+        {data?.anime && (
+             <MovieRow 
+                title={currentProfile.isKids ? "Best for Kids" : "Anime Protocol | انمي"} 
+                movies={data.anime} 
             />
         )}
 
@@ -187,11 +202,11 @@ export default function Home() {
             />
         )}
 
-        {/* ANIME / KIDS */}
-        {data?.kids && (
-             <MovieRow 
-                title={currentProfile.isKids ? "Best for Kids" : "Popular Anime"} 
-                movies={data.kids} 
+        {/* K-DRAMA */}
+        {data?.kDrama && (
+            <MovieRow 
+                title="Korean Dramas | مسلسلات كورية" 
+                movies={data.kDrama} 
             />
         )}
         

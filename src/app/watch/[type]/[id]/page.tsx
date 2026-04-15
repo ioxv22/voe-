@@ -32,16 +32,19 @@ class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: bo
   }
 }
 
+import AdManager from "@/components/AdManager";
+
 function WatchContent({ params }: { params: any }) {
   const { user, isPremium } = useAuth();
   const { saveProgress } = useContinueWatching();
   const [data, setData] = useState<{item: any, similar: any} | null>(null);
-  const [server, setServer] = useState("nebula");
+  const [server, setServer] = useState("vidsrc");
   const [season, setSeason] = useState(1);
   const [episode, setEpisode] = useState(1);
   const [episodes, setEpisodes] = useState<any[]>([]);
   const [paramsData, setParamsData] = useState<any>(null);
   const [watchedEpisodes, setWatchedEpisodes] = useState<string[]>([]);
+  const [playerKey, setPlayerKey] = useState(0); // To force reload
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
   const router = useRouter();
 
@@ -108,8 +111,25 @@ function WatchContent({ params }: { params: any }) {
       <div className="pt-28 px-4 lg:px-12 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
           <div className="lg:col-span-3 space-y-10">
-            <div className="relative aspect-video w-full rounded-[40px] overflow-hidden bg-black border border-white/5 shadow-2xl">
-                <iframe src={playerUrl} className="w-full h-full" allowFullScreen frameBorder="0" />
+            <AdManager />
+            <div className="relative group aspect-video w-full rounded-[40px] overflow-hidden bg-black border border-white/5 shadow-2xl">
+                <iframe 
+                    key={playerKey}
+                    src={playerUrl} 
+                    className="w-full h-full" 
+                    allowFullScreen 
+                    frameBorder="0" 
+                />
+                
+                {/* Custom Overlay for help */}
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                        onClick={() => setPlayerKey(k => k + 1)}
+                        className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black uppercase px-4 py-2 rounded-full border border-white/10"
+                    >
+                        🔄 RELOAD_IFRAME
+                    </button>
+                </div>
             </div>
 
             <div className="flex flex-col lg:flex-row justify-between items-start gap-8 bg-white/[0.02] p-10 rounded-[40px] border border-white/5">
@@ -139,6 +159,7 @@ function WatchContent({ params }: { params: any }) {
                 </button>
               </div>
             </div>
+            
             {similar?.results?.length > 0 && <MovieRow title="More Like This" movies={similar.results} />}
           </div>
 
