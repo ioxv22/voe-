@@ -36,7 +36,7 @@ function WatchContent({ params }: { params: any }) {
   const { user, isPremium } = useAuth();
   const { saveProgress } = useContinueWatching();
   const [data, setData] = useState<{item: any, similar: any} | null>(null);
-  const [server, setServer] = useState("vidsrc");
+  const [server, setServer] = useState("nebula");
   const [season, setSeason] = useState(1);
   const [episode, setEpisode] = useState(1);
   const [episodes, setEpisodes] = useState<any[]>([]);

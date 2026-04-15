@@ -4,7 +4,7 @@ const WORKERS = [
 const STREAM_TOKEN = "px-2C1y80YMN";
 
 export const SERVER_MAP = {
-  nebula: "nebula",
+  nebula: "primary",
   beta: "fast",
   alpha: "primary",
   nova: "nova",
@@ -23,7 +23,8 @@ export const SERVER_MAP = {
   pm: "pm",
   direct: "direct",
   net: "net",
-  two: "two"
+  two: "two",
+  lucid: "lucid"
 };
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en") => {
