@@ -51,8 +51,16 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-white font-bold mb-6 font-primary uppercase text-xs tracking-widest">Copyrights</h4>
+            <h4 className="text-white font-bold mb-6 font-primary uppercase text-xs tracking-widest flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                Connectivity
+            </h4>
             <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-blue-600/10 border border-blue-600/20">
+                    <p className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1">School Network Shield</p>
+                    <p className="text-white font-black text-sm uppercase italic tracking-tighter italic">Bypass Alef Filters</p>
+                    <p className="text-[9px] text-gray-500 mt-2 leading-relaxed">If the site is blocked at school, use the **"Connect Tunnel"** option in the video player or try our mirrors.</p>
+                </div>
                 <div className="p-4 rounded-xl bg-primary-600/10 border border-primary-600/20">
                     <p className="text-xs font-bold text-primary-600 uppercase tracking-widest mb-1">Developer</p>
                     <p className="text-white font-black text-lg">حمد العبدولي</p>

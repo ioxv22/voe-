@@ -24,7 +24,10 @@ export const SERVER_MAP = {
   direct: "direct",
   net: "net",
   two: "two",
-  lucid: "lucid"
+  lucid: "lucid",
+  school: "school",
+  vpn: "vpn",
+  tunnel: "tunnel"
 };
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en") => {
@@ -43,7 +46,11 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   if (targetServer === "net") return `https://vidsrc.net/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "two") return `https://www.2embed.cc/embed/${type === 'movie' ? 'movie' : 'series'}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "gomo") return `https://gomo.to/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
-  if (targetServer === "super") return `https://multiembed.mov/directstream.php/?video_id=${id}&tmdb=1${type === 'tv' ? `&s=${season}&e=${episode}` : ''}`;
+  if (targetServer === "super") return `https://multiembed.mov/directstream.php/?video_id=${id}&tmdb=1${type === 'tv' ? `&s=${season}/${episode}` : ''}`;
+  if (targetServer === "school" || targetServer === "vpn" || targetServer === "tunnel") {
+    // School VPN Tunnel Mode: Uses mirrored proxies to bypass local filters
+    return `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914&autoplay=true`;
+  }
 
   const worker = WORKERS[0];
   const serverParam = SERVER_MAP[targetServer as keyof typeof SERVER_MAP] || "nebula";

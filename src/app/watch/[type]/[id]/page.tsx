@@ -163,10 +163,20 @@ function WatchContent({ params }: { params: any }) {
 
           <div className="space-y-10">
             <PremiumPromo />
+            <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5 bg-gradient-to-br from-blue-600/10 to-purple-600/10 shadow-xl shadow-blue-600/5">
+                <h3 className="text-xs font-black uppercase tracking-widest text-blue-500 mb-4 animate-pulse">⚡ SCHOOL_VPN_BYPASS</h3>
+                <button 
+                  onClick={() => setServer("school")} 
+                  className={`w-full p-6 rounded-3xl text-[12px] font-black uppercase transition border shadow-lg ${server === "school" ? 'bg-blue-600 border-blue-500 text-white shadow-blue-500/20' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-blue-600/20'}`}
+                >
+                  🚀 Connect Tunnel (Alef)
+                </button>
+            </div>
+
             <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5">
               <h3 className="text-xs font-black uppercase tracking-widest text-primary-500 mb-6">PROTOCOLS_ENG</h3>
               <div className="grid grid-cols-2 gap-3">
-                {Object.keys(SERVER_MAP).map(srv => (
+                {Object.keys(SERVER_MAP).filter(s => !["school", "vpn", "tunnel"].includes(s)).map(srv => (
                     <button key={srv} onClick={() => setServer(srv)} className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === srv ? 'bg-red-600 border-red-500 text-white' : 'bg-white/5 border-white/5 text-gray-500 hover:text-white'}`}>
                         {srv}
                     </button>
