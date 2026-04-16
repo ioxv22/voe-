@@ -47,8 +47,8 @@ export default function AIChat() {
         // 2. Ask AI
         const response = await askVOZAI(input, fileUrls);
         setMessages(prev => [...prev, { role: "assistant", content: response }]);
-    } catch (err) {
-        setMessages(prev => [...prev, { role: "assistant", content: "⚠️ Signal lost. The neural engine is currently unreachable." }]);
+    } catch (err: any) {
+        setMessages(prev => [...prev, { role: "assistant", content: `⚠️ Signal lost: ${err.message || 'The neural engine is currently unreachable.'}` }]);
     } finally {
         setIsLoading(false);
     }

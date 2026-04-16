@@ -7,11 +7,8 @@ export async function POST(request: Request) {
     try {
         const { text, fileUrls, type } = await request.json();
 
-        if (type === 'upload') {
-            // Forwarding upload is tricky with raw files, 
-            // but the user's error was in the text chat (askVOZAI).
-            return NextResponse.json({ error: "Use client-side upload or separate proxy" }, { status: 400 });
-        }
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
 
         const body = new URLSearchParams();
         body.append('text', text);
@@ -23,19 +20,24 @@ export async function POST(request: Request) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': '*/*'
             },
-            body: body.toString()
-        });
+            body: body.toString(),
+            signal: controller.signal
+        }).finally(() => clearTimeout(timeoutId));
 
         if (!response.ok) {
-            return NextResponse.json({ error: "AI Provider Error" }, { status: response.status });
+            const errText = await response.text();
+            console.error("AI Provider Error:", response.status, errText);
+            return NextResponse.json({ error: "AI Engine Offline" }, { status: response.status });
         }
 
         const result = await response.text();
         return new NextResponse(result, { status: 200 });
 
     } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        console.error("Proxy Logic Error:", err.message);
+        return NextResponse.json({ error: err.name === 'AbortError' ? "Neural timeout" : err.message }, { status: 500 });
     }
 }
