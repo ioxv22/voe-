@@ -18,24 +18,25 @@ export async function askVOZAI(text: string, fileUrls: string[] = []): Promise<s
     
     const fullText = `${systemPrompt}\n\nUser Message: ${text}`;
     
-    const body = new URLSearchParams();
-    body.append('text', fullText);
-    
-    if (fileUrls.length > 0) {
-        body.append('link', fileUrls.join(','));
+    try {
+        const response = await fetch('/api/ai', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: fullText,
+                fileUrls: fileUrls
+            })
+        });
+
+        if (!response.ok) throw new Error('AI Engine Offline');
+        const result = await response.text();
+        
+        // Clean up response
+        return result.replace(/^(VOZ AI:|ChatGPT:)/i, '').trim();
+    } catch (err) {
+        console.error("AI Error:", err);
+        throw err;
     }
-
-    const response = await fetch('https://sii3.top/api/OCR.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: body.toString()
-    });
-
-    if (!response.ok) throw new Error('AI Engine Offline');
-    const result = await response.text();
-    
-    // Clean up response if it starts with unnecessary artifacts
-    return result.replace(/^(VOZ AI:|ChatGPT:)/i, '').trim();
 }
