@@ -18,6 +18,7 @@ export default function AIChat() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [conversationId, setConversationId] = useState<string | undefined>(undefined);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -36,17 +37,18 @@ export default function AIChat() {
     setInput("");
     
     try {
-        // 1. Upload files if any
-        let fileUrls: string[] = [];
-        for (const file of pendingFiles) {
-            const url = await uploadFileToAI(file);
-            fileUrls.push(url);
+        // 1. Upload files if any (optional for this provider)
+        if (pendingFiles.length > 0) {
+            for (const file of pendingFiles) {
+                await uploadFileToAI(file);
+            }
+            setPendingFiles([]);
         }
-        setPendingFiles([]);
 
         // 2. Ask AI
-        const response = await askVOZAI(input, fileUrls);
-        setMessages(prev => [...prev, { role: "assistant", content: response }]);
+        const data = await askVOZAI(input, conversationId);
+        setMessages(prev => [...prev, { role: "assistant", content: data.response }]);
+        if (data.conversationId) setConversationId(data.conversationId);
     } catch (err: any) {
         setMessages(prev => [...prev, { role: "assistant", content: `⚠️ Signal lost: ${err.message || 'The neural engine is currently unreachable.'}` }]);
     } finally {

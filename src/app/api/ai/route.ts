@@ -5,34 +5,30 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
     try {
-        const { text, fileUrls } = await request.json();
+        const { text, conversationId, model = "1" } = await request.json();
 
-        // New provider: vibe-api.me (wrapped with AllOrigins bypass)
-        const targetUrl = `http://vibe-api.me/api_groq.php?text=${encodeURIComponent(text)}`;
-        const apiUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 20000);
-
-        const response = await fetch(apiUrl, {
-            method: 'GET',
+        const response = await fetch('https://zecora0.serv00.net/deepseek.php', {
+            method: 'POST',
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'text/plain, */*',
-                'Cache-Control': 'no-cache'
+                'Content-Type': 'application/json',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             },
-            signal: controller.signal
-        }).finally(() => clearTimeout(timeoutId));
+            body: JSON.stringify({
+                model: String(model),
+                message: text,
+                conversation_id: conversationId || undefined
+            })
+        });
 
         if (!response.ok) {
-            return NextResponse.json({ error: "AI Engine Busy" }, { status: response.status });
+            return NextResponse.json({ error: "AI Engine Offline" }, { status: response.status });
         }
 
-        const result = await response.text();
-        return new NextResponse(result, { status: 200 });
+        const data = await response.json();
+        return NextResponse.json(data);
 
     } catch (err: any) {
-        console.error("Proxy Logic Error:", err.message);
-        return NextResponse.json({ error: err.name === 'AbortError' ? "Neural timeout" : err.message }, { status: 500 });
+        console.error("DeepSeek Proxy Error:", err.message);
+        return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }

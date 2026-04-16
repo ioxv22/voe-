@@ -13,10 +13,11 @@ export async function uploadFileToAI(file: File): Promise<string> {
     return url.trim();
 }
 
-export async function askVOZAI(text: string, fileUrls: string[] = []): Promise<string> {
-    const systemPrompt = `You are VOZ AI powered by GPT-5.2. Respond in the user's language. If the user sends only text, respond normally. If files are provided, analyze them.`;
+export async function askVOZAI(text: string, conversationId?: string): Promise<{ response: string, conversationId: string }> {
+    const systemPrompt = `You are VOZ AI powered by GPT-5.2. Respond in the user's language. Focus on movies and entertainment.`;
     
-    const fullText = `${systemPrompt}\n\nUser: ${text}`;
+    // On first message, prepend system prompt
+    const fullText = !conversationId ? `${systemPrompt}\n\nUser: ${text}` : text;
     
     try {
         const response = await fetch('/api/ai', {
@@ -26,15 +27,19 @@ export async function askVOZAI(text: string, fileUrls: string[] = []): Promise<s
             },
             body: JSON.stringify({
                 text: fullText,
-                fileUrls: fileUrls
+                conversationId: conversationId
             })
         });
 
         if (!response.ok) throw new Error('AI Engine Offline');
-        const result = await response.text();
+        const data = await response.json();
         
-        // Clean up response
-        return result.replace(/^(VOZ AI:|ChatGPT:)/i, '').trim();
+        if (!data.success) throw new Error(data.response || 'AI Error');
+
+        return {
+            response: data.response,
+            conversationId: data.conversation_id
+        };
     } catch (err) {
         console.error("AI Error:", err);
         throw err;
