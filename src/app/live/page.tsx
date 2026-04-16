@@ -7,7 +7,9 @@ import { Radio, Play, Tv, Film, Search, ChevronRight, Info, Activity } from "luc
 import { motion, AnimatePresence } from "framer-motion";
 
 const STREAMS = {
-  unified: "http://hlaamart.site:80/playlist/hamad201011@2727/hamad201011@2727/m3u?output=hls&key=live,movie,created_live,radio_streams,series"
+  unified: "http://hlaamart.site:80/playlist/hamad201011@2727/hamad201011@2727/m3u?output=hls&key=live,movie,created_live,radio_streams,series",
+  sports_mirror: "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u", // High stability Arabic mirror
+  pro_sports: "https://v4.v-it.org/playlist/m3u" // Newer mirror for V-IT protocol
 };
 
 const CATEGORIES = [
@@ -27,6 +29,7 @@ interface Channel {
 
 export default function LivePage() {
   const [activeTab, setActiveTab] = useState("live");
+  const [currentSource, setCurrentSource] = useState("unified");
   const [channels, setChannels] = useState<Channel[]>([]);
   const [filteredChannels, setFilteredChannels] = useState<Channel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +63,8 @@ export default function LivePage() {
     async function fetchM3U() {
       setLoading(true);
       try {
-        const response = await fetch(`/api/iptv?url=${encodeURIComponent(STREAMS.unified)}`);
+        const streamUrl = (STREAMS as any)[currentSource] || STREAMS.unified;
+        const response = await fetch(`/api/iptv?url=${encodeURIComponent(streamUrl)}`);
         if (!response.ok) {
             console.error("IPTV Proxy failed", response.status);
             setLoading(false);
@@ -140,7 +144,7 @@ export default function LivePage() {
       }
     }
     fetchM3U();
-  }, [activeTab]);
+  }, [activeTab, currentSource]);
 
   useEffect(() => {
     if (!selectedChannel) return;
@@ -299,6 +303,19 @@ export default function LivePage() {
                         className={`flex-1 lg:flex-none px-6 py-3 rounded-xl text-xs font-black uppercase transition flex items-center justify-center gap-2 ${activeTab === cat.id ? `${cat.color} text-white shadow-xl` : 'text-gray-500 hover:text-white'}`}
                     >
                         {cat.icon} {cat.name}
+                    </button>
+                ))}
+            </div>
+
+            <div className="flex bg-white/5 p-1 rounded-xl border border-white/5 items-center gap-1">
+                <span className="text-[9px] font-black text-gray-600 uppercase px-2">Provider:</span>
+                {Object.keys(STREAMS).map(srv => (
+                    <button 
+                        key={srv}
+                        onClick={() => setCurrentSource(srv)}
+                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition ${currentSource === srv ? 'bg-primary-600 text-white' : 'text-gray-500 hover:text-white'}`}
+                    >
+                        {srv}
                     </button>
                 ))}
             </div>
