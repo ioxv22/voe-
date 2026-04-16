@@ -95,8 +95,6 @@ export default function Navbar() {
           <Link href="/"><li className="cursor-pointer transition hover:text-foreground whitespace-nowrap">Home</li></Link>
           <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground whitespace-nowrap">TV Shows</li></Link>
           <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground whitespace-nowrap">Movies</li></Link>
-          <Link href="/live"><li className="cursor-pointer transition hover:text-foreground flex items-center gap-1.5 whitespace-nowrap"><Radio size={14} className="text-red-500 animate-pulse" /> Live TV</li></Link>
-          <Link href="/matches"><li className="cursor-pointer transition hover:text-foreground flex items-center gap-1.5 whitespace-nowrap"><Trophy size={14} className="text-green-500" /> Matches</li></Link>
           <Link href="/rooms"><li className="cursor-pointer transition hover:text-primary-500 font-bold flex items-center gap-1.5 whitespace-nowrap"><Radio size={14} className="text-primary-500 animate-pulse" /> Party</li></Link>
           <li onClick={() => setIsRequestOpen(true)} className="cursor-pointer transition hover:text-foreground group flex items-center gap-1.5 whitespace-nowrap">
              <span className="relative">

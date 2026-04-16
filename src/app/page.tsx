@@ -90,20 +90,6 @@ export default function Home() {
       <div className="relative z-30 -mt-16 lg:-mt-24 space-y-16 px-4 lg:px-12">
         {/* QUICK ACCESS BUTTONS (COMPACT) */}
         <div className="flex flex-wrap items-center gap-3 justify-center lg:justify-start">
-            <Link href="/live">
-                <div className="group flex items-center gap-2 bg-red-600 px-4 py-2.5 rounded-full shadow-lg hover:bg-red-500 transition active:scale-95">
-                    <Radio size={14} className="animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white">Live TV</span>
-                </div>
-            </Link>
-
-            <Link href="/matches">
-                <div className="group flex items-center gap-2 bg-green-600 px-4 py-2.5 rounded-full shadow-lg hover:bg-green-500 transition active:scale-95">
-                    <Activity size={14} className="animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white">المباريات 🔥</span>
-                </div>
-            </Link>
-
             <Link href="/search/ai">
                 <div className="group flex items-center gap-2 bg-primary-600 px-4 py-2.5 rounded-full shadow-lg hover:bg-primary-500 transition active:scale-95">
                     <Sparkles size={14} className="animate-spin" />
@@ -112,7 +98,6 @@ export default function Home() {
             </Link>
         </div>
 
-        <MatchSchedule />
         
         {/* MY LIST - PERSISTENT COLLECTION */}
         {currentProfile.myList && currentProfile.myList.length > 0 && (
