@@ -5,32 +5,24 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
     try {
-        const { text, fileUrls, type } = await request.json();
+        const { text, fileUrls } = await request.json();
+
+        // New provider: vibe-api.me
+        const apiUrl = `http://vibe-api.me/api_groq.php?text=${encodeURIComponent(text)}`;
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
+        const timeoutId = setTimeout(() => controller.abort(), 20000);
 
-        const body = new URLSearchParams();
-        body.append('text', text);
-        if (fileUrls && fileUrls.length > 0) {
-            body.append('link', fileUrls.join(','));
-        }
-
-        const response = await fetch('https://sii3.top/api/OCR.php', {
-            method: 'POST',
+        const response = await fetch(apiUrl, {
+            method: 'GET',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': '*/*'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             },
-            body: body.toString(),
             signal: controller.signal
         }).finally(() => clearTimeout(timeoutId));
 
         if (!response.ok) {
-            const errText = await response.text();
-            console.error("AI Provider Error:", response.status, errText);
-            return NextResponse.json({ error: "AI Engine Offline" }, { status: response.status });
+            return NextResponse.json({ error: "AI Engine Busy" }, { status: response.status });
         }
 
         const result = await response.text();
