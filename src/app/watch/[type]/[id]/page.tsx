@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useContinueWatching } from "@/hooks/useContinueWatching";
 import { db } from "@/lib/firebase";
 import PremiumPromo from "@/components/PremiumPromo";
+import DownloadModal from "@/components/DownloadModal";
 
 // Bulletproof Error Boundary
 class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: boolean}> {
@@ -44,6 +45,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   const [episodes, setEpisodes] = useState<any[]>([]);
   const [watchedEpisodes, setWatchedEpisodes] = useState<string[]>([]);
   const [playerKey, setPlayerKey] = useState(0); // To force reload
+  const [isDownloadOpen, setIsDownloadOpen] = useState(false);
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
   const router = useRouter();
 
@@ -141,10 +143,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                     {isInWatchlist(item.id) ? "✓ LISTED" : "+ LIST"}
                 </button>
                 <button 
-                    onClick={() => {
-                        const dlUrl = `https://vidlink.pro/download/${type}/${item.id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
-                        window.open(dlUrl, '_blank');
-                    }}
+                    onClick={() => setIsDownloadOpen(true)}
                     className="h-16 px-10 rounded-3xl bg-white/5 border border-white/10 font-black uppercase text-xs flex items-center gap-2 hover:bg-white/10 transition group"
                 >
                     <Download size={16} className="text-primary-500 group-hover:scale-125 transition" />
@@ -226,6 +225,15 @@ function WatchContent({ type, id }: { type: string, id: string }) {
           </div>
         </div>
       </div>
+      <DownloadModal 
+        isOpen={isDownloadOpen} 
+        onClose={() => setIsDownloadOpen(false)} 
+        type={type} 
+        id={item.id} 
+        season={season} 
+        episode={episode} 
+        title={item.title || item.name} 
+      />
       <Footer />
     </main>
   );
