@@ -27,7 +27,10 @@ export const SERVER_MAP = {
   lucid: "lucid",
   school: "school",
   vpn: "vpn",
-  tunnel: "tunnel"
+  tunnel: "tunnel",
+  arabic1: "al-primary",
+  arabic2: "al-mirror",
+  akwam: "akwam"
 };
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en") => {
@@ -48,9 +51,13 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   if (targetServer === "gomo") return `https://gomo.to/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "super") return `https://multiembed.mov/directstream.php/?video_id=${id}&tmdb=1${type === 'tv' ? `&s=${season}&e=${episode}` : ''}`;
   if (targetServer === "school" || targetServer === "vpn" || targetServer === "tunnel") {
-    // School VPN Tunnel Mode: Uses mirrored proxies to bypass local filters
     return `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914&autoplay=true`;
   }
+
+  // Arabic Content Specialists
+  if (targetServer === "arabic1") return `https://vidsrc.stream/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
+  if (targetServer === "arabic2") return `https://vidsrc.icu/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
+  if (targetServer === "akwam") return `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
 
   const worker = WORKERS[0];
   const serverParam = SERVER_MAP[targetServer as keyof typeof SERVER_MAP] || "nebula";
