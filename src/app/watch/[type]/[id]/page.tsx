@@ -8,6 +8,7 @@ import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
 import { useRouter } from "next/navigation";
 import { doc, getDoc, setDoc, onSnapshot, collection, serverTimestamp, addDoc } from "firebase/firestore";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import MovieReviews from "@/components/MovieReviews";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
 import { useAuth } from "@/context/AuthContext";
 import { useContinueWatching } from "@/hooks/useContinueWatching";
@@ -153,6 +154,10 @@ function WatchContent({ type, id }: { type: string, id: string }) {
             </div>
             
             {similar?.results?.length > 0 && <MovieRow title="More Like This" movies={similar.results} />}
+            
+            <div className="mt-20">
+                <MovieReviews movieId={id} type={type} />
+            </div>
           </div>
 
           <div className="space-y-10">

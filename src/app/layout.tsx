@@ -68,6 +68,7 @@ import VisitorTracker from "@/components/VisitorTracker";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
 import IOSInstallPrompt from "@/components/IOSInstallPrompt";
 import Navbar from "@/components/Navbar";
+import AIChat from "@/components/AIChat";
 
 export default function RootLayout({
   children,
@@ -92,6 +93,7 @@ export default function RootLayout({
               <Navbar />
               <MaintenanceGuard>
                 <IOSInstallPrompt />
+                <AIChat />
                 {children}
               </MaintenanceGuard>
             </ProfileProvider>

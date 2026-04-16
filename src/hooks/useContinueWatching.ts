@@ -12,6 +12,8 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
+import { checkAchievements } from "@/lib/achievements";
+import { getDoc } from "firebase/firestore";
 
 export function useContinueWatching() {
   const { user } = useAuth();
@@ -73,6 +75,19 @@ export function useContinueWatching() {
       if (mediaType === 'tv' && season && episode) {
           const epRef = doc(db, "users", user.uid, "history", String(movie.id), "watched_episodes", `s${season}e${episode}`);
           await setDoc(epRef, { watched: true, timestamp: new Date().toISOString() });
+      }
+      
+      // Achievement Check
+      const userSnap = await getDoc(doc(db, "users", user.uid));
+      if (userSnap.exists()) {
+          const currentAchievements = userSnap.data().achievements || [];
+          const unlocked = await checkAchievements(user.uid, [...items, movie], currentAchievements);
+          if (unlocked.length > 0) {
+              unlocked.forEach(a => {
+                  // Emit a global event or just alert for now
+                  console.log(`Achievement Unlocked: ${a.title}`);
+              });
+          }
       }
     } catch (e) {
       console.error("Error saving progress", e);
