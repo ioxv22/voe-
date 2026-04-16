@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Suspense, Component, useState, useEffect, use } from "react";
+import { Download } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import MovieRow from "@/components/MovieRow";
 import Footer from "@/components/Footer";
@@ -138,6 +139,16 @@ function WatchContent({ type, id }: { type: string, id: string }) {
               <div className="flex gap-4">
                 <button onClick={() => isInWatchlist(item.id) ? removeFromWatchlist(item.id) : addToWatchlist(item)} className="h-16 px-10 rounded-3xl bg-white/5 border border-white/10 font-black uppercase text-xs">
                     {isInWatchlist(item.id) ? "✓ LISTED" : "+ LIST"}
+                </button>
+                <button 
+                    onClick={() => {
+                        const dlUrl = `https://vidlink.pro/download/${type}/${item.id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
+                        window.open(dlUrl, '_blank');
+                    }}
+                    className="h-16 px-10 rounded-3xl bg-white/5 border border-white/10 font-black uppercase text-xs flex items-center gap-2 hover:bg-white/10 transition group"
+                >
+                    <Download size={16} className="text-primary-500 group-hover:scale-125 transition" />
+                    DOWNLOAD
                 </button>
                 <button 
                     onClick={() => {
