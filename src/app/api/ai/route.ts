@@ -24,8 +24,13 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "AI Engine Offline" }, { status: response.status });
         }
 
-        const data = await response.json();
-        return NextResponse.json(data);
+        const result = await response.text();
+        try {
+            const data = JSON.parse(result);
+            return NextResponse.json(data);
+        } catch (e) {
+            return new NextResponse(result, { status: 200 });
+        }
 
     } catch (err: any) {
         console.error("DeepSeek Proxy Error:", err.message);

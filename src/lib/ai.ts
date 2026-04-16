@@ -34,11 +34,29 @@ export async function askVOZAI(text: string, conversationId?: string): Promise<{
         if (!response.ok) throw new Error('AI Engine Offline');
         const data = await response.json();
         
-        if (!data.success) throw new Error(data.response || 'AI Error');
+        // Ensure we extract only the response text
+        let aiResponse = "";
+        let newConvId = conversationId || "";
+
+        if (data.response) {
+            aiResponse = data.response;
+        } else if (data.html) {
+            // strip html tags if any
+            aiResponse = data.html.replace(/<[^>]*>/g, '');
+        } else if (typeof data === 'string') {
+            try {
+                const parsed = JSON.parse(data);
+                aiResponse = parsed.response || "";
+            } catch (e) {
+                aiResponse = data;
+            }
+        }
+
+        if (data.conversation_id) newConvId = data.conversation_id;
 
         return {
-            response: data.response,
-            conversationId: data.conversation_id
+            response: aiResponse.trim(),
+            conversationId: newConvId
         };
     } catch (err) {
         console.error("AI Error:", err);
