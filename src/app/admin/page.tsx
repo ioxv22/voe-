@@ -15,6 +15,7 @@ export default function AdminDashboard() {
   const [activeRooms, setActiveRooms] = useState<any[]>([]);
   const [requestList, setRequestList] = useState<any[]>([]);
   const [matchList, setMatchList] = useState<any[]>([]);
+  const [vipRequests, setVipRequests] = useState<any[]>([]);
   const [globalConfig, setGlobalConfig] = useState({ maintenance: false, alertBanner: "" });
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -88,10 +89,12 @@ export default function AdminDashboard() {
         const requests = requestsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setRequestList(requests);
 
+        const vipsSnap = await getDocs(collection(db, "vip_requests"));
+        setVipRequests(vipsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
         const matchesSnap = await getDocs(collection(db, "matches"));
         setMatchList(matchesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        const requestsCount = requestsSnap.size;
-        
+
         setStats({ users: usersSnap.size, views: totalVisits, likes: realViews });
 
         // Fetch Global Config
@@ -198,6 +201,23 @@ export default function AdminDashboard() {
       } finally {
           setIsLoading(false);
       }
+  };
+
+  const handleApproveVIP = async (userId: string) => {
+    try {
+        await updateDoc(doc(db, "users", userId), { isPremium: true, isVIP: true });
+        await deleteDoc(doc(db, "vip_requests", userId));
+        alert("User Approved & Upgraded to VIP!");
+        fetchAllData();
+    } catch (e) {
+        alert("Approval failed.");
+    }
+  };
+
+  const handleRejectVIP = async (userId: string) => {
+    await deleteDoc(doc(db, "vip_requests", userId));
+    alert("Request Rejected.");
+    fetchAllData();
   };
 
   const handleDeleteMatch = async (id: string) => {
@@ -377,6 +397,51 @@ export default function AdminDashboard() {
                                     </tr>
                                 ))}
                                 {requestList.length === 0 && <tr><td colSpan={3} className="p-10 text-center text-gray-600">No requests in queue.</td></tr>}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {/* VIP Requests Approval Center */}
+                <div className="rounded-3xl border border-white/5 bg-white/[0.02] p-10">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-3 text-yellow-500">
+                            <Crown size={24} />
+                            <h3 className="text-2xl font-black text-white uppercase tracking-tighter">VIP Approval Center</h3>
+                        </div>
+                        <span className="bg-yellow-500/10 text-yellow-500 px-3 py-1 rounded-full text-[10px] font-black uppercase">{vipRequests.length} Pending</span>
+                    </div>
+                    <div className="overflow-x-auto h-[300px] custom-scrollbar">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-white/5 text-gray-400 uppercase text-[10px] font-bold tracking-[0.3em]">
+                                <tr><th className="p-4">Applicant</th><th className="p-4">Shares</th><th className="p-4 text-right">Action</th></tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {vipRequests.map((r: any) => (
+                                    <tr key={r.id}>
+                                        <td className="p-4">
+                                            <div className="font-bold text-white line-clamp-1">{r.userName}</div>
+                                            <div className="text-[10px] text-gray-500">{r.userEmail}</div>
+                                        </td>
+                                        <td className="p-4">
+                                            <span className="bg-green-500/10 text-green-500 px-3 py-1 rounded-full text-[10px] font-black">
+                                                {r.shareCount}+ Shared
+                                            </span>
+                                        </td>
+                                        <td className="p-4 text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <button 
+                                                    onClick={() => handleApproveVIP(r.userId)}
+                                                    className="px-4 py-2 bg-primary-600 text-black rounded-lg text-[10px] font-black uppercase hover:bg-primary-500 transition"
+                                                >
+                                                    Approve
+                                                </button>
+                                                <button onClick={() => handleRejectVIP(r.userId)} className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg">Dismiss</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {vipRequests.length === 0 && <tr><td colSpan={3} className="p-10 text-center text-gray-600 italic">No VIP requests at this time.</td></tr>}
                             </tbody>
                         </table>
                     </div>

@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function ViralShare() {
   const { t, isRTL } = useLanguage();
-  const { activateVIP, isPremium } = useAuth();
+  const { requestVIP, isPremium } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
 
@@ -28,11 +28,11 @@ export default function ViralShare() {
       ? "شوف أفضل موقع أفلام ومسلسلات مجاناً وبدون إعلانات مزعجة! 🚀" 
       : "Check out the best ad-free movie streaming site! 🚀";
     
-    // Give VIP immediately upon click as requested (Instant Reward)
-    await activateVIP();
+    // Send request instead of instant activation
+    await requestVIP();
     
     // Notify user
-    alert(isRTL ? "تم تفعيل الـ VIP بنجاح! سيتم تنظيف الموقع من الإعلانات الآن..." : "VIP Activated! Cleaning up ads now...");
+    alert(isRTL ? "تم إرسال طلب الـ VIP! سيقوم المدير بالمراجعة والتفعيل قريباً." : "VIP Request Sent! Admin will verify and activate soon.");
     
     if (navigator.share) {
       try {
@@ -44,13 +44,11 @@ export default function ViralShare() {
       window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
     }
     
-    // Force refresh after a small delay to flush all ad scripts from memory
+    // Force refresh after a small delay to show the "Pending" state or notify user
     setTimeout(() => {
-      window.location.reload();
+        setIsOpen(false);
+        setShowInvite(false);
     }, 1500);
-    
-    setIsOpen(false);
-    setShowInvite(false);
   };
 
   return (
