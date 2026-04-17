@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Share2, Users, Gift, X, Send, Ghost, Instagram } from "lucide-react";
+import { Share2, Users, Gift, X, Send, Ghost, Camera } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
@@ -147,7 +147,7 @@ export default function ViralShare() {
                   }}
                   className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] py-4 text-[10px] font-black uppercase text-white transition hover:scale-105 active:scale-95 shadow-lg shadow-purple-500/20"
                 >
-                  <Instagram size={16} /> Insta/TikTok
+                  <Camera size={16} /> Insta/TikTok
                 </button>
               </div>
             </div>
