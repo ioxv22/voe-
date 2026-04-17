@@ -87,8 +87,10 @@ export default function RootLayout({
     >
       <head>
           <link rel="apple-touch-icon" href="https://i.ibb.co/23Bkgcrx/image.png" />
-          {/* Global Ad Script */}
-          <script
+          {/* Monetag Global Tag */}
+          <Script
+            id="monetag-ad"
+            strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: `
                 (function(s){
