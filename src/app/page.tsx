@@ -16,6 +16,8 @@ import { useRouter } from "next/navigation";
 import MatchSchedule from "@/components/MatchSchedule";
 import Link from "next/link";
 import { Radio, Activity, Sparkles, Search } from "lucide-react";
+import SocialWelcome from "@/components/SocialWelcome";
+
 
 export default function Home() {
   const { user, loading: authLoading, signInWithGoogle, signInAsGuest } = useAuth();
@@ -89,7 +91,9 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#020202] pb-20 overflow-x-hidden selection:bg-primary-600 selection:text-white">
+      <SocialWelcome />
       <Navbar />
+
       
       {featured && <Hero movie={featured} />}
 
