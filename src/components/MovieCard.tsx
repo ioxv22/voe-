@@ -2,16 +2,19 @@
 
 import { motion } from "framer-motion";
 import { getImageUrl } from "@/lib/tmdb";
-import { Play, Heart } from "lucide-react";
+import { Play, Heart, Share2, TrendingUp } from "lucide-react";
 import { useProfile } from "@/context/ProfileContext";
+import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
 
 interface MovieCardProps {
   movie: any;
+  rank?: number;
 }
 
-export default function MovieCard({ movie }: MovieCardProps) {
+export default function MovieCard({ movie, rank }: MovieCardProps) {
   const { currentProfile, toggleMyList } = useProfile();
+  const { isRTL } = useLanguage();
   const type = movie.media_type || (movie.title ? "movie" : "tv");
   const posterPath = movie.poster_path || movie.backdrop_path;
   const imageUrl = posterPath ? getImageUrl(posterPath) : null;
@@ -22,6 +25,19 @@ export default function MovieCard({ movie }: MovieCardProps) {
       e.preventDefault();
       e.stopPropagation();
       toggleMyList(movie);
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = `${window.location.origin}/watch/${type}/${movie.id}`;
+    const text = `Watch ${movie.title || movie.name} on VOZ Stream! 🚀`;
+    
+    if (navigator.share) {
+      navigator.share({ title: movie.title || movie.name, text, url });
+    } else {
+      window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
+    }
   };
   
   return (
@@ -44,11 +60,18 @@ export default function MovieCard({ movie }: MovieCardProps) {
             </div>
         )}
 
+        {/* Top 10 Badge */}
+        {rank && rank <= 10 && (
+          <div className="absolute top-2 left-2 z-10 flex items-center gap-1 rounded-md bg-primary-600 px-2 py-1 text-[10px] font-black text-white shadow-lg shadow-primary-900/40">
+            <TrendingUp size={10} /> TOP {rank}
+          </div>
+        )}
+
         {/* Hover Info Overlay */}
         <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black via-black/40 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <div className="flex gap-2">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-white transition hover:bg-primary-700 shadow-lg">
-                  <Play fill="currentColor" size={16} />
+                  <Play fill="currentColor" size={16} className={isRTL ? "rotate-180" : ""} />
               </div>
               <button 
                   onClick={handleFavorite}
@@ -59,6 +82,12 @@ export default function MovieCard({ movie }: MovieCardProps) {
                   }`}
               >
                   <Heart fill={isFavorited ? "currentColor" : "none"} size={16} />
+              </button>
+              <button 
+                  onClick={handleShare}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/30 bg-black/40 text-white transition hover:border-white shadow-lg"
+              >
+                  <Share2 size={16} />
               </button>
           </div>
           <p className="mt-3 text-sm font-black text-white line-clamp-1 italic uppercase tracking-tighter">{movie.title || movie.name}</p>

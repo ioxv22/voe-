@@ -15,21 +15,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VOZ Stream - Premium Entertainment Protocol",
-  description: "Watch the latest movies, TV series, and anime in HD. VOZ Stream is a high-speed, ad-free discovery platform for global audiences.",
-  keywords: ["movies", "streaming", "anime", "TV series", "watch online", "HD streaming", "VOZ Stream"],
+  title: "VOZ Stream - Watch FREE Movies & TV Series in HD | No Ads Discovery",
+  description: "VOZ Stream is the #1 platform to watch latest movies, TV series, and anime in HD for free. Fast, secure, and ad-free experience for global audiences.",
+  keywords: ["watch free movies", "streaming site 2026", "free anime hd", "watch tv shows online", "VOZ Stream movies", "no ads streaming", "free netflix alternative"],
   authors: [{ name: "VOZ Team" }],
   openGraph: {
-    title: "VOZ Stream | The Future of Streaming",
-    description: "Experience ultra-fast streaming world-wide. No ads, just entertainment.",
-    url: "https://vozstream.vercel.app", // Updated to correct domain
+    title: "VOZ Stream | The Future of Free Streaming",
+    description: "Ultra-fast streaming world-wide. Watch your favorite content in HD without annoying ads.",
+    url: "https://vozstream.vercel.app",
     siteName: "VOZ Stream",
     images: [
       {
-        url: "https://i.ibb.co/23Bkgcrx/image.png", // Use the app icon or a better banner
+        url: "https://i.ibb.co/23Bkgcrx/image.png",
         width: 1200,
         height: 630,
-        alt: "VOZ Stream Preview",
+        alt: "VOZ Stream - Free HD Streaming",
       },
     ],
     locale: "en_US",
@@ -37,8 +37,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "VOZ Stream | Watch Movies & TV",
-    description: "The fastest streaming discovery platform on the web.",
+    title: "VOZ Stream | Watch FREE HD Movies",
+    description: "The fastest streaming discovery platform. No ads, just movies.",
     images: ["https://i.ibb.co/23Bkgcrx/image.png"],
   },
   manifest: "/manifest.json",
@@ -72,6 +72,7 @@ import Navbar from "@/components/Navbar";
 import AIChat from "@/components/AIChat";
 import VozMood from "@/components/VozMood";
 import VozPulse from "@/components/VozPulse";
+import ViralShare from "@/components/ViralShare";
 
 export default function RootLayout({
   children,
@@ -86,6 +87,18 @@ export default function RootLayout({
     >
       <head>
           <link rel="apple-touch-icon" href="https://i.ibb.co/23Bkgcrx/image.png" />
+          {/* Global Ad Script */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function(s){
+                  if(localStorage.getItem('isVIP') === 'true') return;
+                  s.dataset.zone='10887963';
+                  s.src='https://al5sm.com/tag.min.js';
+                })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
+              `,
+            }}
+          />
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
         <ThemeProvider>
@@ -100,6 +113,7 @@ export default function RootLayout({
                   <AIChat />
                   <VozMood />
                   <VozPulse />
+                  <ViralShare />
                   {children}
                 </MaintenanceGuard>
               </ProfileProvider>
