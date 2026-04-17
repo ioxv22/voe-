@@ -101,17 +101,39 @@ export default function RootLayout({
                   s.src='https://al5sm.com/tag.min.js';
                 })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
                 
-                // Ad Janitor: Cleanup if VIP is suddenly detected
+                // Ad Sanitizer & Redirect Guard (Global)
+                (function() {
+                  const originalOpen = window.open;
+                  window.open = function(url, name, specs) {
+                    const currentOrigin = window.location.origin;
+                    if (url && typeof url === 'string' && !url.includes(currentOrigin) && !url.includes('google') && !url.includes('firebase')) {
+                      console.log('Ad Redirect Filtered: Bouncing back to VOZ.');
+                      // Force suspicious ad-redirects back to our domain
+                      originalOpen(currentOrigin, '_blank');
+                      return null;
+                    }
+                    return originalOpen.apply(this, arguments);
+                  };
+                  
+                  window.addEventListener('blur', function() {
+                      setTimeout(() => {
+                          if (document.activeElement instanceof HTMLIFrameElement) {
+                              console.log('Iframe interaction detected');
+                          }
+                      }, 100);
+                  });
+                })();
+
+                // Ad Janitor: Cleanup for VIP users
                 setInterval(() => {
                   if(localStorage.getItem('voz_instant_vip') === 'true' || localStorage.getItem('isVIP') === 'true') {
                     const zones = ['10887963', '229810'];
-                    zones.forEach(function(z) {
-                      const el = document.querySelector('[data-zone="' + z + '"]');
-                      if(el) el.remove();
-                    });
                     // Remove propeller/monetag specific injected stuff if possible
                     var elements = document.querySelectorAll('iframe[src*="propeller"], div[id*="pro-"]');
                     for(var i=0; i<elements.length; i++) elements[i].remove();
+                    
+                    const adElements = document.querySelectorAll('ins, .ad-unit, [class*="ad-"]');
+                    adElements.forEach(ad => ad.remove());
                   }
                 }, 2000);
               `,
