@@ -113,18 +113,20 @@ export default function Navbar() {
           <Link href="/browse"><li className="cursor-pointer transition-colors hover:text-white">{t("movies")}</li></Link>
           
           <li className="relative group/cat">
-            <span className="cursor-pointer transition-colors hover:text-white flex items-center gap-1.5 font-medium">
+            <div className="cursor-pointer transition-colors hover:text-white flex items-center gap-1.5 font-medium py-2">
               {t("browse")}
-            </span>
+            </div>
             <div className={cn(
-              "absolute top-full left-0 mt-3 w-44 hidden group-hover/cat:block z-50 animate-in fade-in slide-in-from-top-2 duration-200",
+              "absolute top-full left-0 pt-2 w-48 hidden group-hover/cat:block z-50 animate-in fade-in slide-in-from-top-1 duration-200",
               isRTL && "left-auto right-0"
             )}>
               <div className="rounded-2xl border border-white/10 bg-black/95 backdrop-blur-3xl p-2 shadow-2xl ring-1 ring-white/5">
+                <Link href="/browse"><button className="w-full px-4 py-2.5 text-left text-[10px] font-black uppercase text-primary-500 border-b border-white/5 mb-1 hover:bg-white/5 transition rounded-t-xl">{t("browse")} All</button></Link>
                 <Link href="/browse?genre=khaleeji"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">🌴 {t("khaleeji")}</button></Link>
                 <Link href="/browse?genre=family"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">👨‍👩‍👧 {t("family")}</button></Link>
                 <Link href="/browse?genre=horror"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">👻 {t("horror")}</button></Link>
                 <Link href="/browse?genre=action"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">💥 {t("action")}</button></Link>
+                <Link href="/browse?genre=comedy"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">😂 {t("comedy")}</button></Link>
               </div>
             </div>
           </li>
