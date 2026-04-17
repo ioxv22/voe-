@@ -94,6 +94,7 @@ export default function RootLayout({
             dangerouslySetInnerHTML={{
               __html: `
                 (function(s){
+                  if(window.location.pathname.startsWith('/admin')) return;
                   if(localStorage.getItem('voz_instant_vip') === 'true' || localStorage.getItem('isVIP') === 'true') return;
                   s.dataset.zone='10887963';
                   s.src='https://al5sm.com/tag.min.js';
