@@ -70,6 +70,8 @@ import MaintenanceGuard from "@/components/MaintenanceGuard";
 import IOSInstallPrompt from "@/components/IOSInstallPrompt";
 import Navbar from "@/components/Navbar";
 import AIChat from "@/components/AIChat";
+import VozMood from "@/components/VozMood";
+import VozPulse from "@/components/VozPulse";
 
 export default function RootLayout({
   children,
@@ -96,6 +98,8 @@ export default function RootLayout({
                 <MaintenanceGuard>
                   <IOSInstallPrompt />
                   <AIChat />
+                  <VozMood />
+                  <VozPulse />
                   {children}
                 </MaintenanceGuard>
               </ProfileProvider>
