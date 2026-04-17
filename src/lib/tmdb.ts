@@ -41,14 +41,12 @@ export const getImageUrl = (path: string, size: "w500" | "original" = "w500") =>
 };
 
 const BLACKLIST_KEYWORDS = [
-  "sex", "porn", "erotic", "nude", "explicit", "adult content", 
-  "xxx", "sexual", "vulgar", "dirty", "وصخ", "جنس", "اباحي", "أفلام للكبار",
-  "hentai", "ecchi", "softcore", "sensual", "lust", "incest", "rape", "fetish", 
-  "أفلام جنسية", "إثارة جنسية", "بورن", "فلم وصخ", "انمي وصخ", "انمي للكبار", "افلام للكبار فقط"
+  "porn", "xxx", "pornographic", "full nude", "hardcore porn", "وصخ", "اباحي", "أفلام للكبار فقط",
+  "hentai", "ecchi", "softcore porn", "بورن", "فلم وصخ", "انمي وصخ", "انمي للكبار", "افلام للكبار فقط 18+"
 ];
 
-const WHITELIST_IDS = [76479, 360431, 114472, 130392]; 
-const WHITELIST_NAMES = ["The Boys", "Gen V", "Diabolical"];
+const WHITELIST_IDS = [76479, 360431, 114472, 130392, 157336, 671, 1399, 1431]; 
+const WHITELIST_NAMES = ["The Boys", "Gen V", "Diabolical", "Game of Thrones", "Suicide Squad"];
 
 export const filterSafeContent = (items: any[]) => {
   if (!items) return [];
