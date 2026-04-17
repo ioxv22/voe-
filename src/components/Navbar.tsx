@@ -15,12 +15,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import { collection, query, limit, onSnapshot, orderBy, doc, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useTheme } from "@/context/ThemeContext";
+import { useLanguage, type Language } from "@/context/LanguageContext";
 
 import { usePathname } from "next/navigation";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+const LANGUAGES: { code: Language; label: string; flag: string }[] = [
+  { code: "en", label: "English", flag: "🇺🇸" },
+  { code: "ar", label: "العربية", flag: "🇦🇪" },
+  { code: "fr", label: "Français", flag: "🇫🇷" },
+  { code: "es", label: "Español", flag: "🇪🇸" },
+  { code: "hi", label: "हिन्दी", flag: "🇮🇳" },
+  { code: "ru", label: "Русский", flag: "🇷🇺" },
+];
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -31,12 +41,14 @@ export default function Navbar() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isRequestOpen, setIsRequestOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLangOpen, setIsLangOpen] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
   const [alertBanner, setAlertBanner] = useState("");
   
   const { user, signInWithGoogle, logout } = useAuth();
   const { currentProfile } = useProfile();
   const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage, t, isRTL } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
@@ -83,6 +95,7 @@ export default function Navbar() {
 
   return (
     <nav
+      dir={isRTL ? "rtl" : "ltr"}
       className={cn(
         "fixed top-0 z-50 flex w-full items-center justify-between px-4 py-4 transition-all duration-500 lg:px-12",
         isScrolled ? "bg-background/90 backdrop-blur-md" : "bg-gradient-to-b from-black/80 to-transparent"
@@ -91,25 +104,72 @@ export default function Navbar() {
       <div className="flex items-center gap-8">
         <Logo />
 
-        <ul className="hidden gap-3 xl:gap-6 text-[11px] xl:text-sm font-medium text-muted lg:flex items-center">
-          <Link href="/"><li className="cursor-pointer transition hover:text-foreground whitespace-nowrap">Home</li></Link>
-          <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground whitespace-nowrap">TV Shows</li></Link>
-          <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground whitespace-nowrap">Movies</li></Link>
-          <Link href="/rooms"><li className="cursor-pointer transition hover:text-primary-500 font-bold flex items-center gap-1.5 whitespace-nowrap"><Radio size={14} className="text-primary-500 animate-pulse" /> Party</li></Link>
-          <li onClick={() => setIsRequestOpen(true)} className="cursor-pointer transition hover:text-foreground group flex items-center gap-1.5 whitespace-nowrap">
+        <ul className={cn(
+          "hidden gap-3 xl:gap-6 text-[11px] xl:text-sm font-medium text-muted lg:flex items-center",
+          isRTL && "font-arabic"
+        )}>
+          <Link href="/"><li className="cursor-pointer transition hover:text-foreground">{t("home")}</li></Link>
+          <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground">{t("tvShows")}</li></Link>
+          <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground">{t("movies")}</li></Link>
+          <Link href="/rooms"><li className="cursor-pointer transition hover:text-primary-500 font-bold flex items-center gap-1.5"><Radio size={14} className="text-primary-500 animate-pulse" /> {t("party")}</li></Link>
+          <li onClick={() => setIsRequestOpen(true)} className="cursor-pointer transition hover:text-foreground group flex items-center gap-1.5">
              <span className="relative">
-                Request
+                {t("request")}
                 <span className="absolute -right-2 -top-1 flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                 </span>
              </span>
           </li>
-          <li className="cursor-pointer transition hover:text-foreground whitespace-nowrap">List</li>
+          <li className="cursor-pointer transition hover:text-foreground">{t("list")}</li>
         </ul>
       </div>
 
       <div className="flex items-center gap-4 text-muted lg:gap-6">
+        {/* Language Switcher */}
+        <div className="relative">
+          <button 
+            onClick={() => setIsLangOpen(!isLangOpen)}
+            className="flex items-center gap-2 cursor-pointer hover:text-foreground transition-colors uppercase text-xs font-bold"
+          >
+            {LANGUAGES.find(l => l.code === language)?.flag} {language}
+          </button>
+          
+          <AnimatePresence>
+            {isLangOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsLangOpen(false)} />
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className={cn(
+                    "absolute top-full mt-2 w-32 z-50 rounded-xl border border-white/10 bg-black/90 backdrop-blur-3xl p-1 shadow-2xl",
+                    isRTL ? "left-0" : "right-0"
+                  )}
+                >
+                  {LANGUAGES.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        setLanguage(lang.code);
+                        setIsLangOpen(false);
+                      }}
+                      className={cn(
+                        "w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg flex items-center gap-2",
+                        language === lang.code && "text-primary font-bold"
+                      )}
+                    >
+                      <span>{lang.flag}</span>
+                      <span>{lang.label}</span>
+                    </button>
+                  ))}
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
+
         <button onClick={toggleTheme} className="cursor-pointer hover:text-foreground transition-transform active:rotate-45">
           {theme === "dark" ? <Sun size={20} strokeWidth={2.5} /> : <Moon size={20} strokeWidth={2.5} />}
         </button>
@@ -139,15 +199,18 @@ export default function Navbar() {
                 {isProfileOpen && (
                     <>
                         <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
-                        <div className="absolute right-0 top-full mt-2 w-48 z-50">
+                        <div className={cn(
+                          "absolute top-full mt-2 w-48 z-50",
+                          isRTL ? "left-0" : "right-0"
+                        )}>
                             <div className="rounded-xl border border-white/10 bg-black/90 backdrop-blur-3xl p-2 shadow-2xl animate-in fade-in zoom-in duration-200">
                                 <p className="px-3 py-2 text-[10px] font-bold text-muted border-b border-white/5 truncate uppercase tracking-widest flex items-center justify-between">
                                     {currentProfile.name}
                                     {(user?.isVIP || user?.isPremium) && <Crown size={12} className="text-yellow-500 fill-yellow-500" />}
                                 </p>
-                                <Link href="/profiles"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg mt-1">Switch Profiles</button></Link>
-                                <a href="https://t.me/iivoz" target="_blank"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg">Help Center</button></a>
-                                <button onClick={logout} className="w-full px-3 py-2 text-left text-xs font-bold text-primary transition hover:bg-primary/10 rounded-lg mt-1">Sign Out</button>
+                                <Link href="/profiles"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg mt-1">{t("switchProfile")}</button></Link>
+                                <a href="https://t.me/iivoz" target="_blank"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg">{t("helpCenter")}</button></a>
+                                <button onClick={logout} className="w-full px-3 py-2 text-left text-xs font-bold text-primary transition hover:bg-primary/10 rounded-lg mt-1">{t("signOut")}</button>
                             </div>
                         </div>
                     </>
@@ -158,7 +221,7 @@ export default function Navbar() {
                 onClick={signInWithGoogle}
                 className="rounded-md bg-primary px-4 py-1.5 text-sm font-bold text-white transition hover:bg-primary/90"
             >
-                Sign In
+                {t("signIn")}
             </button>
         )}
       </div>

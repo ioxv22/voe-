@@ -63,6 +63,7 @@ export const viewport = {
 import { AuthProvider } from "@/context/AuthContext";
 import { ProfileProvider } from "@/context/ProfileContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 import SecurityManager from "@/components/SecurityManager";
 import VisitorTracker from "@/components/VisitorTracker";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
@@ -86,18 +87,20 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
         <ThemeProvider>
-          <VisitorTracker />
-          <SecurityManager />
-          <AuthProvider>
-            <ProfileProvider>
-              <Navbar />
-              <MaintenanceGuard>
-                <IOSInstallPrompt />
-                <AIChat />
-                {children}
-              </MaintenanceGuard>
-            </ProfileProvider>
-          </AuthProvider>
+          <LanguageProvider>
+            <VisitorTracker />
+            <SecurityManager />
+            <AuthProvider>
+              <ProfileProvider>
+                <Navbar />
+                <MaintenanceGuard>
+                  <IOSInstallPrompt />
+                  <AIChat />
+                  {children}
+                </MaintenanceGuard>
+              </ProfileProvider>
+            </AuthProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

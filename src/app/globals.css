@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
 
 :root {
   --background: #020202;
@@ -11,13 +12,17 @@
 }
 
 .light-mode {
-  --background: #f8f9fa;
-  --foreground: #1a1a1a;
-  --card: #ffffff;
+  --background: #ffffff;
+  --foreground: #101010;
+  --card: #f5f5f7;
   --primary: #e50914;
-  --muted: #666666;
-  --nav-bg: rgba(255, 255, 255, 0.8);
-  --border-color: rgba(0, 0, 0, 0.1);
+  --muted: #6e6e73;
+  --nav-bg: rgba(255, 255, 255, 0.7);
+  --border-color: rgba(0, 0, 0, 0.08);
+}
+
+.font-arabic {
+  font-family: 'Cairo', sans-serif !important;
 }
 
 @theme {
