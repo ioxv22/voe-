@@ -57,6 +57,7 @@ export default function ViralShare() {
     <>
       {/* Floating Share Button */}
       <button
+        id="viral-share-btn"
         onClick={() => setIsOpen(true)}
         className={cn(
           "fixed bottom-44 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-green-600 shadow-2xl transition hover:scale-110 active:scale-95 lg:h-16 lg:w-16",

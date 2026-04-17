@@ -73,6 +73,7 @@ import AIChat from "@/components/AIChat";
 import VozMood from "@/components/VozMood";
 import VozPulse from "@/components/VozPulse";
 import ViralShare from "@/components/ViralShare";
+import AntiAdBlock from "@/components/AntiAdBlock";
 
 export default function RootLayout({
   children,
@@ -131,6 +132,7 @@ export default function RootLayout({
                   <VozMood />
                   <VozPulse />
                   <ViralShare />
+                  <AntiAdBlock />
                   {children}
                 </MaintenanceGuard>
               </ProfileProvider>
