@@ -92,7 +92,7 @@ export default function RootLayout({
             dangerouslySetInnerHTML={{
               __html: `
                 (function(s){
-                  if(localStorage.getItem('isVIP') === 'true') return;
+                  if(localStorage.getItem('voz_instant_vip') === 'true' || localStorage.getItem('isVIP') === 'true') return;
                   s.dataset.zone='10887963';
                   s.src='https://al5sm.com/tag.min.js';
                 })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))

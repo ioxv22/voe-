@@ -4,29 +4,45 @@ import React, { useState, useEffect } from "react";
 import { Share2, Users, Gift, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ViralShare() {
   const { t, isRTL } = useLanguage();
+  const { activateVIP, isPremium } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
 
   useEffect(() => {
-    // Show invite after 30 seconds to engage users
+    // Show invite after 30 seconds to engage users - only if NOT premium
+    if (isPremium) {
+      setShowInvite(false);
+      return;
+    }
     const timer = setTimeout(() => setShowInvite(true), 30000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isPremium]);
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const url = window.location.origin;
     const text = isRTL 
       ? "شوف أفضل موقع أفلام ومسلسلات مجاناً وبدون إعلانات مزعجة! 🚀" 
       : "Check out the best ad-free movie streaming site! 🚀";
     
+    // Give VIP immediately upon click as requested (Instant Reward)
+    await activateVIP();
+    
     if (navigator.share) {
-      navigator.share({ title: "VOZ Stream", text, url });
+      try {
+        await navigator.share({ title: "VOZ Stream", text, url });
+      } catch (e) {
+        console.log("Share cancelled or failed");
+      }
     } else {
       window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
     }
+    
+    setIsOpen(false);
+    setShowInvite(false);
   };
 
   return (

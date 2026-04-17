@@ -45,7 +45,7 @@ export default function Navbar() {
   const [notifCount, setNotifCount] = useState(0);
   const [alertBanner, setAlertBanner] = useState("");
   
-  const { user, signInWithGoogle, logout } = useAuth();
+  const { user, signInWithGoogle, logout, isPremium } = useAuth();
   const { currentProfile } = useProfile();
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t, isRTL } = useLanguage();
@@ -188,13 +188,23 @@ export default function Navbar() {
         </button>
         
         {user && currentProfile ? (
-            <div className="relative">
-                <div 
-                    onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="h-8 w-8 cursor-pointer overflow-hidden rounded-md border-2 border-transparent hover:border-foreground/20 active:scale-90 transition shadow-lg"
-                >
-                    <img src={currentProfile.avatar} alt="Profile" className="h-full w-full object-cover" />
-                </div>
+            <div className="flex items-center gap-3">
+                {isPremium && (
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-yellow-400 to-orange-500 shadow-lg shadow-yellow-500/20"
+                  >
+                    <Crown size={16} className="text-white fill-white" />
+                  </motion.div>
+                )}
+                <div className="relative">
+                    <div 
+                        onClick={() => setIsProfileOpen(!isProfileOpen)}
+                        className="h-8 w-8 cursor-pointer overflow-hidden rounded-md border-2 border-transparent hover:border-foreground/20 active:scale-90 transition shadow-lg"
+                    >
+                        <img src={currentProfile.avatar} alt="Profile" className="h-full w-full object-cover" />
+                    </div>
                 
                 {isProfileOpen && (
                     <>

@@ -22,6 +22,7 @@ interface AuthContextType {
   signUpWithEmail: (email: string, pass: string) => Promise<void>;
   signInWithEmail: (email: string, pass: string) => Promise<void>;
   signInAsGuest: () => void;
+  activateVIP: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -35,6 +36,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check local storage for persistence of instant-VIP
+    const localVIP = localStorage.getItem("voz_instant_vip") === "true";
+    if (localVIP) setIsPremium(true);
+
     const guestSession = localStorage.getItem("voz_guest_session");
     
     // Safety Timer: Force loading screen to drop after 1.5s if auth hangs
@@ -56,33 +61,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   const userDoc = await getDoc(userDocRef);
                   if (userDoc.exists()) {
                       const data = userDoc.data();
-                      setIsPremium(!!data.isVIP || !!data.isPremium);
+                      const hasVIP = !!data.isVIP || !!data.isPremium || localVIP;
+                      setIsPremium(hasVIP);
                       setIsAdmin(!!data.isAdmin || firebaseUser.email === "admin@voz.stream"); // Fallback check
+                      if (hasVIP) localStorage.setItem("voz_instant_vip", "true");
                   } else {
                       setDoc(userDocRef, { 
                           email: firebaseUser.email, 
                           displayName: firebaseUser.displayName,
-                          isPremium: false,
+                          isPremium: localVIP,
                           isAdmin: firebaseUser.email === "admin@voz.stream"
                       }, { merge: true }).catch(() => {});
                   }
               } catch (err) {
-                  console.warn("Auth sync offline - continuing as standard user.");
-                  setIsPremium(false);
-                  setIsAdmin(false);
+                  console.warn("Auth sync offline - continuing with local state.");
+                  setIsPremium(localVIP);
               }
           };
           syncUser();
           setLoading(false);
       } else if (guestSession) {
           setIsGuest(true);
-          setIsPremium(false);
+          setIsPremium(localVIP);
           setIsAdmin(false);
           setUser({ displayName: "Guest User", uid: "guest_id", photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest" });
           setLoading(false);
       } else {
           setUser(null);
           setIsAdmin(false);
+          setIsPremium(localVIP);
           setLoading(false);
       }
     });
@@ -91,7 +98,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         clearTimeout(safetyTimer);
         unsubscribe();
     };
-  }, []); // loading removed to prevent dependency loop
+  }, []); 
+
+  const activateVIP = async () => {
+    setIsPremium(true);
+    localStorage.setItem("voz_instant_vip", "true");
+    if (user && !isGuest) {
+        try {
+            await setDoc(doc(db, "users", user.uid), { isPremium: true }, { merge: true });
+        } catch (e) {
+            console.error("Failed to sync VIP to Firebase", e);
+        }
+    }
+  };
 
   const signInAsGuest = () => {
     localStorage.setItem("voz_guest_session", "true");
@@ -147,7 +166,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, isGuest, isPremium, isAdmin, signInWithGoogle, signUpWithEmail, signInWithEmail, signInAsGuest, logout }}>
+    <AuthContext.Provider value={{ user, loading, isGuest, isPremium, isAdmin, signInWithGoogle, signUpWithEmail, signInWithEmail, signInAsGuest, activateVIP, logout }}>
       {children}
     </AuthContext.Provider>
   );
