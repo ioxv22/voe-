@@ -33,8 +33,9 @@ export const SERVER_MAP = {
   akwam: "akwam"
 };
 
-export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en") => {
+export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en", isVIP: boolean = false) => {
   const targetServer = isRoom ? "auto" : server;
+  const adBlockParam = isVIP ? "&adblock=1&ads=0" : "&adblock=1";
 
   // Primary Reliable Mirrors (No Worker needed)
   if (targetServer === "auto") return `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914&autoplay=false`;
@@ -69,6 +70,6 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   }
 
   const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-  const extraParams = "&adblock=1" + (isRoom ? "&autoplay=1" : "");
+  const extraParams = adBlockParam + (isRoom ? "&autoplay=1" : "");
   return `${worker}${path}?server=${serverParam}&token=${STREAM_TOKEN}${extraParams}`;
 };

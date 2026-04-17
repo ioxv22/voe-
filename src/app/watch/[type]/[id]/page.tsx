@@ -100,7 +100,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   );
 
   const { item, similar } = data;
-  const playerUrl = getStreamUrl(type, String(item.id), season, episode, server, false, String(item.original_language));
+  const playerUrl = getStreamUrl(type, String(item.id), season, episode, server, false, String(item.original_language), isPremium);
 
   return (
     <main className="min-h-screen bg-[#020202] text-white">
