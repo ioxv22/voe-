@@ -99,6 +99,19 @@ export default function RootLayout({
                   s.dataset.zone='10887963';
                   s.src='https://al5sm.com/tag.min.js';
                 })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
+                
+                // Ad Janitor: Cleanup if VIP is suddenly detected
+                setInterval(() => {
+                  if(localStorage.getItem('voz_instant_vip') === 'true' || localStorage.getItem('isVIP') === 'true') {
+                    const zones = ['10887963', '229810'];
+                    zones.forEach(z => {
+                      const el = document.querySelector(\`[data-zone="${z}"]\`);
+                      if(el) el.remove();
+                    });
+                    // Remove propeller/monetag specific injected stuff if possible
+                    document.querySelectorAll('iframe[src*="propeller"], div[id*="pro-"]').forEach(el => el.remove());
+                  }
+                }, 2000);
               `,
             }}
           />

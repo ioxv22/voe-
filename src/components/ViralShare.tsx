@@ -31,6 +31,9 @@ export default function ViralShare() {
     // Give VIP immediately upon click as requested (Instant Reward)
     await activateVIP();
     
+    // Notify user
+    alert(isRTL ? "تم تفعيل الـ VIP بنجاح! سيتم تنظيف الموقع من الإعلانات الآن..." : "VIP Activated! Cleaning up ads now...");
+    
     if (navigator.share) {
       try {
         await navigator.share({ title: "VOZ Stream", text, url });
@@ -40,6 +43,11 @@ export default function ViralShare() {
     } else {
       window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
     }
+    
+    // Force refresh after a small delay to flush all ad scripts from memory
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
     
     setIsOpen(false);
     setShowInvite(false);

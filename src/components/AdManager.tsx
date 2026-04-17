@@ -12,7 +12,10 @@ export default function AdManager() {
 
   useEffect(() => {
     async function loadAds() {
-      if (isPremium) return; // VIPs don't see ads
+      if (isPremium) {
+        setAdCode(""); // Explicitly clear if premium
+        return;
+      }
       const adsSnap = await getDoc(doc(db, "system", "ads"));
       if (adsSnap.exists()) {
         const data = adsSnap.data();
