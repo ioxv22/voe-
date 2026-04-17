@@ -104,12 +104,13 @@ export default function RootLayout({
                 setInterval(() => {
                   if(localStorage.getItem('voz_instant_vip') === 'true' || localStorage.getItem('isVIP') === 'true') {
                     const zones = ['10887963', '229810'];
-                    zones.forEach(z => {
-                      const el = document.querySelector(\`[data-zone="${z}"]\`);
+                    zones.forEach(function(z) {
+                      const el = document.querySelector('[data-zone="' + z + '"]');
                       if(el) el.remove();
                     });
                     // Remove propeller/monetag specific injected stuff if possible
-                    document.querySelectorAll('iframe[src*="propeller"], div[id*="pro-"]').forEach(el => el.remove());
+                    var elements = document.querySelectorAll('iframe[src*="propeller"], div[id*="pro-"]');
+                    for(var i=0; i<elements.length; i++) elements[i].remove();
                   }
                 }, 2000);
               `,
