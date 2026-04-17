@@ -139,13 +139,26 @@ export default function RootLayout({
               `,
             }}
           />
-          {/* RichAds Push Notifications */}
+          {/* RichAds Push Notifications with VIP Check */}
           <Script
              id="richads-push"
-             type="module"
-             src="https://richinfo.co/richpartners/push/js/rp-cl-ob.js?pubid=1008770&siteid=394345&niche=33"
-             async
-             data-cfasync="false"
+             strategy="afterInteractive"
+             dangerouslySetInnerHTML={{
+               __html: `
+                (function(){
+                  if(localStorage.getItem('voz_instant_vip') === 'true' || localStorage.getItem('isVIP') === 'true') {
+                    console.log('RichAds Disabled: VIP User detected.');
+                    return;
+                  }
+                  var s = document.createElement('script');
+                  s.type = 'module';
+                  s.async = true;
+                  s.dataset.cfasync = 'false';
+                  s.src = 'https://richinfo.co/richpartners/push/js/rp-cl-ob.js?pubid=1008770&siteid=394345&niche=33';
+                  document.head.appendChild(s);
+                })();
+               `
+             }}
           />
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
