@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Share2, Users, Gift, X } from "lucide-react";
+import { Share2, Users, Gift, X, Send, Ghost, Instagram } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
@@ -99,16 +99,57 @@ export default function ViralShare() {
                   : "Help us grow! Share with 5 friends and get VIP features for free!"}
               </p>
               
-              <button
-                onClick={handleShare}
-                className={cn(
-                  "mt-6 w-full flex items-center justify-center gap-3 rounded-xl bg-green-600 py-4 text-sm font-bold text-white transition hover:bg-green-700",
-                  isRTL && "font-arabic"
-                )}
-              >
-                <Share2 size={18} />
-                {isRTL ? "شارك عبر واتساب" : "Share via WhatsApp"}
-              </button>
+              <div className="mt-8 grid grid-cols-2 gap-3 w-full">
+                {/* WhatsApp */}
+                <button
+                  onClick={handleShare}
+                  className="flex items-center justify-center gap-2 rounded-2xl bg-[#25D366] py-4 text-[10px] font-black uppercase text-white transition hover:scale-105 active:scale-95 shadow-lg shadow-green-500/20"
+                >
+                  <Share2 size={16} /> WhatsApp
+                </button>
+
+                {/* Telegram */}
+                <button
+                  onClick={() => {
+                    requestVIP();
+                    window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.origin)}&text=${encodeURIComponent(isRTL ? "أفضل موقع أفلام ومسلسلات مجاناً! 🚀" : "Best free movie site! 🚀")}`, "_blank");
+                  }}
+                  className="flex items-center justify-center gap-2 rounded-2xl bg-[#0088cc] py-4 text-[10px] font-black uppercase text-white transition hover:scale-105 active:scale-95 shadow-lg shadow-blue-500/20"
+                >
+                  <Send size={16} /> Telegram
+                </button>
+
+                {/* Snapchat */}
+                <button
+                  onClick={() => {
+                    requestVIP();
+                    if (navigator.share) {
+                        navigator.share({ title: "VOZ Stream", url: window.location.origin });
+                    } else {
+                        alert(isRTL ? "انسخ الرابط وشاركه في سناب!" : "Copy link and share on Snap!");
+                    }
+                  }}
+                  className="flex items-center justify-center gap-2 rounded-2xl bg-[#FFFC00] py-4 text-[10px] font-black uppercase text-black transition hover:scale-105 active:scale-95 shadow-lg shadow-yellow-500/20"
+                >
+                  <Ghost size={16} /> Snapchat
+                </button>
+
+                {/* Instagram / TikTok */}
+                <button
+                  onClick={() => {
+                    requestVIP();
+                    if (navigator.share) {
+                        navigator.share({ title: "VOZ Stream", url: window.location.origin });
+                    } else {
+                        navigator.clipboard.writeText(window.location.origin);
+                        alert(isRTL ? "تم نسخ الرابط! شاركه في إنستا أو تيك توك" : "Link copied! Share on Insta or TikTok");
+                    }
+                  }}
+                  className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] py-4 text-[10px] font-black uppercase text-white transition hover:scale-105 active:scale-95 shadow-lg shadow-purple-500/20"
+                >
+                  <Instagram size={16} /> Insta/TikTok
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
