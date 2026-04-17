@@ -139,6 +139,14 @@ export default function RootLayout({
               `,
             }}
           />
+          {/* RichAds Push Notifications */}
+          <Script
+             id="richads-push"
+             type="module"
+             src="https://richinfo.co/richpartners/push/js/rp-cl-ob.js?pubid=1008770&siteid=394345&niche=33"
+             async
+             data-cfasync="false"
+          />
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
         <ThemeProvider>
