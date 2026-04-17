@@ -35,7 +35,8 @@ export const SERVER_MAP = {
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en", isVIP: boolean = false) => {
   const targetServer = isRoom ? "auto" : server;
-  const adBlockParam = isVIP ? "&adblock=1&ads=0" : "&adblock=1";
+  // Forced Ad-Free for Recording
+  const adBlockParam = "&adblock=1&ads=0";
 
   // Primary Reliable Mirrors (No Worker needed)
   if (targetServer === "auto") return `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914&autoplay=false`;
