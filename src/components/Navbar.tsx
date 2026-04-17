@@ -108,29 +108,37 @@ export default function Navbar() {
           "hidden gap-3 xl:gap-6 text-[11px] xl:text-sm font-medium text-muted lg:flex items-center",
           isRTL && "font-arabic"
         )}>
-          <Link href="/"><li className="cursor-pointer transition hover:text-foreground">{t("home")}</li></Link>
-          <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground">{t("tvShows")}</li></Link>
-          <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground">{t("movies")}</li></Link>
+          <Link href="/"><li className="cursor-pointer transition-colors hover:text-white">{t("home")}</li></Link>
+          <Link href="/browse"><li className="cursor-pointer transition-colors hover:text-white">{t("tvShows")}</li></Link>
+          <Link href="/browse"><li className="cursor-pointer transition-colors hover:text-white">{t("movies")}</li></Link>
           
           <li className="relative group/cat">
-            <span className="cursor-pointer transition hover:text-foreground flex items-center gap-1 uppercase text-[10px] tracking-widest font-black">
+            <span className="cursor-pointer transition-colors hover:text-white flex items-center gap-1.5 font-medium">
               {t("browse")}
             </span>
             <div className={cn(
-              "absolute top-full left-0 mt-2 w-40 hidden group-hover/cat:block z-50",
+              "absolute top-full left-0 mt-3 w-44 hidden group-hover/cat:block z-50 animate-in fade-in slide-in-from-top-2 duration-200",
               isRTL && "left-auto right-0"
             )}>
-              <div className="rounded-xl border border-white/10 bg-black/90 backdrop-blur-3xl p-2 shadow-2xl">
-                <Link href="/browse?genre=khaleeji"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg flex items-center gap-2">🌴 {t("khaleeji")}</button></Link>
-                <Link href="/browse?genre=family"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg flex items-center gap-2">👨‍👩‍👧 {t("family")}</button></Link>
-                <Link href="/browse?genre=horror"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg flex items-center gap-2">👻 {t("horror")}</button></Link>
-                <Link href="/browse?genre=action"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg flex items-center gap-2">💥 {t("action")}</button></Link>
+              <div className="rounded-2xl border border-white/10 bg-black/95 backdrop-blur-3xl p-2 shadow-2xl ring-1 ring-white/5">
+                <Link href="/browse?genre=khaleeji"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">🌴 {t("khaleeji")}</button></Link>
+                <Link href="/browse?genre=family"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">👨‍👩‍👧 {t("family")}</button></Link>
+                <Link href="/browse?genre=horror"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">👻 {t("horror")}</button></Link>
+                <Link href="/browse?genre=action"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">💥 {t("action")}</button></Link>
               </div>
             </div>
           </li>
 
-          <Link href="/rooms"><li className="cursor-pointer transition hover:text-primary-500 font-bold flex items-center gap-1.5"><Radio size={14} className="text-primary-500 animate-pulse" /> {t("party")}</li></Link>
-          <li onClick={() => setIsRequestOpen(true)} className="cursor-pointer transition hover:text-foreground group flex items-center gap-1.5">
+          <Link href="/rooms">
+            <li className="cursor-pointer transition-all hover:text-primary-400 font-bold flex items-center gap-2">
+              <div className="relative flex items-center justify-center">
+                <Radio size={16} className="text-primary-500" />
+                <span className="absolute h-full w-full rounded-full bg-primary-500/20 animate-ping" />
+              </div>
+              {t("party")}
+            </li>
+          </Link>
+          <li onClick={() => setIsRequestOpen(true)} className="cursor-pointer transition-colors hover:text-white group flex items-center gap-2">
              <span className="relative">
                 {t("request")}
                 <span className="absolute -right-2 -top-1 flex h-2 w-2">
@@ -139,7 +147,11 @@ export default function Navbar() {
                 </span>
              </span>
           </li>
-          <li className="cursor-pointer transition hover:text-foreground">{t("list")}</li>
+          <Link href="/browse">
+            <li className="cursor-pointer transition-colors hover:text-white font-medium">
+              {t("list")}
+            </li>
+          </Link>
         </ul>
       </div>
 
