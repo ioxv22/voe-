@@ -111,6 +111,24 @@ export default function Navbar() {
           <Link href="/"><li className="cursor-pointer transition hover:text-foreground">{t("home")}</li></Link>
           <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground">{t("tvShows")}</li></Link>
           <Link href="/browse"><li className="cursor-pointer transition hover:text-foreground">{t("movies")}</li></Link>
+          
+          <li className="relative group/cat">
+            <span className="cursor-pointer transition hover:text-foreground flex items-center gap-1 uppercase text-[10px] tracking-widest font-black">
+              {t("browse")}
+            </span>
+            <div className={cn(
+              "absolute top-full left-0 mt-2 w-40 hidden group-hover/cat:block z-50",
+              isRTL && "left-auto right-0"
+            )}>
+              <div className="rounded-xl border border-white/10 bg-black/90 backdrop-blur-3xl p-2 shadow-2xl">
+                <Link href="/browse?genre=khaleeji"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg flex items-center gap-2">🌴 {t("khaleeji")}</button></Link>
+                <Link href="/browse?genre=family"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg flex items-center gap-2">👨‍👩‍👧 {t("family")}</button></Link>
+                <Link href="/browse?genre=horror"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg flex items-center gap-2">👻 {t("horror")}</button></Link>
+                <Link href="/browse?genre=action"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg flex items-center gap-2">💥 {t("action")}</button></Link>
+              </div>
+            </div>
+          </li>
+
           <Link href="/rooms"><li className="cursor-pointer transition hover:text-primary-500 font-bold flex items-center gap-1.5"><Radio size={14} className="text-primary-500 animate-pulse" /> {t("party")}</li></Link>
           <li onClick={() => setIsRequestOpen(true)} className="cursor-pointer transition hover:text-foreground group flex items-center gap-1.5">
              <span className="relative">

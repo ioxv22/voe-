@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import { fetchTMDB, endpoints, filterSafeContent } from "@/lib/tmdb";
 import { useContinueWatching } from "@/hooks/useContinueWatching";
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 import { useRouter } from "next/navigation";
 import MatchSchedule from "@/components/MatchSchedule";
 import Link from "next/link";
@@ -19,6 +20,7 @@ import { Radio, Activity, Sparkles, Search } from "lucide-react";
 export default function Home() {
   const { user, loading: authLoading, signInWithGoogle, signInAsGuest } = useAuth();
   const { currentProfile, loading: profileLoading } = useProfile();
+  const { t } = useLanguage();
   const { history } = useContinueWatching();
   const [data, setData] = useState<any>(null);
   const [loadingContent, setLoadingContent] = useState(true);
@@ -44,7 +46,7 @@ export default function Home() {
                 setLoadingContent(false);
 
                 // Fetch Dedicated Rows
-                const [latest, series, arabicSeries, anime, action, horror, topRated, kDrama] = await Promise.all([
+                const [latest, series, arabicSeries, anime, action, horror, topRated, kDrama, khaleeji, family] = await Promise.all([
                     fetchTMDB(endpoints.movies, `${kidsParams}&sort_by=primary_release_date.desc`),
                     fetchTMDB(endpoints.series, kidsParams),
                     fetchTMDB("/discover/tv", `with_original_language=ar&sort_by=popularity.desc`), // Broad Arabic Series
@@ -52,7 +54,9 @@ export default function Home() {
                     fetchTMDB("/discover/movie", "with_genres=28&sort_by=popularity.desc"), // Action
                     fetchTMDB("/discover/movie", "with_genres=27&sort_by=popularity.desc"), // Horror
                     fetchTMDB(endpoints.topRated, kidsParams),
-                    fetchTMDB("/discover/tv", "with_original_language=ko&sort_by=popularity.desc") // K-Drama
+                    fetchTMDB("/discover/tv", "with_original_language=ko&sort_by=popularity.desc"), // K-Drama
+                    fetchTMDB("/discover/tv", "with_original_language=ar&with_origin_country=AE|SA|KW|QA|BH|OM&sort_by=popularity.desc"), // Khaleeji
+                    fetchTMDB("/discover/movie", "with_genres=10751&sort_by=popularity.desc"), // Family
                 ]);
                 
                 setData((prev: any) => ({ 
@@ -64,7 +68,9 @@ export default function Home() {
                     action: filterSafeContent(action.results),
                     horror: filterSafeContent(horror.results),
                     topRated: filterSafeContent(topRated.results),
-                    kDrama: filterSafeContent(kDrama.results)
+                    kDrama: filterSafeContent(kDrama.results),
+                    khaleeji: filterSafeContent(khaleeji.results),
+                    family: filterSafeContent(family.results)
                 }));
             } catch (err) {
                 console.error("Home Data Load Failure:", err);
@@ -130,6 +136,23 @@ export default function Home() {
             <MovieRow 
                 title={currentProfile.isKids ? "New for Kids" : "Latest Movies"} 
                 movies={data.latest} 
+            />
+        )}
+
+        {/* KHALEEJI CONTENT */}
+        {data?.khaleeji && data.khaleeji.length > 0 && (
+            <MovieRow 
+                title={`${t("khaleeji")} | مسلسلات خليجية`} 
+                movies={data.khaleeji} 
+                isHighlighted
+            />
+        )}
+
+        {/* FAMILY CONTENT */}
+        {data?.family && (
+            <MovieRow 
+                title={`${t("family")} | عائلي`} 
+                movies={data.family} 
             />
         )}
 

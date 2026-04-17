@@ -33,6 +33,11 @@ const translations: Record<Language, Record<string, string>> = {
     play: "Play",
     moreInfo: "More Info",
     addToList: "Add to List",
+    family: "Family",
+    horror: "Horror",
+    khaleeji: "Khaleeji",
+    action: "Action",
+    comedy: "Comedy",
   },
   ar: {
     home: "الرئيسية",
@@ -55,6 +60,11 @@ const translations: Record<Language, Record<string, string>> = {
     play: "تشغيل",
     moreInfo: "مزيد من المعلومات",
     addToList: "إضافة للقائمة",
+    family: "عائلي",
+    horror: "رعب",
+    khaleeji: "خليجي",
+    action: "أكشن",
+    comedy: "كوميدي",
   },
   fr: {
     home: "Accueil",
