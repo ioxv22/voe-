@@ -65,9 +65,6 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                     const firstSeason = item.seasons.find((s: any) => s.season_number > 0) || item.seasons[0];
                     setSeason(firstSeason.season_number);
                 }
-                if (item.original_language === 'ar') {
-                    setServer("egybest");
-                }
                 if (type === 'movie') {
                     saveProgress(item, 'movie');
                 }
