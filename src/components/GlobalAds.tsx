@@ -4,10 +4,10 @@ import Script from "next/script";
 import { useAuth } from "@/context/AuthContext";
 
 export default function GlobalAds() {
-    const { isPremium } = useAuth();
+    const { isPremium, loading } = useAuth();
 
-    // If user is Premium, do not load the global ad scripts
-    if (isPremium) return null;
+    // Do not load ads while auth is loading or if user is premium
+    if (loading || isPremium) return null;
 
     return (
         <>

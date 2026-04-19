@@ -8,11 +8,11 @@ import { useLanguage } from "@/context/LanguageContext";
 
 export default function AntiAdBlock() {
   const [isAdBlockActive, setIsAdBlockActive] = useState(false);
-  const { isPremium } = useAuth();
+  const { isPremium, loading } = useAuth();
   const { t, isRTL } = useLanguage();
 
   useEffect(() => {
-    if (isPremium) return;
+    if (loading || isPremium) return;
 
     const checkAdBlock = async () => {
       // Method 1: Check if a fake ad element is hidden
