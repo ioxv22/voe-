@@ -251,7 +251,7 @@ export default function Navbar() {
                                     {(user?.isVIP || user?.isPremium) && <Crown size={12} className="text-yellow-500 fill-yellow-500" />}
                                 </p>
                                 <Link href="/profiles"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg mt-1">{t("switchProfile")}</button></Link>
-                                <a href="https://t.me/iivoz" target="_blank"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg">{t("helpCenter")}</button></a>
+                                <a href="https://t.me/VOZSTREAM" target="_blank"><button className="w-full px-3 py-2 text-left text-xs hover:bg-white/5 transition rounded-lg">{t("helpCenter")}</button></a>
                                 <button onClick={logout} className="w-full px-3 py-2 text-left text-xs font-bold text-primary transition hover:bg-primary/10 rounded-lg mt-1">{t("signOut")}</button>
                             </div>
                         </div>

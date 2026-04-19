@@ -36,7 +36,7 @@ export default function PremiumPromo() {
                 </div>
 
                 <a 
-                    href="https://t.me/iivoz" 
+                    href="https://t.me/VOZSTREAM" 
                     target="_blank"
                     className="block w-full text-center bg-yellow-500 py-4 rounded-3xl text-black font-black uppercase text-xs tracking-widest hover:bg-yellow-400 transition transform active:scale-95 shadow-xl shadow-yellow-500/30"
                 >

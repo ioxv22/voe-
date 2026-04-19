@@ -17,6 +17,7 @@ import MatchSchedule from "@/components/MatchSchedule";
 import Link from "next/link";
 import { Radio, Activity, Sparkles, Search } from "lucide-react";
 import SocialWelcome from "@/components/SocialWelcome";
+import TelegramBanner from "@/components/TelegramBanner";
 
 
 export default function Home() {
@@ -92,6 +93,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#020202] pb-20 overflow-x-hidden selection:bg-primary-600 selection:text-white">
       <SocialWelcome />
+      <TelegramBanner />
       <Navbar />
 
       
@@ -225,11 +227,11 @@ export default function Home() {
                     <p className="text-gray-500 max-w-sm font-medium leading-relaxed">Having issues with "My List" or searching for a specific movie? Contact our team on Telegram.</p>
                 </div>
                 <a 
-                    href="https://t.me/iivoz" 
+                    href="https://t.me/VOZSTREAM" 
                     target="_blank" 
                     className="px-12 py-5 bg-primary-600 text-black font-black rounded-full hover:bg-primary-700 transition-all transform hover:scale-105 shadow-2xl shadow-primary-600/30 uppercase tracking-[0.2em] text-[10px]"
                 >
-                    Connect @IIVOZ
+                    Connect @VOZSTREAM
                 </a>
             </div>
         </div>
