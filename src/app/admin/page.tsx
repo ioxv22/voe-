@@ -594,12 +594,13 @@ export default function AdminDashboard() {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
                         <thead className="bg-white/5 text-gray-400 uppercase text-[10px] font-bold tracking-[0.3em]">
-                            <tr><th className="p-6">User Email</th><th className="p-6 text-center">Status</th><th className="p-6 text-right">Action</th></tr>
+                            <tr><th className="p-6">User Email</th><th className="p-6">Location</th><th className="p-6 text-center">Status</th><th className="p-6 text-right">Action</th></tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
                             {userList.map(u => (
                                 <tr key={u.id}>
                                     <td className="p-6 font-bold">{u.email}</td>
+                                    <td className="p-6 whitespace-nowrap"><span className="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded-md text-gray-400 font-bold uppercase tracking-wider">{u.country || "Global"}</span></td>
                                     <td className="p-6 text-center">{(u.isPremium || u.isVIP) ? <span className="text-yellow-500 font-black">VIP</span> : 'Standard'}</td>
                                     <td className="p-6 text-right"><button onClick={() => toggleVIP(u.id, u.isPremium || u.isVIP)} className={`px-4 py-2 rounded-lg text-[10px] font-black ${(u.isPremium || u.isVIP) ? 'text-red-500' : 'text-green-500'}`}>Toggle VIP</button></td>
                                 </tr>

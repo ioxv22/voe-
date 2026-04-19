@@ -56,18 +56,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               try {
                   const userDocRef = doc(db, "users", firebaseUser.uid);
                   const userDoc = await getDoc(userDocRef);
+                  
+                  // Fetch country for profile if not present
+                  let userCountry = "Unknown";
+                  try {
+                      const geoRes = await fetch("https://ipwho.is/");
+                      const geoData = await geoRes.json();
+                      userCountry = geoData.country || "Unknown";
+                  } catch (e) {}
+
                   if (userDoc.exists()) {
                       const data = userDoc.data();
                       const hasVIP = !!data.isVIP || !!data.isPremium;
                       setIsPremium(hasVIP);
                       setIsAdmin(!!data.isAdmin || firebaseUser.email === "admin@voz.stream"); // Fallback check
+                      
+                      // Update country if missing
+                      if (!data.country || data.country === "Unknown") {
+                          await setDoc(userDocRef, { country: userCountry }, { merge: true });
+                      }
                   } else {
-                      setDoc(userDocRef, { 
+                      await setDoc(userDocRef, { 
                           email: firebaseUser.email, 
                           displayName: firebaseUser.displayName,
                           isPremium: false,
-                          isAdmin: firebaseUser.email === "admin@voz.stream"
-                      }, { merge: true }).catch(() => {});
+                          isAdmin: firebaseUser.email === "admin@voz.stream",
+                          country: userCountry,
+                          createdAt: serverTimestamp()
+                      }, { merge: true });
                   }
               } catch (err) {
                   console.warn("Auth sync offline.");
@@ -131,7 +147,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       const cred = await createUserWithEmailAndPassword(auth, email, pass);
-      setDoc(doc(db, "users", cred.user.uid), { email, isPremium: false, isAdmin: email === "admin@voz.stream" }).catch(() => {});
+      
+      let userCountry = "Unknown";
+      try {
+          const geoRes = await fetch("https://ipwho.is/");
+          const geoData = await geoRes.json();
+          userCountry = geoData.country || "Unknown";
+      } catch (e) {}
+
+      await setDoc(doc(db, "users", cred.user.uid), { 
+          email, 
+          isPremium: false, 
+          isAdmin: email === "admin@voz.stream",
+          country: userCountry,
+          createdAt: serverTimestamp()
+      }, { merge: true });
       localStorage.removeItem("voz_guest_session");
     } catch (error) {
       setLoading(false);
