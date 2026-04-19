@@ -95,12 +95,6 @@ function WatchContent({ type, id }: { type: string, id: string }) {
     }
   }, [user, type, id]);
 
-  if (!data || !data.item) return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white font-black italic tracking-widest animate-pulse">
-        <span className="text-red-600 text-5xl mb-4">●</span>
-        VOZ_LOADER...
-    </div>
-  );
 
     useEffect(() => {
         if (data?.item) {
@@ -110,19 +104,21 @@ function WatchContent({ type, id }: { type: string, id: string }) {
         }
     }, [data]);
 
-  if (!data || !data.item) {
+  const item = data?.item;
+  const similar = data?.similar;
+
+  if (!item) {
     return (
         <div className="min-h-screen bg-[#020202] flex items-center justify-center">
             <div className="flex flex-col items-center gap-4">
                 <div className="h-16 w-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 animate-pulse font-mono">STABILIZING_CONNECTION...</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 animate-pulse font-mono">SYNCHRONIZING_VOZ_CORE...</p>
             </div>
         </div>
     );
   }
 
-  const { item, similar } = data;
-  const playerUrl = getStreamUrl(type, String(item.id), season, episode, server, false, String(item.original_language || "ar"), isPremium);
+  const playerUrl = getStreamUrl(type, String(id), season, episode, server, false, String(item?.original_language || "ar"), isPremium);
 
   return (
     <main className="min-h-screen bg-[#020202] text-white">
