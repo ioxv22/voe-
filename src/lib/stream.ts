@@ -51,7 +51,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   if (targetServer === "vidsrc") return `https://vidsrc.to/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "xyz") return `https://vidsrc.xyz/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "vip") return `https://vidsrc.vip/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
-  if (targetServer === "pm" || targetServer === "alooy") return `https://vidsrc.stream/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
+  if (targetServer === "pm" || targetServer === "alooy") return `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "direct") return `https://vidsrc.io/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "net") return `https://vidsrc.net/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "two") return `https://www.2embed.cc/embed/${type === 'movie' ? 'movie' : 'series'}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
@@ -62,7 +62,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   }
 
   // Arabic Content Specialists (Reliable 2026 Mirrors)
-  if (targetServer === "arabic1" || targetServer === "egybest") return `https://vidsrc.stream/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}${adParam}`;
+  if (targetServer === "arabic1" || targetServer === "egybest") return `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}${adParam}`;
   if (targetServer === "arabic2" || targetServer === "wecima") return `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "akwam") return `https://vidsrc.rip/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "fasel") return `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914&autoplay=false${vidlinkAr}`;

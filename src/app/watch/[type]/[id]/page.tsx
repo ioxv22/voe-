@@ -102,7 +102,16 @@ function WatchContent({ type, id }: { type: string, id: string }) {
     </div>
   );
 
-  const { item, similar } = data;
+    useEffect(() => {
+        if (data?.item) {
+            const title = data.item.title || data.item.name;
+            const year = (data.item.release_date || data.item.first_air_date || "").slice(0, 4);
+            document.title = `${title} (${year}) HD Online - VOZ STREAM`;
+        }
+    }, [data]);
+
+  const item = data?.item;
+  const similar = data?.similar;
   const playerUrl = getStreamUrl(type, String(item.id), season, episode, server, false, String(item.original_language), isPremium);
 
   return (
