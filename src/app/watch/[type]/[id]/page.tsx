@@ -16,6 +16,7 @@ import { useContinueWatching } from "@/hooks/useContinueWatching";
 import { db } from "@/lib/firebase";
 import PremiumPromo from "@/components/PremiumPromo";
 import DownloadModal from "@/components/DownloadModal";
+import { useLanguage } from "@/context/LanguageContext";
 
 // Bulletproof Error Boundary
 class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: boolean}> {
@@ -37,6 +38,7 @@ class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: bo
 
 function WatchContent({ type, id }: { type: string, id: string }) {
   const { user, isPremium } = useAuth();
+  const { t } = useLanguage();
   const { saveProgress } = useContinueWatching();
   const [data, setData] = useState<{item: any, similar: any} | null>(null);
   const [server, setServer] = useState("nebula");
