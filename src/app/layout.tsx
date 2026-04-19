@@ -88,6 +88,13 @@ export default function RootLayout({
     >
       <head>
           <link rel="apple-touch-icon" href="https://i.ibb.co/23Bkgcrx/image.png" />
+          {/* Google AdSense */}
+          <Script
+             async
+             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8867564621500356"
+             crossOrigin="anonymous"
+             strategy="afterInteractive"
+          />
           {/* Monetag Global Tag */}
           <Script
             id="monetag-ad"

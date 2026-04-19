@@ -12,6 +12,7 @@ import { useWatchlist } from "@/hooks/useWatchlist";
 import MovieReviews from "@/components/MovieReviews";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
 import { useAuth } from "@/context/AuthContext";
+import AdSenseUnit from "@/components/AdSenseUnit";
 import { useContinueWatching } from "@/hooks/useContinueWatching";
 import { db } from "@/lib/firebase";
 import PremiumPromo from "@/components/PremiumPromo";
@@ -196,6 +197,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
               </div>
             </div>
             
+            <AdSenseUnit />
             {similar?.results?.length > 0 && <MovieRow title="More Like This" movies={similar.results} />}
             
             <div className="mt-20">
