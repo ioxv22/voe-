@@ -13,8 +13,20 @@ export default function VisitorTracker() {
 
       try {
         const statsRef = doc(db, "system", "stats");
+        
+        // Fetch Country info
+        let country = "Unknown";
+        try {
+            const geoRes = await fetch("https://ipapi.co/json/");
+            const geoData = await geoRes.json();
+            country = geoData.country_name || "Unknown";
+        } catch (e) {
+            console.error("Geo fetch failed");
+        }
+
         await setDoc(statsRef, { 
-            totalVisits: increment(1) 
+            totalVisits: increment(1),
+            [`countries.${country}`]: increment(1)
         }, { merge: true });
         
         sessionStorage.setItem("voz_visited", "true");

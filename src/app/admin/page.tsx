@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import { collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { Users, Eye, Lock, Save, Key, Crown, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings, Film, ShieldCheck, Trophy } from "lucide-react";
+import { Users, Eye, Lock, Save, Key, Crown, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings, Film, ShieldCheck, Trophy, Globe } from "lucide-react";
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [passwordInput, setPasswordInput] = useState("");
-  const [stats, setStats] = useState({ users: 0, views: 0, likes: 0 });
+  const [stats, setStats] = useState({ users: 0, views: 0, likes: 0, countries: {} as Record<string, number> });
   const [userList, setUserList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [activeRooms, setActiveRooms] = useState<any[]>([]);
@@ -84,18 +84,19 @@ export default function AdminDashboard() {
         const statsSnap = await getDoc(doc(db, "system", "stats"));
         const realViews = statsSnap.exists() ? (statsSnap.data().totalViews || 0) : 0;
         const totalVisits = statsSnap.exists() ? (statsSnap.data().totalVisits || 0) : 0;
+        const countries = statsSnap.exists() ? (statsSnap.data().countries || {}) : {};
         
         const requestsSnap = await getDocs(collection(db, "requests"));
         const requests = requestsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setRequestList(requests);
-
+        
         const vipsSnap = await getDocs(collection(db, "vip_requests"));
         setVipRequests(vipsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-
+        
         const matchesSnap = await getDocs(collection(db, "matches"));
         setMatchList(matchesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-
-        setStats({ users: usersSnap.size, views: totalVisits, likes: realViews });
+        
+        setStats({ users: usersSnap.size, views: totalVisits, likes: realViews, countries });
 
         // Fetch Global Config
         const configSnap = await getDoc(doc(db, "system", "config"));
@@ -264,6 +265,28 @@ export default function AdminDashboard() {
                 <StatCard icon={<Eye className="text-blue-500" />} label="Total Visits" value={stats.views} />
                 <StatCard icon={<Activity className="text-green-500" />} label="Content Interactions" value={stats.likes} />
                 <StatCard icon={<Crown className="text-yellow-500" />} label="Active Rooms" value={activeRooms.length} />
+            </div>
+
+            {/* Country Stats */}
+            <div className="mt-12 rounded-3xl border border-white/5 bg-white/[0.02] p-10">
+                <div className="flex items-center gap-3 mb-8 text-blue-500">
+                    <Globe size={24} />
+                    <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Visitor Geography (بصمة الزوار)</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {Object.entries(stats.countries).sort((a, b) => b[1] - a[1]).map(([country, count]) => (
+                        <div key={country} className="p-6 bg-black/40 rounded-2xl border border-white/5 flex items-center justify-between group hover:border-blue-500/50 transition">
+                            <div>
+                                <p className="text-[10px] font-black uppercase text-gray-500 mb-1">{country}</p>
+                                <p className="text-2xl font-black">{count}</p>
+                            </div>
+                            <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-black transition">
+                                <span className="text-xs font-black">{stats.views > 0 ? ((count / stats.views) * 100).toFixed(1) : 0}%</span>
+                            </div>
+                        </div>
+                    ))}
+                    {Object.keys(stats.countries).length === 0 && <p className="col-span-full text-center text-gray-600 italic py-10 font-bold uppercase tracking-widest">Awaiting geo-traffic data... (في انتظار بيانات الزوار)</p>}
+                </div>
             </div>
 
             {/* LIVE FEED PROPOSAL (Coming Soon) */}
