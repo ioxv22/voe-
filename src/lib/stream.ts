@@ -61,9 +61,9 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   }
 
   // Arabic Content Specialists (Reliable 2026 Mirrors)
-  if (targetServer === "arabic1" || targetServer === "egybest") return `https://vidsrc.pm/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}${adParam}`;
-  if (targetServer === "arabic2" || targetServer === "wecima") return `https://vidsrc.market/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}${adParam}`;
-  if (targetServer === "akwam") return `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
+  if (targetServer === "arabic1" || targetServer === "egybest") return `https://vidsrc.stream/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}${adParam}`;
+  if (targetServer === "arabic2" || targetServer === "wecima") return `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
+  if (targetServer === "akwam") return `https://vidsrc.rip/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "fasel") return `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914&autoplay=false${vidlinkAr}`;
 
   const worker = WORKERS[0];
