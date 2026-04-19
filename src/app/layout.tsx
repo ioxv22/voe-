@@ -88,85 +88,6 @@ export default function RootLayout({
     >
       <head>
           <link rel="apple-touch-icon" href="https://i.ibb.co/23Bkgcrx/image.png" />
-          {/* Google AdSense */}
-          <Script
-             async
-             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8867564621500356"
-             crossOrigin="anonymous"
-             strategy="afterInteractive"
-          />
-          {/* Monetag Global Tag */}
-          <Script
-            id="monetag-ad"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `
-                (function(s){
-                  if(window.location.pathname.startsWith('/admin')) return;
-                  if(localStorage.getItem('voz_instant_vip') === 'true' || localStorage.getItem('isVIP') === 'true') return;
-                  s.dataset.zone='10887963';
-                  s.src='https://al5sm.com/tag.min.js';
-                })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
-                
-                // Ad Sanitizer & Redirect Guard (Global)
-                (function() {
-                  const originalOpen = window.open;
-                  window.open = function(url, name, specs) {
-                    const currentOrigin = window.location.origin;
-                    if (url && typeof url === 'string' && !url.includes(currentOrigin) && !url.includes('google') && !url.includes('firebase')) {
-                      console.log('Ad Redirect Filtered: Bouncing back to VOZ.');
-                      // Force suspicious ad-redirects back to our domain
-                      originalOpen(currentOrigin, '_blank');
-                      return null;
-                    }
-                    return originalOpen.apply(this, arguments);
-                  };
-                  
-                  window.addEventListener('blur', function() {
-                      setTimeout(() => {
-                          if (document.activeElement instanceof HTMLIFrameElement) {
-                              console.log('Iframe interaction detected');
-                          }
-                      }, 100);
-                  });
-                })();
-
-                // Ad Janitor: Cleanup for VIP users
-                setInterval(() => {
-                  if(localStorage.getItem('voz_instant_vip') === 'true' || localStorage.getItem('isVIP') === 'true') {
-                    const zones = ['10887963', '229810'];
-                    // Remove propeller/monetag specific injected stuff if possible
-                    var elements = document.querySelectorAll('iframe[src*="propeller"], div[id*="pro-"]');
-                    for(var i=0; i<elements.length; i++) elements[i].remove();
-                    
-                    const adElements = document.querySelectorAll('ins, .ad-unit, [class*="ad-"]');
-                    adElements.forEach(ad => ad.remove());
-                  }
-                }, 2000);
-              `,
-            }}
-          />
-          {/* RichAds Push Notifications with VIP Check */}
-          <Script
-             id="richads-push"
-             strategy="afterInteractive"
-             dangerouslySetInnerHTML={{
-               __html: `
-                (function(){
-                  if(localStorage.getItem('voz_instant_vip') === 'true' || localStorage.getItem('isVIP') === 'true') {
-                    console.log('RichAds Disabled: VIP User detected.');
-                    return;
-                  }
-                  var s = document.createElement('script');
-                  s.type = 'module';
-                  s.async = true;
-                  s.dataset.cfasync = 'false';
-                  s.src = 'https://richinfo.co/richpartners/push/js/rp-cl-ob.js?pubid=1008770&siteid=394345&niche=33';
-                  document.head.appendChild(s);
-                })();
-               `
-             }}
-          />
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
         <ThemeProvider>
@@ -182,7 +103,6 @@ export default function RootLayout({
                   <VozMood />
                   <VozPulse />
                   <ViralShare />
-                  <AntiAdBlock />
                   {children}
                 </MaintenanceGuard>
               </ProfileProvider>

@@ -12,7 +12,7 @@ import { useWatchlist } from "@/hooks/useWatchlist";
 import MovieReviews from "@/components/MovieReviews";
 import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
 import { useAuth } from "@/context/AuthContext";
-import AdSenseUnit from "@/components/AdSenseUnit";
+
 import { useContinueWatching } from "@/hooks/useContinueWatching";
 import { db } from "@/lib/firebase";
 import PremiumPromo from "@/components/PremiumPromo";
@@ -137,20 +137,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                     sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals allow-pointer-lock allow-top-navigation allow-top-navigation-by-user-activation allow-storage-access-by-user-activation"
                 />
 
-                {(!isPremium && !hasClickedIntro) && (
-                    <div 
-                        onClick={() => {
-                            setHasClickedIntro(true);
-                            // Smart Redirect for Monetag logic
-                        }}
-                        className="absolute inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center cursor-pointer group/play"
-                    >
-                        <div className="h-24 w-24 rounded-full bg-primary-600 flex items-center justify-center shadow-2xl shadow-primary-600/40 transform group-hover/play:scale-110 transition duration-500">
-                             <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-black border-b-[15px] border-b-transparent ml-2" />
-                        </div>
-                        <div className="absolute bottom-10 text-white font-black uppercase tracking-[0.3em] text-[10px] animate-pulse italic">Engage Secure Player</div>
-                    </div>
-                )}
+
                 
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button 
@@ -197,7 +184,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
               </div>
             </div>
             
-            <AdSenseUnit />
+
             {similar?.results?.length > 0 && <MovieRow title="More Like This" movies={similar.results} />}
             
             <div className="mt-20">
