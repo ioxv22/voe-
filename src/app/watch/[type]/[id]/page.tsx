@@ -48,6 +48,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   const [watchedEpisodes, setWatchedEpisodes] = useState<string[]>([]);
   const [playerKey, setPlayerKey] = useState(0); // To force reload
   const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+  const [hasClickedIntro, setHasClickedIntro] = useState(false);
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
   const router = useRouter();
 
@@ -119,6 +120,21 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                     frameBorder="0" 
                     sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals allow-pointer-lock allow-top-navigation allow-top-navigation-by-user-activation allow-storage-access-by-user-activation"
                 />
+
+                {(!isPremium && !hasClickedIntro) && (
+                    <div 
+                        onClick={() => {
+                            setHasClickedIntro(true);
+                            // Smart Redirect for Monetag logic
+                        }}
+                        className="absolute inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center cursor-pointer group/play"
+                    >
+                        <div className="h-24 w-24 rounded-full bg-primary-600 flex items-center justify-center shadow-2xl shadow-primary-600/40 transform group-hover/play:scale-110 transition duration-500">
+                             <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-black border-b-[15px] border-b-transparent ml-2" />
+                        </div>
+                        <div className="absolute bottom-10 text-white font-black uppercase tracking-[0.3em] text-[10px] animate-pulse italic">Engage Secure Player</div>
+                    </div>
+                )}
                 
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button 
@@ -190,18 +206,37 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                 {t("arabicServers")}
               </h3>
               <div className="grid grid-cols-2 gap-3">
-                {["egybest", "wecima", "akwam", "fasel"].map(srv => (
-                    <button key={srv} onClick={() => setServer(srv)} className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === srv ? 'bg-green-600 border-green-500 text-white' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-green-600/20'}`}>
-                        {t(srv)}
-                    </button>
-                ))}
+                <button 
+                    onClick={() => setServer("alooy")} 
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === "alooy" ? 'bg-green-600 border-green-500 text-white shadow-lg shadow-green-600/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-green-600/20'}`}
+                >
+                    🚀 Alooy Server (علاوي)
+                </button>
+                <button 
+                    onClick={() => setServer("nebula")} 
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === "nebula" ? 'bg-blue-600 border-blue-500 text-white' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-blue-600/20'}`}
+                >
+                    🪐 Nebula Server
+                </button>
+                <button 
+                    onClick={() => setServer("akwam")} 
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === "akwam" ? 'bg-white/10 border-white/20 text-white' : 'bg-white/5 border-white/5 text-gray-500 hover:text-white hover:bg-white/10'}`}
+                >
+                    Akwam
+                </button>
+                <button 
+                    onClick={() => setServer("fasel")} 
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === "fasel" ? 'bg-white/10 border-white/20 text-white' : 'bg-white/5 border-white/5 text-gray-500 hover:text-white hover:bg-white/10'}`}
+                >
+                    FaselHD
+                </button>
               </div>
             </div>
 
             <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5">
-              <h3 className="text-xs font-black uppercase tracking-widest text-primary-500 mb-6">PROTOCOLS_ENG</h3>
+              <h3 className="text-xs font-black uppercase tracking-widest text-primary-500 mb-6">GLOBAL_SPEED_MIRRORS</h3>
               <div className="grid grid-cols-2 gap-3">
-                {Object.keys(SERVER_MAP).filter(s => !["school", "vpn", "tunnel", "egybest", "wecima", "akwam", "fasel", "arabic1", "arabic2"].includes(s)).map(srv => (
+                {["auto", "vidsrc", "xyz", "vip", "net", "direct"].map(srv => (
                     <button key={srv} onClick={() => setServer(srv)} className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === srv ? 'bg-red-600 border-red-500 text-white' : 'bg-white/5 border-white/5 text-gray-500 hover:text-white'}`}>
                         {srv}
                     </button>

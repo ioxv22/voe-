@@ -49,17 +49,17 @@ export default function Home() {
                 setLoadingContent(false);
 
                 // Fetch Dedicated Rows
-                const [latest, series, arabicSeries, anime, action, horror, topRated, kDrama, khaleeji, family] = await Promise.all([
+                const [latest, series, arabicSeries, anime, action, horror, topRated, turkish, khaleeji, ramadan] = await Promise.all([
                     fetchTMDB(endpoints.movies, `${kidsParams}&sort_by=primary_release_date.desc`),
                     fetchTMDB(endpoints.series, kidsParams),
-                    fetchTMDB("/discover/tv", `with_original_language=ar&sort_by=popularity.desc`), // Broad Arabic Series
+                    fetchTMDB("/discover/tv", `with_original_language=ar&sort_by=popularity.desc`), 
                     fetchTMDB(endpoints.anime, "with_genres=16&with_original_language=ja"),
-                    fetchTMDB("/discover/movie", "with_genres=28&sort_by=popularity.desc"), // Action
-                    fetchTMDB("/discover/movie", "with_genres=27&sort_by=popularity.desc"), // Horror
+                    fetchTMDB("/discover/movie", "with_genres=28&sort_by=popularity.desc"), 
+                    fetchTMDB("/discover/movie", "with_genres=27&sort_by=popularity.desc"), 
                     fetchTMDB(endpoints.topRated, kidsParams),
-                    fetchTMDB("/discover/tv", "with_original_language=ko&sort_by=popularity.desc"), // K-Drama
+                    fetchTMDB("/discover/tv", "with_original_language=tr&sort_by=popularity.desc"), // Turkish
                     fetchTMDB("/discover/tv", "with_original_language=ar&with_origin_country=AE|SA|KW|QA|BH|OM&sort_by=popularity.desc"), // Khaleeji
-                    fetchTMDB("/discover/movie", "with_genres=10751&sort_by=popularity.desc"), // Family
+                    fetchTMDB("/discover/tv", `with_original_language=ar&first_air_date_year=2026&sort_by=popularity.desc`), // Ramadan 2026
                 ]);
                 
                 setData((prev: any) => ({ 
@@ -71,9 +71,10 @@ export default function Home() {
                     action: filterSafeContent(action.results),
                     horror: filterSafeContent(horror.results),
                     topRated: filterSafeContent(topRated.results),
-                    kDrama: filterSafeContent(kDrama.results),
+                    turkish: filterSafeContent(turkish.results),
                     khaleeji: filterSafeContent(khaleeji.results),
-                    family: filterSafeContent(family.results)
+                    ramadan: filterSafeContent(ramadan.results),
+                    top10: filterSafeContent(trending.results).slice(0, 10)
                 }));
             } catch (err) {
                 console.error("Home Data Load Failure:", err);
@@ -120,14 +121,41 @@ export default function Home() {
             />
         )}
 
-        {/* TRENDING ROW */}
-        {data?.trending && (
+        {/* TRENDING ROW (TOP 10 STYLE) */}
+        {data?.top10 && (
             <MovieRow 
-                title={currentProfile.isKids ? "Hot Animations" : "Trending on VOZ"} 
-                movies={data.trending.results} 
+                title="Top 10 in VOZ Today | توب 10 اليوم" 
+                movies={data.top10} 
+                isTop10
             />
         )}
-        
+
+        {/* RAMADAN 2026 SPECIAL */}
+        {data?.ramadan && data.ramadan.length > 0 && (
+            <MovieRow 
+                title="RAMADAN 2026 | مسلسلات رمضان" 
+                movies={data.ramadan} 
+                isHighlighted
+            />
+        )}
+
+        {/* TURKISH DRAMA */}
+        {data?.turkish && (
+            <MovieRow 
+                title="Turkish Protocol | الدراما التركية" 
+                movies={data.turkish} 
+            />
+        )}
+
+        {/* KHALEEJI CONTENT */}
+        {data?.khaleeji && data.khaleeji.length > 0 && (
+            <MovieRow 
+                title={`${t("khaleeji")} | مسلسلات خليجية`} 
+                movies={data.khaleeji} 
+                isHighlighted
+            />
+        )}
+
         {/* CONTINUE WATCHING */}
         {(history && history.length > 0) && (
             <MovieRow 
@@ -145,29 +173,11 @@ export default function Home() {
             />
         )}
 
-        {/* KHALEEJI CONTENT */}
-        {data?.khaleeji && data.khaleeji.length > 0 && (
-            <MovieRow 
-                title={`${t("khaleeji")} | مسلسلات خليجية`} 
-                movies={data.khaleeji} 
-                isHighlighted
-            />
-        )}
-
-        {/* FAMILY CONTENT */}
-        {data?.family && (
-            <MovieRow 
-                title={`${t("family")} | عائلي`} 
-                movies={data.family} 
-            />
-        )}
-
         {/* ARABIC SERIES */}
         {data?.arabicSeries && data.arabicSeries.length > 0 && (
             <MovieRow 
                 title="Arabic TV Hits | مسلسلات عربية" 
                 movies={data.arabicSeries} 
-                isHighlighted
             />
         )}
 

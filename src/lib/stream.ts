@@ -33,7 +33,8 @@ export const SERVER_MAP = {
   akwam: "akwam",
   egybest: "egybest",
   wecima: "wecima",
-  fasel: "faselhd"
+  fasel: "faselhd",
+  alooy: "alooy"
 };
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en", isVIP: boolean = false) => {

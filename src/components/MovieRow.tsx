@@ -8,9 +8,10 @@ interface MovieRowProps {
   title: string;
   movies: any[];
   isHighlighted?: boolean;
+  isTop10?: boolean;
 }
 
-export default function MovieRow({ title, movies, isHighlighted }: MovieRowProps) {
+export default function MovieRow({ title, movies, isHighlighted, isTop10 }: MovieRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   const [showLeft, setShowLeft] = useState(false);
 
@@ -47,10 +48,19 @@ export default function MovieRow({ title, movies, isHighlighted }: MovieRowProps
 
         <div
           ref={rowRef}
-          className="flex gap-4 overflow-x-scroll px-4 hide-scrollbar lg:gap-6 lg:px-12 py-4"
+          className={`flex overflow-x-scroll hide-scrollbar py-4 px-4 lg:px-12 ${isTop10 ? 'gap-12 lg:gap-20' : 'gap-4 lg:gap-6'}`}
         >
-          {safeMovies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
+          {safeMovies.map((movie, index) => (
+             <div key={movie.id} className="relative flex items-center group/card">
+                {isTop10 && (
+                    <span className="absolute -left-10 lg:-left-16 bottom-[-20px] lg:bottom-[-40px] z-0 text-[100px] lg:text-[200px] font-black leading-none text-white opacity-20 select-none pointer-events-none italic tracking-tighter stroke-primary-600 stroke-1">
+                        {index + 1}
+                    </span>
+                )}
+                <div className="relative z-10 transition-transform duration-500 group-hover/card:scale-110">
+                    <MovieCard movie={movie} />
+                </div>
+            </div>
           ))}
         </div>
 

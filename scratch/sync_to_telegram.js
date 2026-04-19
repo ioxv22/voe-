@@ -1,6 +1,6 @@
 const TG_TOKEN = "8640789206:AAGHTPEsXEQRKBFMg6nyJZrgazeuVja9Hcc";
 const CHAT_ID = "-1003910077563";
-const TMDB_KEY = "f207f2ef84a1e948842e61a66a7b21ec";
+const TMDB_KEY = "4d8a341b16e8d0427445100613dd7ba2";
 
 async function postToTelegram() {
     console.log("🚀 Starting Bulk Sync to Telegram...");
