@@ -66,7 +66,7 @@ export default function Footer() {
                     <p className="text-white font-black text-lg">حمد العبدولي</p>
                     <p className="text-[10px] text-gray-500 mt-2 hover:text-white transition">Telegram: @VOZSTREAM</p>
                 </div>
-                <p className="text-[10px] text-gray-600 uppercase tracking-widest">&copy; 2026 VOZ STREAM. ALL RIGHTS RESERVED.</p>
+                <p className="text-[10px] text-gray-600 uppercase tracking-widest">&copy; 2026 VOZ STREAM. ALL RIGHTS RESERVED. [VOZ PROTOCOL V. 2026.4.19]</p>
             </div>
           </div>
         </div>
