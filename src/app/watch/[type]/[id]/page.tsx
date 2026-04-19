@@ -63,6 +63,9 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                     const firstSeason = item.seasons.find((s: any) => s.season_number > 0) || item.seasons[0];
                     setSeason(firstSeason.season_number);
                 }
+                if (item.original_language === 'ar') {
+                    setServer("egybest");
+                }
                 if (type === 'movie') {
                     saveProgress(item, 'movie');
                 }
@@ -182,10 +185,24 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                 </button>
             </div>
 
+            <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5 bg-gradient-to-br from-red-600/10 to-green-600/10">
+              <h3 className="text-xs font-black uppercase tracking-widest text-green-500 mb-6 flex items-center gap-2">
+                <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                {t("arabicServers")}
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {["egybest", "wecima", "akwam", "fasel"].map(srv => (
+                    <button key={srv} onClick={() => setServer(srv)} className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === srv ? 'bg-green-600 border-green-500 text-white' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-green-600/20'}`}>
+                        {t(srv)}
+                    </button>
+                ))}
+              </div>
+            </div>
+
             <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5">
               <h3 className="text-xs font-black uppercase tracking-widest text-primary-500 mb-6">PROTOCOLS_ENG</h3>
               <div className="grid grid-cols-2 gap-3">
-                {Object.keys(SERVER_MAP).filter(s => !["school", "vpn", "tunnel"].includes(s)).map(srv => (
+                {Object.keys(SERVER_MAP).filter(s => !["school", "vpn", "tunnel", "egybest", "wecima", "akwam", "fasel", "arabic1", "arabic2"].includes(s)).map(srv => (
                     <button key={srv} onClick={() => setServer(srv)} className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === srv ? 'bg-red-600 border-red-500 text-white' : 'bg-white/5 border-white/5 text-gray-500 hover:text-white'}`}>
                         {srv}
                     </button>

@@ -38,6 +38,11 @@ const translations: Record<Language, Record<string, string>> = {
     khaleeji: "Khaleeji",
     action: "Action",
     comedy: "Comedy",
+    arabicServers: "Arabic Servers",
+    egybest: "EgyBest",
+    wecima: "WeCima",
+    akwam: "Akwam",
+    fasel: "FaselHD",
   },
   ar: {
     home: "الرئيسية",
@@ -65,6 +70,11 @@ const translations: Record<Language, Record<string, string>> = {
     khaleeji: "خليجي",
     action: "أكشن",
     comedy: "كوميدي",
+    arabicServers: "سيرفرات عربية",
+    egybest: "إيجي بست",
+    wecima: "وي سيما",
+    akwam: "أكوام",
+    fasel: "فاصل إتش دي",
   },
   fr: {
     home: "Accueil",

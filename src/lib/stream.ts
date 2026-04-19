@@ -30,7 +30,10 @@ export const SERVER_MAP = {
   tunnel: "tunnel",
   arabic1: "al-primary",
   arabic2: "al-mirror",
-  akwam: "akwam"
+  akwam: "akwam",
+  egybest: "egybest",
+  wecima: "wecima",
+  fasel: "faselhd"
 };
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en", isVIP: boolean = false) => {
@@ -57,9 +60,10 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   }
 
   // Arabic Content Specialists
-  if (targetServer === "arabic1") return `https://vidsrc.stream/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
-  if (targetServer === "arabic2") return `https://vidsrc.icu/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
+  if (targetServer === "arabic1" || targetServer === "egybest") return `https://vidsrc.stream/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
+  if (targetServer === "arabic2" || targetServer === "wecima") return `https://vidsrc.icu/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "akwam") return `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
+  if (targetServer === "fasel") return `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914&autoplay=false`;
 
   const worker = WORKERS[0];
   const serverParam = SERVER_MAP[targetServer as keyof typeof SERVER_MAP] || "nebula";
