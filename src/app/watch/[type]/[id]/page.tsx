@@ -120,7 +120,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                     className="w-full h-full" 
                     allowFullScreen 
                     frameBorder="0" 
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals allow-pointer-lock allow-top-navigation-by-user-activation"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-modals allow-pointer-lock allow-top-navigation allow-top-navigation-by-user-activation allow-storage-access-by-user-activation"
                 />
                 
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
