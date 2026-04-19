@@ -29,9 +29,9 @@ export default function VisitorTracker() {
                 return data.country;
             },
             async () => {
-                const res = await fetch("http://ip-api.com/json/");
+                const res = await fetch("https://freeipapi.com/api/json");
                 const data = await res.json();
-                return data.country;
+                return data.countryName;
             }
         ];
 
