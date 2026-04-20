@@ -48,11 +48,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   let finalUrl = "";
 
   // Unified Anti-Ad Mirror Strategy
-  if (targetServer === "auto" || targetServer === "vidlink") finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914${adParam}`;
-  else if (targetServer === "nebula" || targetServer === "multi") {
-      const worker = WORKERS[Math.floor(Math.random() * WORKERS.length)];
-      const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-      finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
+  if (targetServer === "auto" || targetServer === "vidlink" || targetServer === "nebula" || targetServer === "multi") {
+      finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914${adParam}`;
   }
   else if (targetServer === "vidsrc") finalUrl = `https://vidsrc.to/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
   else if (targetServer === "embedsu") finalUrl = `https://embed.su/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
