@@ -1,8 +1,6 @@
 const WORKERS = [
-  "https://nebula-proxy.xhx1997.workers.dev",
-  "https://lucky-pond-0426.xhx1997.workers.dev",
-  "https://metadata-proxy.workers.dev",
-  "https://voz-direct.worker.stream"
+  "https://voz-direct.worker.stream",
+  "https://metadata-proxy.workers.dev"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
 
