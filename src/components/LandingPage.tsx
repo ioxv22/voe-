@@ -119,14 +119,18 @@ export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () 
                         <span className="relative bg-[#0b0b0b] px-4 text-[10px] text-gray-600 uppercase tracking-widest font-black">Fast Connect</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                         <button type="button" onClick={() => window.open('https://t.me/VOZSTREAM', '_blank')} className="flex items-center justify-center gap-2 bg-[#229ED9]/10 border border-[#229ED9]/20 p-3 rounded-xl hover:bg-[#229ED9]/20 transition group">
                             <Send size={18} className="text-[#229ED9] group-hover:scale-110 transition" />
                             <span className="text-[10px] font-bold text-white uppercase">Telegram</span>
                         </button>
+                        <button type="button" onClick={() => window.open('https://t.me/VOZSTREAM', '_blank')} className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 p-3 rounded-xl hover:bg-white/10 transition group">
+                            <svg viewBox="0 0 384 512" width="16" height="16" className="fill-white group-hover:scale-110 transition"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 21.8-88.5 21.8-11.4 0-51.1-20.8-83.6-20.4-42.3.6-81.4 24.7-103.1 62.1-46.3 79.7-11.8 196.4 33.1 261.3 21.9 31.7 48 67.2 81.3 66 32.5-1.2 44.8-20.8 84.1-20.8 39.4 0 50.7 20.8 84.7 20.1 34.7-.7 57.5-32.2 79.5-64 25.4-37 35.9-72.9 36.2-74.8-.8-.4-68.8-26.4-69-106zM230.3 77.9c18.5-22.5 31-53.8 27.6-85-26.7 1.1-59.1 17.8-78.2 40.2-17.1 20-32 51.5-28 82 29.8 2.3 60.1-14.7 78.6-37.2z"/></svg>
+                            <span className="text-[10px] font-bold text-white uppercase">Apple</span>
+                        </button>
                         <button type="button" onClick={() => window.open('https://t.me/VOZSTREAM', '_blank')} className="flex items-center justify-center gap-2 bg-[#FFFC00]/10 border border-[#FFFC00]/20 p-3 rounded-xl hover:bg-[#FFFC00]/20 transition group">
                             <Ghost size={18} className="text-[#FFFC00] group-hover:scale-110 transition" />
-                            <span className="text-[10px] font-bold text-white uppercase">Snapchat</span>
+                            <span className="text-[10px] font-bold text-white uppercase">Snap</span>
                         </button>
                     </div>
                 </form>

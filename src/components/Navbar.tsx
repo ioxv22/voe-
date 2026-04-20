@@ -33,8 +33,10 @@ const LANGUAGES: { code: Language; label: string; flag: string }[] = [
 ];
 
 import NotificationHub from "./NotificationHub";
+import VozVipModal from "./VozVipModal";
 
 export default function Navbar() {
+  const [isVipOpen, setIsVipOpen] = useState(false);
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   
@@ -209,10 +211,21 @@ export default function Navbar() {
           {theme === "dark" ? <Sun size={20} strokeWidth={2.5} /> : <Moon size={20} strokeWidth={2.5} />}
         </button>
 
+        {!isPremium && user && (
+            <button 
+                onClick={() => setIsVipOpen(true)}
+                className="hidden lg:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-[10px] font-black uppercase rounded-full shadow-lg shadow-yellow-500/20 hover:scale-105 transition active:scale-95"
+            >
+                <Crown size={14} className="fill-black" />
+                GO VIP
+            </button>
+        )}
+
         <button onClick={() => setIsSearchOpen(true)} className="cursor-pointer hover:text-foreground">
           <Search size={20} strokeWidth={2.5} />
         </button>
         
+        <VozVipModal isOpen={isVipOpen} onClose={() => setIsVipOpen(false)} />
         <NotificationHub />
         
         {user && currentProfile ? (
