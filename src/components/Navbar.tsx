@@ -32,6 +32,8 @@ const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: "ru", label: "Русский", flag: "🇷🇺" },
 ];
 
+import NotificationHub from "./NotificationHub";
+
 export default function Navbar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -211,14 +213,7 @@ export default function Navbar() {
           <Search size={20} strokeWidth={2.5} />
         </button>
         
-        <button onClick={handleOpenNotif} className="relative cursor-pointer hover:text-foreground transition active:scale-90">
-          <Bell size={20} strokeWidth={2.5} />
-          {notifCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-black text-white shadow-lg animate-bounce">
-                {notifCount}
-            </span>
-          )}
-        </button>
+        <NotificationHub />
         
         {user && currentProfile ? (
             <div className="flex items-center gap-3">

@@ -22,6 +22,8 @@ interface UserProfile {
   isKids: boolean;
   pin?: string;
   myList?: any[]; // Array of movie objects
+  likes?: number[]; // Array of movie IDs
+  dislikes?: number[]; // Array of movie IDs
 }
 
 interface ProfileContextType {
@@ -32,6 +34,7 @@ interface ProfileContextType {
   updateProfile: (id: string, name: string, avatar: string, isKids: boolean, pin?: string) => Promise<void>;
   deleteProfile: (id: string) => Promise<void>;
   toggleMyList: (movie: any) => Promise<void>;
+  toggleLike: (movie: any, isLike: boolean) => Promise<void>;
   loading: boolean;
 }
 
@@ -172,6 +175,45 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         await updateDoc(docRef, {
             myList: isAdded ? arrayRemove(movie) : arrayUnion(movie)
         }).catch(err => console.error("Update List Error", err));
+    }
+  };
+
+  const toggleLike = async (movie: any, isLike: boolean) => {
+    if (!currentProfile || !user) return;
+
+    const likes = currentProfile.likes || [];
+    const dislikes = currentProfile.dislikes || [];
+    const movieId = movie.id;
+
+    let updatedLikes = [...likes];
+    let updatedDislikes = [...dislikes];
+
+    if (isLike) {
+        if (likes.includes(movieId)) {
+            updatedLikes = updatedLikes.filter(id => id !== movieId);
+        } else {
+            updatedLikes.push(movieId);
+            updatedDislikes = updatedDislikes.filter(id => id !== movieId);
+        }
+    } else {
+        if (dislikes.includes(movieId)) {
+            updatedDislikes = updatedDislikes.filter(id => id !== movieId);
+        } else {
+            updatedDislikes.push(movieId);
+            updatedLikes = updatedLikes.filter(id => id !== movieId);
+        }
+    }
+
+    const updatedProfile = { ...currentProfile, likes: updatedLikes, dislikes: updatedDislikes };
+    setCurrentProfile(updatedProfile);
+    setProfiles(prev => prev.map(p => p.id === currentProfile.id ? updatedProfile : p));
+
+    if (!isGuest) {
+        const docRef = doc(db, "users", user.uid, "profiles", currentProfile.id);
+        await updateDoc(docRef, {
+            likes: updatedLikes,
+            dislikes: updatedDislikes
+        });
     }
   };
 

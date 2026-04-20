@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense, Component, useState, useEffect, use } from "react";
-import { Download } from "lucide-react";
+import { Download, ThumbsUp, ThumbsDown, Check, Plus, Share2, CheckCircle2, Play, Users } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import MovieRow from "@/components/MovieRow";
 import Footer from "@/components/Footer";
@@ -224,28 +224,58 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-4">
-                <button onClick={() => isInWatchlist(item.id) ? removeFromWatchlist(item.id) : addToWatchlist(item)} className="h-20 px-12 rounded-3xl bg-white/5 border border-white/10 font-black uppercase text-xs hover:bg-white/10 transition">
-                    {isInWatchlist(item.id) ? "✓ IN YOUR LIST" : "+ WATCHLIST"}
-                </button>
+              <div className="flex flex-wrap gap-4 items-center">
                 <button 
-                    onClick={() => setIsDownloadOpen(true)}
-                    className="h-20 px-12 rounded-3xl bg-white/5 border border-white/10 font-black uppercase text-xs flex items-center gap-2 hover:bg-white/10 transition group"
+                    onClick={() => toggleMyList(item)}
+                    className={`h-20 px-10 rounded-3xl font-black uppercase text-xs transition-all transform active:scale-95 flex items-center gap-3 ${currentProfile?.myList?.some(m => m.id === item.id) ? 'bg-white text-black' : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'}`}
                 >
-                    <Download size={16} className="text-primary-500 group-hover:scale-125 transition" />
-                    DOWNLOAD_HD
+                    {currentProfile?.myList?.some(m => m.id === item.id) ? <CheckCircle2 size={20} className="text-green-600" /> : <Plus size={20} />}
+                    {currentProfile?.myList?.some(m => m.id === item.id) ? 'In My List' : 'Watchlist'}
                 </button>
-                <button 
-                    onClick={() => {
-                        addDoc(collection(db, "rooms"), {
-                            name: `${user?.displayName || "Guest"}'s Cinema`, hostId: user?.uid || "guest",
-                            createdAt: serverTimestamp(), currentMovie: { id: item.id, type: type }
-                        }).then(d => router.push(`/rooms/${d.id}`));
-                    }}
-                    className="h-20 px-12 rounded-3xl bg-red-600 font-black uppercase text-sm shadow-2xl shadow-red-600/30 hover:scale-105 transition"
-                >
-                    🎥 PARTY_MODE
-                </button>
+
+                <div className="flex items-center gap-1 p-2 bg-white/5 rounded-3xl border border-white/10 h-20">
+                    <button 
+                        onClick={() => toggleLike(item, true)}
+                        className={`p-4 rounded-2xl transition-all ${currentProfile?.likes?.includes(item.id) ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
+                        title="I Like This"
+                    >
+                        <ThumbsUp size={20} fill={currentProfile?.likes?.includes(item.id) ? "currentColor" : "none"} />
+                    </button>
+                    <div className="w-[1px] h-6 bg-white/10" />
+                    <button 
+                        onClick={() => toggleLike(item, false)}
+                        className={`p-4 rounded-2xl transition-all ${currentProfile?.dislikes?.includes(item.id) ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
+                        title="Not for me"
+                    >
+                        <ThumbsDown size={20} fill={currentProfile?.dislikes?.includes(item.id) ? "currentColor" : "none"} />
+                    </button>
+                </div>
+
+                <div className="flex gap-2 h-20">
+                    <button 
+                        onClick={() => setIsDownloadOpen(true)}
+                        className="w-16 h-full flex items-center justify-center rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition group"
+                    >
+                        <Download size={20} className="text-gray-400 group-hover:text-primary-500 transition" />
+                    </button>
+                    <button 
+                        onClick={() => setIsShareOpen(true)}
+                        className="w-16 h-full flex items-center justify-center rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition group"
+                    >
+                        <Share2 size={20} className="text-gray-400 group-hover:text-blue-500 transition" />
+                    </button>
+                    <button 
+                        onClick={() => {
+                            addDoc(collection(db, "rooms"), {
+                                name: `${user?.displayName || "Guest"}'s Cinema`, hostId: user?.uid || "guest",
+                                createdAt: serverTimestamp(), currentMovie: { id: item.id, type: type }
+                            }).then(d => router.push(`/rooms/${d.id}`));
+                        }}
+                        className="h-full px-8 rounded-3xl bg-red-600 font-black uppercase text-xs flex items-center gap-2 hover:scale-105 transition shadow-xl shadow-red-600/20"
+                    >
+                        <Users size={18} /> PARTY
+                    </button>
+                </div>
               </div>
             </div>
             
