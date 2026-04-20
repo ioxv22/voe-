@@ -11,7 +11,6 @@ export const SERVER_MAP = {
   beta: "fast",
   alpha: "primary",
   vidsrc: "vidsrc",
-  embedsu: "embedsu",
   vidsrcme: "vidsrcme",
   auto: "auto",
   school: "school",
@@ -57,7 +56,6 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
       finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914${adParam}`;
   }
   else if (targetServer === "vidsrc") finalUrl = `https://vidsrc.to/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
-  else if (targetServer === "embedsu") finalUrl = `https://embed.su/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
   else if (targetServer === "vidsrcme") finalUrl = type === "movie" ? `https://vidsrc.me/embed/movie?tmdb=${id}${adParam}` : `https://vidsrc.me/embed/tv?tmdb=${id}&s=${season}&e=${episode}${adParam}`;
   
   else if (targetServer === "school" || targetServer === "vpn" || targetServer === "tunnel") {
