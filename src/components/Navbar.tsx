@@ -123,11 +123,11 @@ export default function Navbar() {
             )}>
               <div className="rounded-2xl border border-white/10 bg-black/95 backdrop-blur-3xl p-2 shadow-2xl ring-1 ring-white/5">
                 <Link href="/browse"><button className="w-full px-4 py-2.5 text-left text-[10px] font-black uppercase text-primary-500 border-b border-white/5 mb-1 hover:bg-white/5 transition rounded-t-xl">{t("browse")} All</button></Link>
-                <Link href="/browse?genre=khaleeji"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">🌴 {t("khaleeji")}</button></Link>
-                <Link href="/browse?genre=family"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">👨‍👩‍👧 {t("family")}</button></Link>
-                <Link href="/browse?genre=horror"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">👻 {t("horror")}</button></Link>
-                <Link href="/browse?genre=action"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">💥 {t("action")}</button></Link>
-                <Link href="/browse?genre=comedy"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">😂 {t("comedy")}</button></Link>
+                <Link href="/browse/genre/khaleeji"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">🌴 {t("khaleeji")}</button></Link>
+                <Link href="/browse/genre/family"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">👨‍👩‍👧 {t("family")}</button></Link>
+                <Link href="/browse/genre/horror"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">👻 {t("horror")}</button></Link>
+                <Link href="/browse/genre/action"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">💥 {t("action")}</button></Link>
+                <Link href="/browse/genre/comedy"><button className="w-full px-4 py-2.5 text-left text-xs hover:bg-white/5 transition rounded-xl flex items-center gap-3">😂 {t("comedy")}</button></Link>
               </div>
             </div>
           </li>
