@@ -127,7 +127,7 @@ export default function Home() {
 
         
         {/* MY LIST - PERSISTENT COLLECTION */}
-        {currentProfile.myList && currentProfile.myList.length > 0 && (
+        {currentProfile?.myList && currentProfile.myList.length > 0 && (
             <MovieRow 
                 title="My List" 
                 movies={currentProfile.myList} 
@@ -182,7 +182,7 @@ export default function Home() {
         {/* NEW RELEASES */}
         {data?.latest && (
             <MovieRow 
-                title={currentProfile.isKids ? "New for Kids" : "Latest Movies"} 
+                title={currentProfile?.isKids ? "New for Kids" : "Latest Movies"} 
                 movies={data.latest} 
             />
         )}
@@ -206,7 +206,7 @@ export default function Home() {
         {/* ANIME */}
         {data?.anime && (
              <MovieRow 
-                title={currentProfile.isKids ? "Best for Kids" : "Anime Protocol | انمي"} 
+                title={currentProfile?.isKids ? "Best for Kids" : "Anime Protocol | انمي"} 
                 movies={data.anime} 
             />
         )}
@@ -222,7 +222,7 @@ export default function Home() {
         {/* TV SERIES */}
         {data?.series && (
             <MovieRow 
-                title={currentProfile.isKids ? "Fun Series" : "Binge-worthy TV Series"} 
+                title={currentProfile?.isKids ? "Fun Series" : "Binge-worthy TV Series"} 
                 movies={data.series} 
             />
         )}
