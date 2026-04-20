@@ -1,6 +1,5 @@
 const WORKERS = [
-  "https://voz-direct.worker.stream",
-  "https://metadata-proxy.workers.dev"
+  "https://voz-direct.worker.stream"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
 

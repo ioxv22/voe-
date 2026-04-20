@@ -20,7 +20,7 @@ function BrowseContent() {
     async function load() {
         setLoading(true);
         const typeParam = searchParams.get("type"); // movie or tv
-        let endpoint = typeParam === "tv" ? endpoints.tv : endpoints.movies;
+        let endpoint = typeParam === "tv" ? endpoints.series : endpoints.movies;
         let params = "sort_by=popularity.desc";
         
         if (genreParam === "khaleeji") {
