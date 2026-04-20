@@ -58,16 +58,34 @@ export default function MovieCard({ movie, rank }: MovieCardProps) {
             </div>
         )}
 
-        {/* Top 10 Badge */}
+        {/* Quality & Type Badges (Stig Style) */}
+        <div className="absolute top-2 right-2 z-10 flex flex-col gap-1 items-end pointer-events-none">
+            <div className="px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[8px] font-black text-primary-500 uppercase tracking-widest">
+                {movie.media_type === "tv" || movie.first_air_date ? "Series" : "Movie"}
+            </div>
+            <div className="px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[8px] font-black text-green-500 uppercase tracking-widest">
+                {(movie.vote_average || 0) > 7.5 ? "4K Ultra" : "Full HD"}
+            </div>
+        </div>
+
+        {/* Rank Overlay (Integrated) */}
         {rank && rank <= 10 && (
-          <div className="absolute top-2 left-2 z-10 flex items-center gap-1 rounded-md bg-primary-600 px-2 py-1 text-[10px] font-black text-white shadow-lg shadow-primary-900/40">
-            <TrendingUp size={10} /> TOP {rank}
+          <div className="absolute top-2 left-2 z-10 flex items-center gap-1 rounded-md bg-primary-600 px-2 py-1 text-[10px] font-black text-white shadow-lg">
+            {rank}
           </div>
         )}
 
-        {/* Hover Info Overlay */}
-        <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black via-black/40 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <div className="flex gap-2">
+        {/* Persistent Bottom Bar */}
+        {!rank && (
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-6 transition-transform duration-300 group-hover:translate-y-full">
+                <p className="text-[10px] font-black text-white uppercase italic tracking-tighter line-clamp-1">{movie.title || movie.name}</p>
+                <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest mt-0.5 italic">VOZ Premium Feed</p>
+            </div>
+        )}
+
+        {/* Advanced Hover Overlay */}
+        <div className="absolute inset-0 flex flex-col justify-end bg-black/40 backdrop-blur-[2px] p-4 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:backdrop-blur-[6px]">
+          <div className="flex gap-2 transform translate-y-4 transition-transform duration-300 group-hover:translate-y-0">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-white transition hover:bg-primary-700 shadow-lg">
                   <Play fill="currentColor" size={16} className={isRTL ? "rotate-180" : ""} />
               </div>
@@ -75,7 +93,7 @@ export default function MovieCard({ movie, rank }: MovieCardProps) {
                   onClick={handleFavorite}
                   className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition shadow-lg ${
                       isFavorited 
-                      ? 'bg-red-600 border-red-600 text-white' 
+                      ? 'bg-red-600 border-red-600 text-white shadow-red-600/20' 
                       : 'bg-black/40 border-white/30 text-white hover:border-white'
                   }`}
               >
@@ -88,10 +106,16 @@ export default function MovieCard({ movie, rank }: MovieCardProps) {
                   <Share2 size={16} />
               </button>
           </div>
-          <p className="mt-3 text-sm font-black text-white line-clamp-1 italic uppercase tracking-tighter">{movie.title || movie.name}</p>
-          <div className="flex items-center gap-2 text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-widest">
-              <span className="text-primary-500 italic">⭐ {movie.vote_average?.toFixed(1)}</span>
-              <span className="bg-white/10 px-1.5 py-0.5 rounded text-[8px]">{movie.release_date?.slice(0, 4) || movie.first_air_date?.slice(0, 4)}</span>
+          
+          <div className="mt-4 transform translate-y-4 transition-all duration-300 delay-75 group-hover:translate-y-0">
+              <p className="text-sm font-black text-white italic uppercase tracking-tighter line-clamp-2 leading-tight">
+                  {movie.title || movie.name}
+              </p>
+              <div className="flex items-center gap-3 text-[9px] text-gray-400 font-bold mt-2 uppercase tracking-widest italic">
+                  <span className="text-yellow-500">⭐ {movie.vote_average?.toFixed(1) || "7.5"}</span>
+                  <span>{movie.release_date?.slice(0, 4) || movie.first_air_date?.slice(0, 4) || "2026"}</span>
+                  <span className="border border-white/20 px-1 rounded text-[7px]">CC</span>
+              </div>
           </div>
         </div>
       </div>

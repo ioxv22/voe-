@@ -52,11 +52,14 @@ export default function MovieRow({ title, movies, isHighlighted, isTop10 }: Movi
         >
           {safeMovies.map((movie, index) => (
              <div key={movie.id} className="relative flex items-center group/card">
-                {isTop10 && (
-                    <span className="absolute -left-12 sm:-left-16 lg:-left-20 bottom-[-10px] sm:bottom-[-20px] lg:bottom-[-40px] z-0 text-[80px] sm:text-[140px] lg:text-[220px] font-black leading-none text-white opacity-25 select-none pointer-events-none italic tracking-tighter stroke-primary-600 stroke-1">
+                 {isTop10 && (
+                    <span 
+                      style={{ WebkitTextStroke: "2px rgba(255,255,255,0.4)", textStroke: "2px rgba(255,255,255,0.4)" }}
+                      className="absolute -left-10 sm:-left-12 lg:-left-16 bottom-[-2px] sm:bottom-[-4px] lg:bottom-[-10px] z-0 text-[100px] sm:text-[160px] lg:text-[220px] font-black leading-none text-transparent select-none pointer-events-none italic tracking-tighter drop-shadow-[0_0_20px_rgba(0,0,0,0.8)]"
+                    >
                         {index + 1}
                     </span>
-                )}
+                 )}
                 <div className="relative z-10 transition-transform duration-500 group-hover/card:scale-105">
                     <MovieCard movie={movie} />
                 </div>
