@@ -42,10 +42,8 @@ export default function MovieCard({ movie, rank }: MovieCardProps) {
   
   return (
     <Link href={`/watch/${type}/${movie.id}`}>
-      <motion.div
-        whileHover={{ scale: 1.05, zIndex: 30 }}
-        transition={{ duration: 0.3 }}
-        className="relative aspect-[2/3] w-[110px] sm:w-[150px] md:w-[170px] lg:w-[200px] flex-shrink-0 cursor-pointer overflow-hidden rounded-xl bg-[#121212] group shadow-xl"
+      <div
+        className="movie-card-hover relative aspect-[2/3] w-[140px] sm:w-[160px] md:w-[180px] lg:w-[220px] flex-shrink-0 cursor-pointer overflow-hidden rounded-2xl bg-[#0a0a0a] group shadow-2xl border border-white/5"
       >
         {imageUrl ? (
             <img
@@ -96,7 +94,7 @@ export default function MovieCard({ movie, rank }: MovieCardProps) {
               <span className="bg-white/10 px-1.5 py-0.5 rounded text-[8px]">{movie.release_date?.slice(0, 4) || movie.first_air_date?.slice(0, 4)}</span>
           </div>
         </div>
-      </motion.div>
+      </div>
     </Link>
   );
 }

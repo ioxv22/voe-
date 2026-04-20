@@ -53,8 +53,32 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   const [playerKey, setPlayerKey] = useState(0); // To force reload
   const [isDownloadOpen, setIsDownloadOpen] = useState(false);
   const [hasClickedIntro, setHasClickedIntro] = useState(false);
+  const [isCinemaMode, setIsCinemaMode] = useState(false);
+  const [showNextPrompt, setShowNextPrompt] = useState(false);
+  const [countdown, setCountdown] = useState(10);
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
   const router = useRouter();
+
+  // Auto-Next Logic for TV Shows
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showNextPrompt && countdown > 0) {
+        timer = setInterval(() => setCountdown(c => c - 1), 1000);
+    } else if (showNextPrompt && countdown === 0) {
+        handleNextEpisode();
+    }
+    return () => clearInterval(timer);
+  }, [showNextPrompt, countdown]);
+
+  const handleNextEpisode = () => {
+      const nextEp = episodes.find(e => e.episode_number === episode + 1);
+      if (nextEp) {
+          setEpisode(nextEp.episode_number);
+          setShowNextPrompt(false);
+          setCountdown(10);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+  };
 
   useEffect(() => {
     async function init() {
@@ -127,10 +151,10 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   return (
     <main className="min-h-screen bg-[#020202] text-white">
       <Navbar />
-      <div className="pt-28 px-4 lg:px-12 pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-          <div className="lg:col-span-3 space-y-10">
-            <div className="relative group aspect-video w-full rounded-[40px] overflow-hidden bg-black border border-white/5 shadow-2xl">
+      <div className={`transition-all duration-700 ${isCinemaMode ? 'pt-0' : 'pt-28 px-4 lg:px-12'} pb-20`}>
+        <div className={`grid grid-cols-1 ${isCinemaMode ? 'lg:grid-cols-1' : 'lg:grid-cols-4'} gap-12`}>
+          <div className={`${isCinemaMode ? 'lg:col-span-1' : 'lg:col-span-3'} space-y-10`}>
+            <div className={`relative group transition-all duration-700 overflow-hidden bg-black border border-white/5 shadow-2xl ${isCinemaMode ? 'h-[85vh] w-full rounded-none' : 'aspect-video w-full rounded-[40px]'}`}>
                 <iframe 
                     key={playerKey}
                     src={playerUrl} 
@@ -140,38 +164,75 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                     sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock allow-top-navigation allow-top-navigation-by-user-activation allow-storage-access-by-user-activation"
                 />
 
+                <div className="absolute bottom-10 left-10 right-10 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                    <div className="flex gap-4">
+                        <button 
+                            onClick={() => setIsCinemaMode(!isCinemaMode)}
+                            className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black uppercase px-6 py-3 rounded-full border border-white/10 flex items-center gap-2 hover:bg-primary-600 hover:border-primary-500 transition"
+                        >
+                            {isCinemaMode ? "Exit Cinema" : "Cinema Mode"}
+                        </button>
+                        <button 
+                            onClick={() => setPlayerKey(k => k + 1)}
+                            className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black uppercase px-6 py-3 rounded-full border border-white/10 hover:bg-white/20 transition"
+                        >
+                            🔄 RELOAD
+                        </button>
+                    </div>
 
-                
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                        onClick={() => setPlayerKey(k => k + 1)}
-                        className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black uppercase px-4 py-2 rounded-full border border-white/10"
-                    >
-                        🔄 RELOAD_IFRAME
-                    </button>
+                    {type === 'tv' && episode < episodes.length && (
+                        <button 
+                            onClick={() => setShowNextPrompt(true)}
+                            className="bg-primary-600 text-white text-[10px] font-black uppercase px-6 py-3 rounded-full shadow-lg shadow-primary-900/40 hover:scale-105 transition"
+                        >
+                            Next Episode →
+                        </button>
+                    )}
                 </div>
+
+                {showNextPrompt && (
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-xl z-[60] flex flex-col items-center justify-center text-center p-12">
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 mb-2">Next Episode Starting In</p>
+                        <h2 className="text-8xl font-black italic mb-8">{countdown}</h2>
+                        <div className="flex gap-4">
+                            <button onClick={handleNextEpisode} className="bg-primary-600 px-12 py-5 rounded-full font-black uppercase text-sm">Play Now</button>
+                            <button onClick={() => setShowNextPrompt(false)} className="bg-white/10 px-12 py-5 rounded-full font-black uppercase text-sm border border-white/10">Cancel</button>
+                        </div>
+                    </div>
+                )}
             </div>
 
-            <div className="flex flex-col lg:flex-row justify-between items-start gap-8 bg-white/[0.02] p-10 rounded-[40px] border border-white/5">
+            <div className={`flex flex-col lg:flex-row justify-between items-start gap-8 bg-white/[0.02] p-10 rounded-[40px] border border-white/5 ${isCinemaMode ? 'mx-4 lg:mx-12' : ''}`}>
               <div className="flex-1">
-                <h1 className="text-4xl lg:text-6xl font-black italic uppercase tracking-tighter mb-4">{String(item.title || item.name)}</h1>
-                <p className="text-gray-400 text-sm lg:text-lg italic line-clamp-3">{String(item.overview || "No description available.")}</p>
-                <div className="flex gap-6 mt-8 font-black italic color-gray-500 text-sm">
-                    <span className="text-primary-500">⭐ {Number(item.vote_average).toFixed(1)}</span>
-                    <span>📅 {String(item.release_date || item.first_air_date).slice(0, 4)}</span>
+                <div className="flex items-center gap-3 mb-6">
+                    <span className="bg-primary-600 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase italic shadow-lg">4K ULTRA HD</span>
+                    <span className="bg-white/10 text-gray-400 px-3 py-1 rounded-lg text-[10px] font-black uppercase">IMDb {Number(item.vote_average).toFixed(1)}</span>
+                    <span className="bg-white/10 text-gray-400 px-3 py-1 rounded-lg text-[10px] font-black uppercase">{item.runtime || item.episode_run_time?.[0] || '120'} MIN</span>
+                </div>
+                <h1 className="text-4xl lg:text-7xl font-black italic uppercase tracking-tighter mb-6 leading-none">{String(item.title || item.name)}</h1>
+                <div className="flex flex-wrap gap-2 mb-8">
+                    {item.genres?.map((g: any) => (
+                        <span key={g.id} className="text-[10px] font-black uppercase text-gray-500 border border-white/10 px-4 py-2 rounded-full italic hover:text-white hover:border-white/30 transition">{g.name}</span>
+                    ))}
+                </div>
+                <p className="text-gray-400 text-sm lg:text-lg italic line-clamp-3 leading-relaxed">{String(item.overview || "No description available.")}</p>
+                <div className="flex gap-6 mt-8 font-black italic text-gray-500 text-sm">
+                    <span className="text-primary-500">📅 {String(item.release_date || item.first_air_date).slice(0, 4)}</span>
+                    <span>🌍 {item.production_countries?.[0]?.name || item.origin_country?.[0] || 'Global'}</span>
+                    <span>🎞️ {item.status}</span>
                 </div>
               </div>
 
-              <div className="flex gap-4">
-                <button onClick={() => isInWatchlist(item.id) ? removeFromWatchlist(item.id) : addToWatchlist(item)} className="h-16 px-10 rounded-3xl bg-white/5 border border-white/10 font-black uppercase text-xs">
-                    {isInWatchlist(item.id) ? "✓ LISTED" : "+ LIST"}
+              <div className="flex flex-wrap gap-4">
+                <button onClick={() => isInWatchlist(item.id) ? removeFromWatchlist(item.id) : addToWatchlist(item)} className="h-20 px-12 rounded-3xl bg-white/5 border border-white/10 font-black uppercase text-xs hover:bg-white/10 transition">
+                    {isInWatchlist(item.id) ? "✓ IN YOUR LIST" : "+ WATCHLIST"}
                 </button>
                 <button 
                     onClick={() => setIsDownloadOpen(true)}
-                    className="h-16 px-10 rounded-3xl bg-white/5 border border-white/10 font-black uppercase text-xs flex items-center gap-2 hover:bg-white/10 transition group"
+                    className="h-20 px-12 rounded-3xl bg-white/5 border border-white/10 font-black uppercase text-xs flex items-center gap-2 hover:bg-white/10 transition group"
                 >
                     <Download size={16} className="text-primary-500 group-hover:scale-125 transition" />
-                    DOWNLOAD
+                    DOWNLOAD_HD
                 </button>
                 <button 
                     onClick={() => {
@@ -180,9 +241,9 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                             createdAt: serverTimestamp(), currentMovie: { id: item.id, type: type }
                         }).then(d => router.push(`/rooms/${d.id}`));
                     }}
-                    className="h-16 px-10 rounded-3xl bg-red-600 font-black uppercase text-xs shadow-xl shadow-red-600/20"
+                    className="h-20 px-12 rounded-3xl bg-red-600 font-black uppercase text-sm shadow-2xl shadow-red-600/30 hover:scale-105 transition"
                 >
-                    🎥 PARTY
+                    🎥 PARTY_MODE
                 </button>
               </div>
             </div>

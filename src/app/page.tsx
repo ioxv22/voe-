@@ -18,6 +18,7 @@ import Link from "next/link";
 import { Radio, Activity, Sparkles, Search } from "lucide-react";
 import SocialWelcome from "@/components/SocialWelcome";
 import TelegramBanner from "@/components/TelegramBanner";
+import { MovieRowSkeleton, HeroSkeleton } from "@/components/Skeletons";
 
 
 export default function Home() {
@@ -87,7 +88,20 @@ export default function Home() {
 
   if (authLoading || (user && profileLoading)) return <LoadingScreen />;
   if (!user) return <LandingPage onSignIn={signInWithGoogle} onGuestSignIn={signInAsGuest} />;
-  if (!currentProfile) return <LoadingScreen />;
+  
+  if (loadingContent) {
+    return (
+      <main className="min-h-screen bg-[#020202]">
+        <Navbar />
+        <HeroSkeleton />
+        <div className="relative z-30 -mt-16 lg:-mt-24 space-y-4">
+          <MovieRowSkeleton />
+          <MovieRowSkeleton />
+          <MovieRowSkeleton />
+        </div>
+      </main>
+    );
+  }
 
   const featured = data?.trending?.results?.[0];
 
@@ -100,7 +114,7 @@ export default function Home() {
       
       {featured && <Hero movie={featured} />}
 
-      <div className="relative z-30 -mt-16 lg:-mt-24 space-y-16 px-4 lg:px-12">
+      <div className="relative z-30 -mt-16 lg:-mt-24 space-y-16">
         {/* QUICK ACCESS BUTTONS (COMPACT) */}
         <div className="flex flex-wrap items-center gap-3 justify-center lg:justify-start">
             <Link href="/search/ai">

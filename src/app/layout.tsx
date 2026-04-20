@@ -75,6 +75,7 @@ import VozPulse from "@/components/VozPulse";
 import ViralShare from "@/components/ViralShare";
 import AntiAdBlock from "@/components/AntiAdBlock";
 import VozTurbo from "@/components/VozTurbo";
+import SmartAds from "@/components/SmartAds";
 
 export default function RootLayout({
   children,
@@ -89,6 +90,23 @@ export default function RootLayout({
     >
       <head>
           <link rel="apple-touch-icon" href="https://i.ibb.co/23Bkgcrx/image.png" />
+          {/* Structured Data for Google (SEO) */}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "VOZ Stream",
+                "url": "https://vozstream.vercel.app",
+                "potentialAction": {
+                  "@type": "SearchAction",
+                  "target": "https://vozstream.vercel.app/search?q={search_term_string}",
+                  "query-input": "required name=search_term_string"
+                }
+              })
+            }}
+          />
       </head>
       <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
         <ThemeProvider>
@@ -105,6 +123,7 @@ export default function RootLayout({
                   <VozPulse />
                   <ViralShare />
                   <VozTurbo />
+                  <SmartAds />
                   {children}
                 </MaintenanceGuard>
               </ProfileProvider>
