@@ -36,13 +36,22 @@ export default function GenrePage({ params }: { params: Promise<{ genre: string 
   const [movies, setMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  
+  // Advanced Filters
+  const [year, setYear] = useState("");
+  const [rating, setRating] = useState("");
+  const [sortBy, setSortBy] = useState("popularity.desc");
 
   useEffect(() => {
     async function load() {
       if (!genreId) return;
       setLoading(true);
       try {
-        const data = await fetchTMDB("/discover/movie", `with_genres=${genreId}&page=${page}&sort_by=popularity.desc`);
+        let params = `with_genres=${genreId}&page=${page}&sort_by=${sortBy}`;
+        if (year) params += `&primary_release_year=${year}`;
+        if (rating) params += `&vote_average.gte=${rating}`;
+        
+        const data = await fetchTMDB("/discover/movie", params);
         setMovies(prev => page === 1 ? filterSafeContent(data.results) : [...prev, ...filterSafeContent(data.results)]);
       } catch (e) {
         console.error(e);
@@ -51,7 +60,7 @@ export default function GenrePage({ params }: { params: Promise<{ genre: string 
       }
     }
     load();
-  }, [genreId, page]);
+  }, [genreId, page, year, rating, sortBy]);
 
   if (!genreId) return <div>Genre not found</div>;
 
@@ -59,9 +68,41 @@ export default function GenrePage({ params }: { params: Promise<{ genre: string 
     <main className="min-h-screen bg-background text-white">
       <Navbar />
       <div className="pt-32 px-4 lg:px-12 pb-20">
-        <header className="mb-12">
-            <h1 className="text-5xl lg:text-7xl font-black italic uppercase tracking-tighter text-white">{genreName}</h1>
-            <p className="text-gray-500 font-bold uppercase tracking-widest mt-2">{movies.length} Masterpieces Found</p>
+        <header className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+            <div>
+                <h1 className="text-5xl lg:text-7xl font-black italic uppercase tracking-tighter text-white">{genreName}</h1>
+                <p className="text-gray-500 font-bold uppercase tracking-widest mt-2">{movies.length} Masterpieces Found</p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+                <select 
+                    value={year} 
+                    onChange={(e) => { setYear(e.target.value); setPage(1); }}
+                    className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest outline-none focus:border-primary-600 transition"
+                >
+                    <option value="">Year (Any)</option>
+                    {[2026, 2025, 2024, 2023, 2022, 2021, 2020].map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+
+                <select 
+                    value={rating} 
+                    onChange={(e) => { setRating(e.target.value); setPage(1); }}
+                    className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest outline-none focus:border-primary-600 transition"
+                >
+                    <option value="">Rating (Any)</option>
+                    {[9, 8, 7, 6, 5].map(r => <option key={r} value={r}>{r}+ Stars</option>)}
+                </select>
+
+                <select 
+                    value={sortBy} 
+                    onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+                    className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest outline-none focus:border-primary-600 transition"
+                >
+                    <option value="popularity.desc">Most Popular</option>
+                    <option value="vote_average.desc">Highest Rated</option>
+                    <option value="primary_release_date.desc">Newest First</option>
+                </select>
+            </div>
         </header>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">

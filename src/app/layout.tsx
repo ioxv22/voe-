@@ -76,6 +76,8 @@ import ViralShare from "@/components/ViralShare";
 import AntiAdBlock from "@/components/AntiAdBlock";
 import VozTurbo from "@/components/VozTurbo";
 
+import MobileBottomNav from "@/components/MobileBottomNav";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -88,6 +90,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+          <link rel="manifest" href="/manifest.json" />
+          <meta name="theme-color" content="#020202" />
           <link rel="apple-touch-icon" href="https://i.ibb.co/23Bkgcrx/image.png" />
           {/* Structured Data for Google (SEO) */}
           <script
@@ -107,7 +111,7 @@ export default function RootLayout({
             }}
           />
       </head>
-      <body className="min-h-full flex flex-col bg-background select-none" suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-background select-none pb-20 lg:pb-0" suppressHydrationWarning>
         <ThemeProvider>
           <LanguageProvider>
             <VisitorTracker />
@@ -123,6 +127,7 @@ export default function RootLayout({
                   <ViralShare />
                   <VozTurbo />
                   {children}
+                  <MobileBottomNav />
                 </MaintenanceGuard>
               </ProfileProvider>
             </AuthProvider>
