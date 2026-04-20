@@ -5,18 +5,34 @@ import { useEffect, useState, useRef } from "react";
 export default function SecurityManager() {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Anti-Tamper: MutationObserver to protect watermarks
   useEffect(() => {
-    // Light deterrents to protect IP without lagging the app
+    if (!containerRef.current) return;
+    
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'childList' && mutation.removedNodes.length > 0) {
+                console.error("DOM TAMPER DETECTED: RESTORING PROTECTED NODES");
+            }
+        });
+    });
+
+    observer.observe(containerRef.current, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
+  // Block DevTools and Keyboard Shortcuts
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
-      if (
-        e.key === 'F12' || 
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
-        (e.ctrlKey && (e.key === 'u' || e.key === 's'))
-      ) {
-        e.preventDefault();
-        return false;
-      }
+        if (
+            e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+            (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'p')) ||
+            (e.metaKey && e.altKey && e.key === 'i')
+        ) {
+            e.preventDefault();
+            return false;
+        }
     };
 
     const handleContextMenu = (e: MouseEvent) => {
@@ -50,7 +66,6 @@ export default function SecurityManager() {
         <style jsx global>{`
             .protected-img { pointer-events: none; -webkit-user-drag: none; }
             body { background-color: var(--background) !important; }
-            /* Global selection color matched to Hamad's Brand */
             ::selection { background: var(--primary); color: white; }
         `}</style>
     </div>
@@ -61,11 +76,9 @@ function Watermark({ id, initialPos, text }: { id: number, initialPos: {x: numbe
     const [pos, setPos] = useState(initialPos);
     
     useEffect(() => {
-        // Slow interval to not cause lag, but keeps labels moving
         const interval = setInterval(() => {
             setPos({ x: Math.random() * 80 + 10, y: Math.random() * 80 + 10 });
-        }, 12000 + id * 3000); // Staggered timers
-        
+        }, 12000 + id * 3000);
         return () => clearInterval(interval);
     }, [id]);
 

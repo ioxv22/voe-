@@ -24,9 +24,14 @@ export const SERVER_MAP = {
 };
 
 // Security Protocol: Link Obfuscation
+// Security Protocol: Universal Link Obfuscation
 const obs = (url: string) => {
-    if (typeof window === "undefined") return url;
-    return btoa(url).split("").reverse().join("");
+    try {
+        const b64 = typeof window !== 'undefined' ? btoa(url) : Buffer.from(url).toString('base64');
+        return b64.split("").reverse().join("");
+    } catch {
+        return url;
+    }
 };
 
 export const decodeObs = (str: string) => {
@@ -57,7 +62,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   else if (targetServer === "vidsrcme") finalUrl = type === "movie" ? `https://vidsrc.me/embed/movie?tmdb=${id}${adParam}` : `https://vidsrc.me/embed/tv?tmdb=${id}&s=${season}&e=${episode}${adParam}`;
   
   else if (targetServer === "school" || targetServer === "vpn" || targetServer === "tunnel") {
-    const isTurbo = typeof window !== "undefined" && localStorage.getItem("voz_turbo_mode") === "true";
+    const isTurbo = typeof window !== "undefined" && localStorage ? localStorage.getItem("voz_turbo_mode") === "true" : false;
     const worker = isTurbo ? WORKERS[0] : WORKERS[Math.floor(Math.random() * WORKERS.length)];
     const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
     finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;

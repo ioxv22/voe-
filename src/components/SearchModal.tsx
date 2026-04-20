@@ -21,7 +21,8 @@ export default function SearchModal({ isOpen, onClose, onSelect }: { isOpen: boo
       setLoading(true);
       try {
         const data = await fetchTMDB(endpoints.search, `query=${encodeURIComponent(query)}`);
-        setResults(filterSafeContent(data.results).filter((i: any) => i.poster_path).slice(0, 8));
+        const searchedResults = data.results || [];
+        setResults(filterSafeContent(searchedResults).filter((i: any) => i.poster_path || i.profile_path).slice(0, 8));
       } catch (e) {
         console.error(e);
       } finally {
@@ -107,38 +108,48 @@ export default function SearchModal({ isOpen, onClose, onSelect }: { isOpen: boo
               {!loading && results.length > 0 && (
                 <div className="grid grid-cols-1 gap-3">
                   {results.map((item) => {
+                    const isPerson = item.media_type === "person";
                     const type = item.media_type || (item.title ? "movie" : "tv");
+                    const href = isPerson ? `/actor/${item.id}` : `/watch/${type}/${item.id}`;
+                    
                     const content = (
-                      <div className="group flex items-center gap-6 rounded-3xl p-3 transition hover:bg-white/[0.05] border border-transparent hover:border-white/5 text-left w-full group">
-                        <div className="relative h-24 w-40 flex-shrink-0 overflow-hidden rounded-2xl">
+                      <div className="group flex items-center gap-6 rounded-3xl p-3 transition hover:bg-white/[0.05] border border-transparent hover:border-white/5 text-left w-full">
+                        <div className={`relative flex-shrink-0 overflow-hidden rounded-2xl ${isPerson ? 'h-24 w-24' : 'h-24 w-40'}`}>
                              <img 
-                                src={getImageUrl(item.backdrop_path || item.poster_path)} 
+                                src={getImageUrl(isPerson ? item.profile_path : (item.backdrop_path || item.poster_path))} 
                                 alt="" 
                                 className="h-full w-full object-cover group-hover:scale-110 transition duration-500" 
                             />
-                            <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition" />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                                <Play fill="white" size={24} />
-                            </div>
+                            {!isPerson && (
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                                    <Play fill="white" size={24} />
+                                </div>
+                            )}
                         </div>
                         <div className="flex-1">
                           <h4 className="font-black italic uppercase tracking-tighter text-lg leading-tight mb-1">{item.title || item.name}</h4>
                           <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest">
-                             <span className="text-primary-500 italic">⭐ {item.vote_average?.toFixed(1)}</span>
-                             <span className="text-gray-500">{item.release_date?.slice(0, 4) || item.first_air_date?.slice(0, 4)}</span>
-                             <span className="bg-white/10 px-2 py-0.5 rounded text-[8px]">{type}</span>
+                             {isPerson ? (
+                                 <span className="text-primary-500 italic">Voz Masterclass</span>
+                             ) : (
+                                 <>
+                                    <span className="text-primary-500 italic">⭐ {item.vote_average?.toFixed(1)}</span>
+                                    <span className="text-gray-500">{item.release_date?.slice(0, 4) || item.first_air_date?.slice(0, 4)}</span>
+                                    <span className="bg-white/10 px-2 py-0.5 rounded text-[8px]">{type}</span>
+                                 </>
+                             )}
                           </div>
                         </div>
                       </div>
                     );
-
+ 
                     return (
                         <Link 
-                          key={item.id} 
-                          href={`/watch/${type}/${item.id}`} 
-                          onClick={onClose}
+                           key={item.id} 
+                           href={href} 
+                           onClick={onClose}
                         >
-                          {content}
+                           {content}
                         </Link>
                     );
                   })}
