@@ -70,12 +70,8 @@ import VisitorTracker from "@/components/VisitorTracker";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
 import IOSInstallPrompt from "@/components/IOSInstallPrompt";
 import Navbar from "@/components/Navbar";
-import AIChat from "@/components/AIChat";
-import VozMood from "@/components/VozMood";
-import VozPulse from "@/components/VozPulse";
 import ViralShare from "@/components/ViralShare";
 import AntiAdBlock from "@/components/AntiAdBlock";
-import VozTurbo from "@/components/VozTurbo";
 
 import MobileBottomNav from "@/components/MobileBottomNav";
 
@@ -123,11 +119,7 @@ export default function RootLayout({
                 <Navbar />
                 <MaintenanceGuard>
                   <IOSInstallPrompt />
-                  <AIChat />
-                  <VozMood />
-                  <VozPulse />
                   <ViralShare />
-                  <VozTurbo />
                   {children}
                   <MobileBottomNav />
                 </MaintenanceGuard>
