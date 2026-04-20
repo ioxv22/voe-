@@ -70,6 +70,7 @@ import VisitorTracker from "@/components/VisitorTracker";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
 import IOSInstallPrompt from "@/components/IOSInstallPrompt";
 import Navbar from "@/components/Navbar";
+import VozMood from "@/components/VozMood";
 import ViralShare from "@/components/ViralShare";
 import AntiAdBlock from "@/components/AntiAdBlock";
 
@@ -119,6 +120,7 @@ export default function RootLayout({
                 <Navbar />
                 <MaintenanceGuard>
                   <IOSInstallPrompt />
+                  <VozMood />
                   <ViralShare />
                   {children}
                   <MobileBottomNav />
