@@ -161,7 +161,8 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                     className="w-full h-full" 
                     allowFullScreen 
                     frameBorder="0" 
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock allow-top-navigation allow-top-navigation-by-user-activation allow-storage-access-by-user-activation"
+                    // Cinematic Protection: Block popups and malicious navigation while allowing core video functions
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock"
                 />
 
                 <div className="absolute bottom-10 left-10 right-10 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity z-50">
