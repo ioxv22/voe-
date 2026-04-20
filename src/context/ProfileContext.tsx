@@ -276,7 +276,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <ProfileContext.Provider value={{ profiles, currentProfile, selectProfile, createProfile, updateProfile, deleteProfile, toggleMyList, loading }}>
+    <ProfileContext.Provider value={{ profiles, currentProfile, selectProfile, createProfile, updateProfile, deleteProfile, toggleMyList, toggleLike, loading }}>
       {children}
     </ProfileContext.Provider>
   );
