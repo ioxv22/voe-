@@ -43,9 +43,9 @@ export default function MovieCard({ movie, rank }: MovieCardProps) {
   return (
     <Link href={`/watch/${type}/${movie.id}`}>
       <motion.div
-        whileHover={{ scale: 1.1, zIndex: 30 }}
+        whileHover={{ scale: 1.05, zIndex: 30 }}
         transition={{ duration: 0.3 }}
-        className="relative aspect-[2/3] w-[140px] flex-shrink-0 cursor-pointer overflow-hidden rounded-xl bg-[#121212] lg:w-[200px] group shadow-xl"
+        className="relative aspect-[2/3] w-[110px] sm:w-[150px] md:w-[170px] lg:w-[200px] flex-shrink-0 cursor-pointer overflow-hidden rounded-xl bg-[#121212] group shadow-xl"
       >
         {imageUrl ? (
             <img

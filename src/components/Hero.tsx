@@ -56,7 +56,7 @@ export default function Hero({ movie }: HeroProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
           className={cn(
-            "max-w-xl text-sm text-gray-200 drop-shadow-md lg:text-lg line-clamp-3",
+            "max-w-xl text-xs text-gray-300 drop-shadow-md lg:text-lg line-clamp-2 lg:line-clamp-3 md:text-sm",
             isRTL && "font-arabic mr-0 ml-auto"
           )}
         >
@@ -73,13 +73,13 @@ export default function Hero({ movie }: HeroProps) {
           )}
         >
           <Link href={`/watch/${type}/${movie.id}`}>
-            <button className="flex items-center gap-2 rounded-md bg-white px-6 py-2 font-bold text-black transition hover:bg-white/80 lg:px-8 lg:py-3 lg:text-xl">
-              <Play fill="black" size={24} className={isRTL ? "rotate-180" : ""} /> {t("play")}
+            <button className="flex items-center gap-2 rounded-md bg-white px-4 py-1.5 lg:px-8 lg:py-3 font-bold text-black transition hover:bg-white/80 lg:text-xl text-sm">
+              <Play fill="black" size={18} className={cn("lg:w-6 lg:h-6", isRTL && "rotate-180")} /> {t("play")}
             </button>
           </Link>
           <Link href={`/watch/${type}/${movie.id}`}>
-            <button className="flex items-center gap-2 rounded-md bg-white/25 px-6 py-2 font-bold text-white backdrop-blur-md transition hover:bg-white/30 lg:px-8 lg:py-3 lg:text-xl">
-              <Info size={24} /> {t("moreInfo")}
+            <button className="flex items-center gap-2 rounded-md bg-white/25 px-4 py-1.5 lg:px-8 lg:py-3 font-bold text-white backdrop-blur-md transition hover:bg-white/30 lg:text-xl text-sm">
+              <Info size={18} className="lg:w-6 lg:h-6" /> {t("moreInfo")}
             </button>
           </Link>
         </motion.div>

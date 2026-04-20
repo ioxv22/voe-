@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Bell, User as UserIcon, Sun, Moon, Crown, Share2, Radio, Users, Eye, Lock, Save, Key, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings, Trophy } from "lucide-react";
+import { Search, Bell, User as UserIcon, Sun, Moon, Crown, Share2, Radio, Users, Eye, Lock, Save, Key, LayoutDashboard, Terminal, BellPlus, Activity, ShieldAlert, Megaphone, Settings, Trophy, Menu, X } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "@/context/AuthContext";
@@ -42,6 +42,7 @@ export default function Navbar() {
   const [isRequestOpen, setIsRequestOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
   const [alertBanner, setAlertBanner] = useState("");
   
@@ -225,15 +226,16 @@ export default function Navbar() {
                   <motion.div 
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-yellow-400 to-orange-500 shadow-lg shadow-yellow-500/20"
+                    className="flex h-6 w-6 lg:h-8 lg:w-8 items-center justify-center rounded-full bg-gradient-to-tr from-yellow-400 to-orange-500 shadow-lg shadow-yellow-500/20"
                   >
-                    <Crown size={16} className="text-white fill-white" />
+                    <Crown size={12} className="text-white fill-white lg:hidden" />
+                    <Crown size={16} className="text-white fill-white hidden lg:block" />
                   </motion.div>
                 )}
                 <div className="relative">
                     <div 
                         onClick={() => setIsProfileOpen(!isProfileOpen)}
-                        className="h-8 w-8 cursor-pointer overflow-hidden rounded-md border-2 border-transparent hover:border-foreground/20 active:scale-90 transition shadow-lg"
+                        className="h-7 w-7 lg:h-8 lg:w-8 cursor-pointer overflow-hidden rounded-md border-2 border-transparent hover:border-foreground/20 active:scale-90 transition shadow-lg"
                     >
                         <img src={currentProfile.avatar} alt="Profile" className="h-full w-full object-cover" />
                     </div>
@@ -262,12 +264,70 @@ export default function Navbar() {
         ) : (
             <button 
                 onClick={signInWithGoogle}
-                className="rounded-md bg-primary px-4 py-1.5 text-sm font-bold text-white transition hover:bg-primary/90"
+                className="rounded-md bg-primary px-3 py-1 lg:px-4 lg:py-1.5 text-xs lg:text-sm font-bold text-white transition hover:bg-primary/90"
             >
                 {t("signIn")}
             </button>
         )}
+
+        {/* Mobile Menu Toggle */}
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="lg:hidden text-white hover:text-primary transition"
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ x: isRTL ? -100 : 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: isRTL ? -100 : 100, opacity: 0 }}
+            className={cn(
+              "fixed inset-0 z-40 bg-black/95 backdrop-blur-xl lg:hidden flex flex-col p-8 pt-24",
+              isRTL ? "text-right" : "text-left"
+            )}
+          >
+            <ul className="space-y-6 text-xl font-bold">
+              <li onClick={() => setIsMobileMenuOpen(false)}><Link href="/" className="hover:text-primary transition">{t("home")}</Link></li>
+              <li onClick={() => setIsMobileMenuOpen(false)}><Link href="/browse" className="hover:text-primary transition">{t("tvShows")}</Link></li>
+              <li onClick={() => setIsMobileMenuOpen(false)}><Link href="/browse" className="hover:text-primary transition">{t("movies")}</Link></li>
+              <li onClick={() => setIsMobileMenuOpen(false)}><Link href="/rooms" className="hover:text-primary transition flex items-center gap-3">{t("party")} <span className="h-2 w-2 rounded-full bg-primary animate-ping" /></Link></li>
+              <li onClick={() => { setIsMobileMenuOpen(false); setIsRequestOpen(true); }} className="hover:text-primary transition">{t("request")}</li>
+              <li onClick={() => setIsMobileMenuOpen(false)}><Link href="/browse" className="hover:text-primary transition">{t("list")}</Link></li>
+            </ul>
+
+            <div className="mt-auto border-t border-white/10 pt-8 space-y-6">
+               <div className="flex items-center justify-between">
+                  <span className="text-gray-500 uppercase text-xs tracking-widest">{t("theme")}</span>
+                  <button onClick={toggleTheme} className="text-white bg-white/5 p-3 rounded-xl border border-white/10">
+                    {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+                  </button>
+               </div>
+               <div className="flex items-center justify-between">
+                  <span className="text-gray-500 uppercase text-xs tracking-widest">{t("language")}</span>
+                  <div className="flex gap-2 flex-wrap justify-end">
+                    {LANGUAGES.map(l => (
+                      <button 
+                        key={l.code}
+                        onClick={() => { setLanguage(l.code); setIsMobileMenuOpen(false); }}
+                        className={cn(
+                          "px-3 py-1 rounded-md text-[10px] font-bold border",
+                          language === l.code ? "bg-primary border-primary text-white" : "bg-white/5 border-white/10 text-gray-400"
+                        )}
+                      >
+                        {l.flag} {l.code.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+               </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
       <NotificationPanel isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />

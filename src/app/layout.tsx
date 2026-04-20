@@ -56,8 +56,8 @@ export const viewport = {
   themeColor: "#020202",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 import { AuthProvider } from "@/context/AuthContext";

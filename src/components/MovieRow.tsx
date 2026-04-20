@@ -48,16 +48,16 @@ export default function MovieRow({ title, movies, isHighlighted, isTop10 }: Movi
 
         <div
           ref={rowRef}
-          className={`flex overflow-x-scroll hide-scrollbar py-4 px-4 lg:px-12 ${isTop10 ? 'gap-12 lg:gap-20' : 'gap-4 lg:gap-6'}`}
+          className={`flex overflow-x-scroll hide-scrollbar py-4 px-4 lg:px-12 ${isTop10 ? 'gap-16 sm:gap-20 lg:gap-24' : 'gap-3 sm:gap-4 lg:gap-6'}`}
         >
           {safeMovies.map((movie, index) => (
              <div key={movie.id} className="relative flex items-center group/card">
                 {isTop10 && (
-                    <span className="absolute -left-10 lg:-left-16 bottom-[-20px] lg:bottom-[-40px] z-0 text-[100px] lg:text-[200px] font-black leading-none text-white opacity-20 select-none pointer-events-none italic tracking-tighter stroke-primary-600 stroke-1">
+                    <span className="absolute -left-12 sm:-left-16 lg:-left-20 bottom-[-10px] sm:bottom-[-20px] lg:bottom-[-40px] z-0 text-[80px] sm:text-[140px] lg:text-[220px] font-black leading-none text-white opacity-25 select-none pointer-events-none italic tracking-tighter stroke-primary-600 stroke-1">
                         {index + 1}
                     </span>
                 )}
-                <div className="relative z-10 transition-transform duration-500 group-hover/card:scale-110">
+                <div className="relative z-10 transition-transform duration-500 group-hover/card:scale-105">
                     <MovieCard movie={movie} />
                 </div>
             </div>
