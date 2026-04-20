@@ -1,7 +1,8 @@
 "use client";
 
 import React, { Suspense, Component, useState, useEffect, use } from "react";
-import { Download, ThumbsUp, ThumbsDown, Check, Plus, Share2, CheckCircle2, Play, Users } from "lucide-react";
+import { Download, ThumbsUp, ThumbsDown, Check, Plus, Share2, CheckCircle2, Play, Users, Send } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import MovieRow from "@/components/MovieRow";
 import Footer from "@/components/Footer";
@@ -57,6 +58,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   const [hasClickedIntro, setHasClickedIntro] = useState(false);
   const [isCinemaMode, setIsCinemaMode] = useState(false);
   const [showNextPrompt, setShowNextPrompt] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [countdown, setCountdown] = useState(10);
   const router = useRouter();
 
@@ -412,6 +414,55 @@ function WatchContent({ type, id }: { type: string, id: string }) {
         episode={episode} 
         title={item.title || item.name} 
       />
+      <AnimatePresence>
+        {isShareOpen && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-2xl p-6"
+            >
+                <div className="max-w-md w-full bg-[#0b0b0b] border border-white/10 rounded-[40px] p-10 text-center relative shadow-2xl">
+                    <button onClick={() => setIsShareOpen(false)} className="absolute top-6 right-6 text-gray-500 hover:text-white transition">✕</button>
+                    
+                    <div className="mb-8">
+                        <div className="h-20 w-20 bg-primary-600/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                            <Share2 className="text-primary-600" size={40} />
+                        </div>
+                        <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-2">Share this {type === 'movie' ? 'Movie' : 'Series'}</h2>
+                        <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest italic">Help VOZ grow and earn 50 reward points!</p>
+                    </div>
+
+                    <div className="space-y-4">
+                        <button 
+                            onClick={async () => {
+                                const url = window.location.href;
+                                const text = `Watching "${item.title || item.name}" in 4K on VOZ! 🍿🎬`;
+                                if (navigator.share) {
+                                    await navigator.share({ title: "VOZ STREAM", text, url });
+                                } else {
+                                    window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
+                                }
+                            }}
+                            className="w-full bg-white text-black py-5 rounded-2xl font-black uppercase text-xs flex items-center justify-center gap-3 hover:bg-gray-200 transition"
+                        >
+                            <Send size={18} /> Send to Friends
+                        </button>
+                        <button 
+                            onClick={() => {
+                                const url = window.location.href;
+                                const text = `Watching "${item.title || item.name}" in 4K on VOZ! 🍿🎬`;
+                                window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, "_blank");
+                            }}
+                            className="w-full bg-[#229ED9]/10 border border-[#229ED9]/20 text-[#229ED9] py-5 rounded-2xl font-black uppercase text-xs hover:bg-[#229ED9]/20 transition"
+                        >
+                            Direct Telegram Share
+                        </button>
+                    </div>
+                </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
       <Footer />
     </main>
   );
