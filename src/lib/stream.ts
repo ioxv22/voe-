@@ -1,4 +1,5 @@
 const WORKERS = [
+  "https://vidsrc.pro",
   "https://vidlink.pro"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
@@ -20,7 +21,6 @@ export const SERVER_MAP = {
   alooy: "alooy"
 };
 
-// Security Protocol: Link Obfuscation
 // Security Protocol: Universal Link Obfuscation
 const obs = (url: string) => {
     try {
@@ -41,14 +41,19 @@ export const decodeObs = (str: string) => {
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en", isVIP: boolean = false) => {
   const targetServer = isRoom ? "auto" : server;
-  // Forced Ad-Free Protocol 2026
-  const adParam = "&ads=0&adblock=1&iv_load_policy=3&mime=true&autoplay=false";
+  // Forced Ad-Free Protocol 2026 - Maximum Aggression
+  const adParam = "&ads=0&adblock=1&iv_load_policy=3&mime=true&autoplay=false&primaryColor=e50914";
   const vidlinkAr = "&subs=ar&multi_lang=true&ads=0";
 
   let finalUrl = "";
 
-  // Unified Anti-Ad Mirror Strategy
-  if (targetServer === "auto" || targetServer === "vidlink" || targetServer === "nebula" || targetServer === "multi") {
+  // Original Nebula Proxy Engine
+  if (targetServer === "nebula" || targetServer === "multi") {
+      const worker = WORKERS[0];
+      const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
+      finalUrl = `${worker}${path}?&server=nebula&token=${STREAM_TOKEN}${adParam}`;
+  }
+  else if (targetServer === "auto" || targetServer === "vidlink") {
       finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914${adParam}`;
   }
   else if (targetServer === "vidsrc") finalUrl = `https://vidsrc.to/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
