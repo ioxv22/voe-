@@ -6,38 +6,50 @@ const TMDB_KEYS = [
 ];
 
 const TMDB_KEY = TMDB_KEYS[Math.floor(Math.random() * TMDB_KEYS.length)];
-const BASE_URL = "https://api.themoviedb.org/3";
-const IMAGE_BASE_URL = "https://image.tmdb.org/t/p";
+const BASE_URL = "https://api.tmdb.org/3";
+const IMAGE_BASE_URL = "https://images.tmdb.org/t/p";
+
+const fallbackMovies = [
+  { id: 550, title: "Fight Club", backdrop_path: "/hZk9YgbiEJKvYp2vubvI5GIXsSC.jpg", poster_path: "/pB8BM7pdv9ovvyySMR7S37vS8S6.jpg", overview: "A ticking-time bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy.", vote_average: 8.4, media_type: "movie" },
+  { id: 1396, name: "Breaking Bad", backdrop_path: "/9fa9LpL7nAFh8vUv9pU8vD0YGoB.jpg", poster_path: "/zt896kwp7UM7p99K9pSy90U6YpU.jpg", overview: "A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine.", vote_average: 8.9, media_type: "tv" },
+  { id: 82856, name: "The Mandalorian", backdrop_path: "/9ijMGlSoczv3qyW9crYp79pvcno.jpg", poster_path: "/eU1i6eHXlzhHH7qmPVMfsSE7OTp.jpg", overview: "The travels of a lone bounty hunter in the outer reaches of the galaxy, far from the authority of the New Republic.", vote_average: 8.5, media_type: "tv" }
+];
 
 export const fetchTMDB = async (endpoint: string, params: string = "") => {
   const isServer = typeof window === "undefined";
   const safetyParams = `include_adult=false&${params}`;
   
   if (isServer) {
-    const TMDB_KEY = TMDB_KEYS[Math.floor(Math.random() * TMDB_KEYS.length)];
-    const res = await fetch(`${BASE_URL}${endpoint}?api_key=${TMDB_KEY}&${safetyParams}`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) throw new Error("Failed to fetch TMDB data");
-    return res.json();
+    for (const baseUrl of [ "https://api-themoviedb-org.translate.goog/3", "https://api.tmdb.org/3" ]) {
+      try {
+        const TMDB_KEY = TMDB_KEYS[Math.floor(Math.random() * TMDB_KEYS.length)];
+        const res = await fetch(`${baseUrl}${endpoint}?api_key=${TMDB_KEY}&${safetyParams}`, { next: { revalidate: 3600 } });
+        if (res.ok) return await res.json();
+      } catch (e) {}
+    }
   } 
   
   try {
-    const res = await fetch(`/api/tmdb${endpoint}?${safetyParams}`);
-    if (!res.ok) throw new Error("Proxy error");
-    return await res.json();
+    const isTurbo = typeof window !== "undefined" && localStorage.getItem("voz_turbo_mode") === "true";
+    
+    try {
+      // If Turbo is ON, prioritize the Google Stealth Tunnel
+      const primaryPath = isTurbo ? "https://api-tmdb-org.translate.goog/3" : `/api/metadata`;
+      const res = await fetch(isTurbo ? `${primaryPath}${endpoint}?api_key=${TMDB_KEY}&${safetyParams}` : `${primaryPath}${endpoint}?${safetyParams}`);
+      if (res.ok) return await res.json();
+    } catch (e) {}
+
+    console.warn("Proxy Failed - Falling back to local discovery mode");
+    return { results: fallbackMovies, total_pages: 1, total_results: fallbackMovies.length };
   } catch (error) {
-    console.warn("Proxy Failed - Falling back to direct secure fetch", error);
-    const TMDB_KEY = TMDB_KEYS[Math.floor(Math.random() * TMDB_KEYS.length)];
-    const fallbackRes = await fetch(`${BASE_URL}${endpoint}?api_key=${TMDB_KEY}&${safetyParams}`);
-    if (!fallbackRes.ok) throw new Error("Complete TMDB Failure");
-    return fallbackRes.json();
+    return { results: fallbackMovies, total_pages: 1, total_results: fallbackMovies.length };
   }
 };
 
 export const getImageUrl = (path: string, size: "w500" | "original" = "w500") => {
   if (!path) return "";
-  return `${IMAGE_BASE_URL}/${size}${path}`;
+  const originalUrl = `image.tmdb.org/t/p/${size}${path}`;
+  return `https://images.weserv.nl/?url=${originalUrl}&default=https://i.ibb.co/23Bkgcrx/image.png`;
 };
 
 const BLACKLIST_KEYWORDS = [

@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore";
+import { initializeFirestore, clearIndexedDbPersistence } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAJt1XDCr2kKLKEfql3Dv0Hy0S_BISFZS0",
@@ -16,10 +16,14 @@ const firebaseConfig = {
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Initialize Firestore with Offline Persistence to avoid "Client Offline" crashes
-const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
-});
+
+// Initialize Standard Firestore
+const db = initializeFirestore(app, {});
+
+// Self-Repair: Clear corrupted persistence if any existed before
+if (typeof window !== "undefined") {
+  clearIndexedDbPersistence(db).catch(() => {});
+}
 
 const googleProvider = new GoogleAuthProvider();
 

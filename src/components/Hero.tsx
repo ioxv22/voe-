@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, Info } from "lucide-react";
+import { Play, Info, Activity } from "lucide-react";
 import { getImageUrl } from "@/lib/tmdb";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
@@ -72,14 +72,14 @@ export default function Hero({ movie }: HeroProps) {
             isRTL ? "justify-end" : "justify-start"
           )}
         >
-          <Link href={`/watch/${type}/${movie.id}`}>
+          <Link href={`/watch/${type}/${movie.id}?server=school`}>
             <button className="flex items-center gap-2 rounded-md bg-white px-4 py-1.5 lg:px-8 lg:py-3 font-bold text-black transition hover:bg-white/80 lg:text-xl text-sm">
               <Play fill="black" size={18} className={cn("lg:w-6 lg:h-6", isRTL && "rotate-180")} /> {t("play")}
             </button>
           </Link>
-          <Link href={`/watch/${type}/${movie.id}`}>
-            <button className="flex items-center gap-2 rounded-md bg-white/25 px-4 py-1.5 lg:px-8 lg:py-3 font-bold text-white backdrop-blur-md transition hover:bg-white/30 lg:text-xl text-sm">
-              <Info size={18} className="lg:w-6 lg:h-6" /> {t("moreInfo")}
+          <Link href={`/watch/${type}/${movie.id}?server=school`}>
+            <button className="flex items-center gap-2 rounded-md bg-blue-600/90 px-4 py-1.5 lg:px-8 lg:py-3 font-bold text-white backdrop-blur-md transition hover:bg-blue-600 lg:text-xl text-sm border border-blue-400/30">
+              <Activity size={18} className="lg:w-6 lg:h-6" /> School Bypass
             </button>
           </Link>
         </motion.div>

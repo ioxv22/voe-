@@ -1,5 +1,7 @@
 const WORKERS = [
   "https://lucky-pond-0426.xhx1997.workers.dev",
+  "https://voz-bypass.worker.stream",
+  "https://metadata-proxy.workers.dev"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
 
@@ -58,7 +60,11 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   if (targetServer === "gomo") return `https://gomo.to/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}`;
   if (targetServer === "super") return `https://multiembed.mov/directstream.php/?video_id=${id}&tmdb=1${type === 'tv' ? `&s=${season}&e=${episode}` : ''}${adParam}`;
   if (targetServer === "school" || targetServer === "vpn" || targetServer === "tunnel") {
-    return `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914&autoplay=true${adParam}`;
+    // School bypass with Turbo Mode Check
+    const isTurbo = typeof window !== "undefined" && localStorage.getItem("voz_turbo_mode") === "true";
+    const worker = isTurbo ? WORKERS[1] : WORKERS[Math.floor(Math.random() * WORKERS.length)];
+    const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
+    return `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
 
   // Arabic Content Specialists (Reliable 2026 Mirrors)

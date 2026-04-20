@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import MovieRow from "@/components/MovieRow";
 import Footer from "@/components/Footer";
 import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { doc, getDoc, setDoc, onSnapshot, collection, serverTimestamp, addDoc } from "firebase/firestore";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import MovieReviews from "@/components/MovieReviews";
@@ -41,8 +41,11 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   const { user, isPremium } = useAuth();
   const { t } = useLanguage();
   const { saveProgress } = useContinueWatching();
+  const searchParams = useSearchParams();
+  const initialServer = searchParams.get("server") || "nebula";
+  
   const [data, setData] = useState<{item: any, similar: any} | null>(null);
-  const [server, setServer] = useState("nebula");
+  const [server, setServer] = useState(initialServer);
   const [season, setSeason] = useState(1);
   const [episode, setEpisode] = useState(1);
   const [episodes, setEpisodes] = useState<any[]>([]);
