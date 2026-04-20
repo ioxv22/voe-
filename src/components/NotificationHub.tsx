@@ -7,20 +7,32 @@ import { db } from "@/lib/firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 
+interface Notification {
+  id: string;
+  title?: string;
+  message?: string;
+  date?: { seconds: number };
+  timestamp?: { seconds: number };
+  isSystem: boolean;
+  read?: boolean;
+  type?: 'system' | 'movie' | 'info';
+  userId?: string;
+}
+
 export default function NotificationHub() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     // 1. Fetch Global System Notifications
     const qSystem = query(collection(db, "notifications"), orderBy("date", "desc"), limit(5));
     const unsubSystem = onSnapshot(qSystem, (snapshot) => {
-        const sysNotifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), isSystem: true }));
+        const sysNotifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), isSystem: true } as Notification));
         setNotifications(prev => {
             const userOnly = prev.filter(n => !n.isSystem);
-            return [...sysNotifs, ...userOnly].sort((a, b) => b.date?.seconds - a.date?.seconds);
+            return [...sysNotifs, ...userOnly].sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
         });
     });
 
@@ -29,11 +41,18 @@ export default function NotificationHub() {
     if (user) {
         const qUser = query(collection(db, "user_notifications"), orderBy("timestamp", "desc"), limit(5));
         unsubUser = onSnapshot(qUser, (snapshot) => {
-            const userNotifs = snapshot.docs.filter(d => d.data().userId === user.uid).map(doc => ({ id: doc.id, ...doc.data(), isSystem: false }));
-            setUnreadCount(userNotifs.filter(n => !n.read).length);
+            const userNotifs = snapshot.docs
+                .filter(d => d.data().userId === user.uid)
+                .map(doc => ({ id: doc.id, ...doc.data(), isSystem: false } as Notification));
+                
+            setUnreadCount(userNotifs.filter(n => !n.isSystem && !n.read).length);
             setNotifications(prev => {
                 const systemOnly = prev.filter(n => n.isSystem);
-                return [...systemOnly, ...userNotifs].sort((a, b) => (b.date?.seconds || b.timestamp?.seconds) - (a.date?.seconds || a.timestamp?.seconds));
+                return [...systemOnly, ...userNotifs].sort((a, b) => {
+                    const timeA = a.date?.seconds || a.timestamp?.seconds || 0;
+                    const timeB = b.date?.seconds || b.timestamp?.seconds || 0;
+                    return timeB - timeA;
+                });
             });
         });
     }
