@@ -96,6 +96,7 @@ export default function RootLayout({
           {/* Structured Data for Google (SEO) */}
           <script
             type="application/ld+json"
+            suppressHydrationWarning
             dangerouslySetInnerHTML={{
               __html: JSON.stringify({
                 "@context": "https://schema.org",

@@ -7,7 +7,8 @@ import {
   signOut, 
   User,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  updatePassword
 } from "firebase/auth";
 import { auth, googleProvider, db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
@@ -25,6 +26,7 @@ interface AuthContextType {
   activateVIP: () => Promise<void>;
   requestVIP: () => Promise<void>;
   logout: () => Promise<void>;
+  updateAccountPassword: (newPass: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -213,8 +215,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateAccountPassword = async (newPass: string) => {
+    if (!user || isGuest) throw new Error("Log in properly to change password.");
+    try {
+        await updatePassword(auth.currentUser!, newPass);
+    } catch (error) {
+        throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, isGuest, isPremium, isAdmin, signInWithGoogle, signUpWithEmail, signInWithEmail, signInAsGuest, activateVIP, requestVIP, logout }}>
+    <AuthContext.Provider value={{ user, loading, isGuest, isPremium, isAdmin, signInWithGoogle, signUpWithEmail, signInWithEmail, signInAsGuest, activateVIP, requestVIP, logout, updateAccountPassword }}>
       {children}
     </AuthContext.Provider>
   );

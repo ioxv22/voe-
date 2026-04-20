@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Bell, X, Info, Flame, AlertTriangle } from "lucide-react";
-import { collection, query, orderBy, limit, onSnapshot, doc, updateDoc } from "firebase/firestore";
+import { collection, query, orderBy, limit, onSnapshot, doc, updateDoc, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
@@ -39,10 +39,14 @@ export default function NotificationHub() {
     // 2. Fetch User-Specific Notifications
     let unsubUser = () => {};
     if (user) {
-        const qUser = query(collection(db, "user_notifications"), orderBy("timestamp", "desc"), limit(5));
+        const qUser = query(
+            collection(db, "user_notifications"), 
+            where("userId", "==", user.uid),
+            orderBy("timestamp", "desc"), 
+            limit(5)
+        );
         unsubUser = onSnapshot(qUser, (snapshot) => {
             const userNotifs = snapshot.docs
-                .filter(d => d.data().userId === user.uid)
                 .map(doc => ({ id: doc.id, ...doc.data(), isSystem: false } as Notification));
                 
             setUnreadCount(userNotifs.filter(n => !n.isSystem && !n.read).length);
