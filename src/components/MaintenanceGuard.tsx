@@ -11,7 +11,9 @@ import { usePathname } from "next/navigation";
 
 export default function MaintenanceGuard({ children }: { children: React.ReactNode }) {
     const [isMaintenance, setIsMaintenance] = useState(false);
-    const { user } = useAuth();
+    const [isScheduled, setIsScheduled] = useState(false);
+    const [timeLeft, setTimeLeft] = useState("");
+    const { user, isAdmin: isAuthAdmin } = useAuth();
     const [loading, setLoading] = useState(true);
     const pathname = usePathname();
     const [isUrlBypass, setIsUrlBypass] = useState(false);
@@ -29,17 +31,81 @@ export default function MaintenanceGuard({ children }: { children: React.ReactNo
             }
             setLoading(false);
         });
-        return () => unsub();
+
+        // Launch Timer Logic (5:00 PM UAE Today)
+        const checkLaunch = () => {
+            // UAE is UTC+4. Let's calculate target UTC time.
+            // Target: 2026-04-20 17:00:00 UAE
+            // UTC: 2026-04-20 13:00:00 UTC
+            const targetTime = new Date("2026-04-20T13:00:00Z").getTime();
+            const now = new Date().getTime();
+            
+            if (now < targetTime) {
+                setIsScheduled(true);
+                const diff = targetTime - now;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+                setTimeLeft(`${hours}h ${mins}m ${secs}s`);
+            } else {
+                setIsScheduled(false);
+            }
+        };
+
+        const timer = setInterval(checkLaunch, 1000);
+        checkLaunch();
+
+        return () => {
+            unsub();
+            clearInterval(timer);
+        };
     }, []);
 
-    // Allow admins to bypass maintenance (assuming admin check logic here)
-    // For now, let's keep it simple: if maintenance is on, everyone sees the screen unless they are a specific admin UID if we had one.
-    // Hamad's UID can be added here.
-    const isAdmin = user?.email === "hamad@example.com" || user?.email?.includes("admin");
+    const isAdmin = isAuthAdmin || (user?.email && user.email.includes("admin")) || isUrlBypass;
 
     if (loading) return null;
 
-    if (isMaintenance && !isAdmin && !pathname.startsWith('/admin') && !isUrlBypass) {
+    // SCENARIO: SITE IS LOCKED UNTIL 5 PM UAE
+    if (isScheduled && !isAdmin && !pathname.startsWith('/admin')) {
+        return (
+            <div className="fixed inset-0 z-[99999] bg-[#020202] flex flex-col items-center justify-center p-6 text-center select-none overflow-hidden">
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary-600/20 blur-[120px] rounded-full animate-pulse" />
+                </div>
+
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="relative z-10 max-w-2xl w-full"
+                >
+                    <div className="mb-12">
+                        <h3 className="text-primary-500 font-black uppercase tracking-[0.5em] text-[10px] mb-4">Official Platform Launch</h3>
+                        <h1 className="text-6xl lg:text-8xl font-black italic uppercase tracking-tighter text-white leading-none">VOZ STREAM <br/><span className="text-gray-700">COMES ALIVE</span></h1>
+                    </div>
+
+                    <div className="mb-16">
+                        <p className="text-gray-500 font-bold uppercase tracking-[0.2em] text-xs mb-8 italic">Opening Doors Today at 5:00 PM UAE ( بتوقيت الإمارات )</p>
+                        <div className="text-6xl lg:text-7xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-[0_0_30px_rgba(229,9,20,0.3)]">
+                            {timeLeft}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-6">
+                        <div className="h-[1px] w-40 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                        <p className="text-[10px] font-black text-gray-700 uppercase tracking-widest leading-relaxed max-w-xs">
+                            Server Syncing... Security Hardening... <br/>Preparing the Ultimate 4K Experience for VOZ VIPs.
+                        </p>
+                    </div>
+                </motion.div>
+                
+                <div className="absolute bottom-10 left-10 text-[8px] font-black text-gray-800 uppercase tracking-widest">
+                    V-SYS CORE v4.0 // ENCRYPTED_CHANNEL
+                </div>
+            </div>
+        );
+    }
+
+    if (isMaintenance && !isAdmin && !pathname.startsWith('/admin')) {
         return (
             <div className="fixed inset-0 z-[99999] bg-[#020202] flex items-center justify-center p-6 text-center">
                 <div className="max-w-md w-full">

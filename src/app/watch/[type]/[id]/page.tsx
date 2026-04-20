@@ -7,6 +7,7 @@ import MovieRow from "@/components/MovieRow";
 import Footer from "@/components/Footer";
 import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { doc, getDoc, setDoc, onSnapshot, collection, serverTimestamp, addDoc } from "firebase/firestore";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import MovieReviews from "@/components/MovieReviews";
@@ -45,6 +46,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   const initialServer = searchParams.get("server") || "nebula";
   
   const [data, setData] = useState<{item: any, similar: any} | null>(null);
+  const [cast, setCast] = useState<any[]>([]);
   const [server, setServer] = useState(initialServer);
   const [season, setSeason] = useState(1);
   const [episode, setEpisode] = useState(1);
@@ -83,13 +85,15 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   useEffect(() => {
     async function init() {
         try {
-            const [item, similar] = await Promise.all([
+            const [item, similar, credits] = await Promise.all([
               fetchTMDB(endpoints.details(type, id)),
               fetchTMDB(endpoints.similar(type, id)),
-            ]).catch(() => [null, {results: []}]);
+              fetchTMDB(`/${type}/${id}/credits`)
+            ]);
 
             if (item) {
                 setData({ item, similar });
+                setCast(credits.cast?.slice(0, 15) || []);
                 if (type === 'tv' && item.seasons?.length > 0) {
                     const firstSeason = item.seasons.find((s: any) => s.season_number > 0) || item.seasons[0];
                     setSeason(firstSeason.season_number);
@@ -279,6 +283,31 @@ function WatchContent({ type, id }: { type: string, id: string }) {
               </div>
             </div>
             
+
+            {cast?.length > 0 && (
+                <div className="mt-12">
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-6 flex items-center gap-2">
+                        <Users size={14} /> Starring Masterclass
+                    </h3>
+                    <div className="flex flex-wrap gap-4">
+                        {cast.map(person => (
+                            <Link 
+                                key={person.id} 
+                                href={`/actor/${person.id}`}
+                                className="group flex items-center gap-3 bg-white/5 border border-white/10 pr-6 p-1 rounded-full hover:bg-white/10 transition active:scale-95"
+                            >
+                                <div className="h-10 w-10 rounded-full overflow-hidden border border-white/10">
+                                    <img src={getImageUrl(person.profile_path)} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition" alt={person.name} />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-black text-white uppercase tracking-tighter">{person.name}</span>
+                                    <span className="text-[8px] text-gray-500 font-bold uppercase">{person.character?.split(' (')[0].slice(0, 15)}</span>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {similar?.results?.length > 0 && <MovieRow title="More Like This" movies={similar.results} />}
             
