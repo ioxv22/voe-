@@ -75,7 +75,6 @@ import VozPulse from "@/components/VozPulse";
 import ViralShare from "@/components/ViralShare";
 import AntiAdBlock from "@/components/AntiAdBlock";
 import VozTurbo from "@/components/VozTurbo";
-import SmartAds from "@/components/SmartAds";
 
 export default function RootLayout({
   children,
@@ -123,7 +122,6 @@ export default function RootLayout({
                   <VozPulse />
                   <ViralShare />
                   <VozTurbo />
-                  <SmartAds />
                   {children}
                 </MaintenanceGuard>
               </ProfileProvider>
