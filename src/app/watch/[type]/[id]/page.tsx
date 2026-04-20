@@ -9,11 +9,10 @@ import { fetchTMDB, endpoints, getImageUrl } from "@/lib/tmdb";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { doc, getDoc, setDoc, onSnapshot, collection, serverTimestamp, addDoc } from "firebase/firestore";
-import { useWatchlist } from "@/hooks/useWatchlist";
 import MovieReviews from "@/components/MovieReviews";
 import { getStreamUrl, SERVER_MAP, decodeObs } from "@/lib/stream";
 import { useAuth } from "@/context/AuthContext";
-
+import { useProfile } from "@/context/ProfileContext";
 import { useContinueWatching } from "@/hooks/useContinueWatching";
 import { db } from "@/lib/firebase";
 import PremiumPromo from "@/components/PremiumPromo";
@@ -40,6 +39,7 @@ class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: bo
 
 function WatchContent({ type, id }: { type: string, id: string }) {
   const { user, isPremium } = useAuth();
+  const { currentProfile, toggleMyList, toggleLike } = useProfile();
   const { t } = useLanguage();
   const { saveProgress } = useContinueWatching();
   const searchParams = useSearchParams();
@@ -58,7 +58,6 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   const [isCinemaMode, setIsCinemaMode] = useState(false);
   const [showNextPrompt, setShowNextPrompt] = useState(false);
   const [countdown, setCountdown] = useState(10);
-  const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
   const router = useRouter();
 
   // Auto-Next Logic for TV Shows
