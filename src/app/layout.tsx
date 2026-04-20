@@ -1,3 +1,4 @@
+/* VOZ_DEPLOY_SYNC: 2026-04-20_17-18 */
 import React from "react";
 import type { Metadata } from "next";
 import Script from "next/script";
