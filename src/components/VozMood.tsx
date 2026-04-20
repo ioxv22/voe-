@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Sparkles, X, Smile, Frown, Flame, Zap, Ghost, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
@@ -21,6 +19,12 @@ export default function VozMood() {
   const [recommendation, setRecommendation] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-voz-mood', handleOpen);
+    return () => window.removeEventListener('open-voz-mood', handleOpen);
+  }, []);
+
   const getRecommendation = async (genreId: number) => {
     setLoading(true);
     try {
@@ -39,7 +43,7 @@ export default function VozMood() {
       <button
         onClick={() => setIsOpen(true)}
         className={cn(
-          "fixed bottom-24 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary shadow-2xl transition hover:scale-110 active:scale-95 lg:h-16 lg:w-16",
+          "fixed bottom-24 z-40 hidden lg:flex h-14 w-14 items-center justify-center rounded-full bg-primary shadow-2xl transition hover:scale-110 active:scale-95 lg:h-16 lg:w-16",
           isRTL ? "left-6" : "right-6"
         )}
       >

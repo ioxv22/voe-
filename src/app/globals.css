@@ -62,6 +62,8 @@
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
     transition: background-color 0.3s ease, color 0.3s ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
@@ -118,12 +120,14 @@
 
 /* StigStream Floating Pill UI */
 .pill-nav {
-  @apply fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex items-center justify-between px-6 py-2.5 rounded-full border border-white/10 bg-black/60 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-500 hover:bg-black/80;
+  @apply fixed left-1/2 -translate-x-1/2 z-[100] flex items-center justify-between px-6 py-2.5 rounded-full border border-white/10 bg-black/60 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-500 hover:bg-black/80;
   width: min(95vw, 1200px);
+  top: calc(1.5rem + env(safe-area-inset-top)); /* Responsive iPhone Notch Support */
 }
 
 .pill-nav-compact {
-  @apply top-4 px-4 py-2;
+  @apply px-4 py-2;
+  top: 1rem;
 }
 
 .active-dot {
@@ -156,4 +160,26 @@
   from { background-position: 200% 0; }
   to { background-position: -200% 0; }
 }
+/* iPhone & Retina Precision Optimization */
+.ios-glass {
+  @apply bg-black/40 backdrop-blur-[20px] border border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.1)];
+}
 
+.retina-border {
+  border-width: 0.5px;
+}
+
+@keyframes ios-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+}
+
+.tap-effect:active {
+  animation: ios-bounce 0.2s ease-in-out;
+}
+
+/* Smooth Scroll for iPhone Safari */
+.scroll-ios {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
