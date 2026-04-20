@@ -1,5 +1,5 @@
 const WORKERS = [
-  "https://voz-direct.worker.stream"
+  "https://vidlink.pro"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
 
