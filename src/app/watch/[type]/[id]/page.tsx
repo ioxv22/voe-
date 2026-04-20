@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { doc, getDoc, setDoc, onSnapshot, collection, serverTimestamp, addDoc } from "firebase/firestore";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import MovieReviews from "@/components/MovieReviews";
-import { getStreamUrl, SERVER_MAP } from "@/lib/stream";
+import { getStreamUrl, SERVER_MAP, decodeObs } from "@/lib/stream";
 import { useAuth } from "@/context/AuthContext";
 
 import { useContinueWatching } from "@/hooks/useContinueWatching";
@@ -146,7 +146,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
     );
   }
 
-  const playerUrl = getStreamUrl(type, String(id), season, episode, server, false, String(item?.original_language || "ar"), isPremium);
+  const playerUrl = decodeObs(getStreamUrl(type, String(id), season, episode, server, false, String(item?.original_language || "ar"), isPremium));
 
   return (
     <main className="min-h-screen bg-[#020202] text-white">

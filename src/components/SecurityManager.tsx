@@ -8,12 +8,24 @@ export default function SecurityManager() {
   useEffect(() => {
     // Light deterrents to protect IP without lagging the app
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey && (e.key === 'u' || e.key === 's')) || e.key === 'F12') {
+      // Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+      if (
+        e.key === 'F12' || 
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+        (e.ctrlKey && (e.key === 'u' || e.key === 's'))
+      ) {
         e.preventDefault();
+        return false;
       }
     };
 
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+      return false;
+    };
+
     document.addEventListener('keydown', handleKeyDown, true);
+    document.addEventListener('contextmenu', handleContextMenu, true);
     
     const cleaner = setInterval(() => {
         console.clear();
@@ -23,6 +35,7 @@ export default function SecurityManager() {
     return () => {
       clearInterval(cleaner);
       document.removeEventListener('keydown', handleKeyDown, true);
+      document.removeEventListener('contextmenu', handleContextMenu, true);
     };
   }, []);
 
