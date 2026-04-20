@@ -37,9 +37,8 @@ export function useContinueWatching() {
     return () => unsubscribe();
   }, [user]);
 
-  const saveProgress = async (movie: any, mediaType: string, season?: number, episode?: number) => {
+  const saveProgress = async (movie: any, mediaType: string, season?: number, episode?: number, progress?: number, duration?: number) => {
     if (!user) {
-        // ... (local storage fallback remains the same)
         const history = JSON.parse(localStorage.getItem("voz_history") || "[]");
         const newItem = {
             id: movie.id,
@@ -50,6 +49,8 @@ export function useContinueWatching() {
             backdrop_path: movie.backdrop_path,
             season,
             episode,
+            progress: progress || 0,
+            duration: duration || 0,
             lastWatched: new Date().toISOString(),
         };
         const filtered = history.filter((h: any) => h.id !== movie.id).slice(0, 19);
@@ -59,7 +60,7 @@ export function useContinueWatching() {
 
     try {
       const historyRef = doc(db, "users", user.uid, "history", String(movie.id));
-      await setDoc(historyRef, {
+      const payload: any = {
         id: movie.id,
         media_type: mediaType,
         title: movie.title || movie.name,
@@ -69,12 +70,22 @@ export function useContinueWatching() {
         season: season || null,
         episode: episode || null,
         lastWatched: new Date().toISOString(),
-      }, { merge: true });
+      };
 
-      // Track specific episode
+      if (progress !== undefined) payload.progress = progress;
+      if (duration !== undefined) payload.duration = duration;
+
+      await setDoc(historyRef, payload, { merge: true });
+
+      // Track specific episode markers
       if (mediaType === 'tv' && season && episode) {
           const epRef = doc(db, "users", user.uid, "history", String(movie.id), "watched_episodes", `s${season}e${episode}`);
-          await setDoc(epRef, { watched: true, timestamp: new Date().toISOString() });
+          await setDoc(epRef, { 
+            watched: true, 
+            timestamp: new Date().toISOString(),
+            progress: progress || 0,
+            duration: duration || 0
+          }, { merge: true });
       }
       
       // Achievement Check

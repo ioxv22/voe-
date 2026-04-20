@@ -140,6 +140,45 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   const item = data?.item;
   const similar = data?.similar;
 
+  const [savedTime, setSavedTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  // Load Saved Progress from Firestore
+  useEffect(() => {
+    if (user && id) {
+        const docRef = doc(db, "users", user.uid, "history", String(id));
+        getDoc(docRef).then(snap => {
+            if (snap.exists() && snap.data().progress) {
+                setSavedTime(snap.data().progress);
+            }
+        });
+    }
+  }, [user, id]);
+
+  // Handle Messages from Iframe (VidLink / Nebula)
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+        // VidLink / Nebula Protocol
+        if (event.data?.type === 'vidlink_timeupdate') {
+            const { currentTime, duration } = event.data;
+            setSavedTime(currentTime);
+            setDuration(duration);
+        }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  // Periodic Save (Every 15s or on Pause)
+  useEffect(() => {
+    if (savedTime > 0) {
+        const interval = setInterval(() => {
+            saveProgress(item, type, season, episode, savedTime, duration);
+        }, 15000);
+        return () => clearInterval(interval);
+    }
+  }, [savedTime, item, type, season, episode, duration]);
+
   if (!item) {
     return (
         <div className="min-h-screen bg-[#020202] flex items-center justify-center">
@@ -151,7 +190,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
     );
   }
 
-  const playerUrl = decodeObs(getStreamUrl(type, String(id), season, episode, server, false, String(item?.original_language || "ar"), isPremium));
+  const playerUrl = decodeObs(getStreamUrl(type, String(id), season, episode, server, false, String(item?.original_language || "ar"), isPremium)) + `&t=${Math.floor(savedTime)}`;
 
   return (
     <main className="min-h-screen bg-[#020202] text-white">
