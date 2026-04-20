@@ -56,9 +56,9 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/", label: t("home"), icon: Home },
-    { href: "/browse/movies", label: t("movies") || "Movies", icon: PlayCircle },
-    { href: "/browse/tv", label: t("tvShows") || "TV Shows", icon: Tv },
-    { href: "/list", label: t("list") || "My List", icon: Bookmark },
+    { href: "/browse?type=movie", label: t("movies") || "Movies", icon: PlayCircle },
+    { href: "/browse?type=tv", label: t("tvShows") || "TV Shows", icon: Tv },
+    { href: "/browse?genre=watchlist", label: t("list") || "My List", icon: Bookmark },
     { href: "/rooms", label: t("party") || "Rooms", icon: Users },
   ];
 

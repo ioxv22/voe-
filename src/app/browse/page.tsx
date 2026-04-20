@@ -19,7 +19,8 @@ function BrowseContent() {
   useEffect(() => {
     async function load() {
         setLoading(true);
-        let endpoint = endpoints.movies;
+        const typeParam = searchParams.get("type"); // movie or tv
+        let endpoint = typeParam === "tv" ? endpoints.tv : endpoints.movies;
         let params = "sort_by=popularity.desc";
         
         if (genreParam === "khaleeji") {
@@ -30,18 +31,18 @@ function BrowseContent() {
             endpoint = "/discover/movie";
             params = "with_genres=10751&sort_by=popularity.desc";
             setTitle("Family Selection | عائلي");
-        } else if (genreParam === "horror") {
+        } else if (genreParam === "watchlist") {
+            setTitle("Your Arsenal | قائمتي");
+            // Here we'd ideally get from profile, for now show discovery as fallback or empty
+            setMovies([]); 
+            setLoading(false);
+            return;
+        } else if (typeParam === "movie") {
             endpoint = "/discover/movie";
-            params = "with_genres=27&sort_by=popularity.desc";
-            setTitle("Horror Protocols | رعب");
-        } else if (genreParam === "action") {
-            endpoint = "/discover/movie";
-            params = "with_genres=28&sort_by=popularity.desc";
-            setTitle("Action Front | أكشن");
-        } else if (genreParam === "comedy") {
-            endpoint = "/discover/movie";
-            params = "with_genres=35&sort_by=popularity.desc";
-            setTitle("Comedy Central | كوميدي");
+            setTitle("Cinema Productions | أفلام");
+        } else if (typeParam === "tv") {
+            endpoint = "/discover/tv";
+            setTitle("Premium TV Shows | مسلسلات");
         } else {
             setTitle("Explore Library");
         }
@@ -51,7 +52,7 @@ function BrowseContent() {
         setLoading(false);
     }
     load();
-  }, [genreParam]);
+  }, [genreParam, searchParams]);
 
   const searchMovies = async (q: string) => {
     setQuery(q);
