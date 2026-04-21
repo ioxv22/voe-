@@ -1,4 +1,5 @@
 const WORKERS = [
+  "https://nebula-worker-voz.vercel.app", // Placeholder for user's new deployment
   "https://vidsrc.pro",
   "https://vidlink.pro"
 ];
