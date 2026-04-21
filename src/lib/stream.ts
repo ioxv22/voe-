@@ -1,7 +1,7 @@
 const WORKERS = [
+  "https://vidsrc.pm",
   "https://vidlink.pro",
-  "https://vidsrc.pro",
-  "https://nebula-worker-voz.vercel.app" // Placeholder
+  "https://vidsrc.pro"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
 
