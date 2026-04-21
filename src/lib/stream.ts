@@ -1,7 +1,8 @@
 const WORKERS = [
-  "https://vidsrc.pm",
-  "https://vidlink.pro",
-  "https://vidsrc.pro"
+  "https://pixelstream.pixelstream1.workers.dev",
+  "https://iplt20-5c89.lahaye9139.workers.dev",
+  "https://pixelstream3.niburoqi.workers.dev",
+  "https://vidlink.pro"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
 
