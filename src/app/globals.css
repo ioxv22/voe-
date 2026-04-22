@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700;900&display=swap');
 @import "tailwindcss";
 
 :root {
   --background: #020202;
   --foreground: #ffffff;
   --card: #0a0a0a;
-  --primary: #e50914;
+  --primary: #14b8a6;
   --muted: #737373;
   --nav-bg: rgba(2, 2, 2, 0.6);
   --border-color: rgba(255, 255, 255, 0.1);
@@ -22,7 +22,7 @@
 }
 
 .font-arabic {
-  font-family: 'Cairo', sans-serif !important;
+  font-family: 'Noto Sans Arabic', sans-serif !important;
 }
 
 @theme {
@@ -131,7 +131,7 @@
 }
 
 .active-dot {
-  @apply h-1 w-1 bg-primary rounded-full shadow-[0_0_8px_#e50914] animate-pulse;
+  @apply h-1 w-1 bg-primary rounded-full shadow-[0_0_8px_#14b8a6] animate-pulse;
 }
 
 .nav-link {
