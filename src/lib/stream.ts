@@ -43,7 +43,7 @@ export const decodeObs = (str: string) => {
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en", isVIP: boolean = false) => {
   const targetServer = isRoom ? "auto" : server;
   // Forced Ad-Free Protocol 2026 - Maximum Aggression
-  const adParam = "&ads=0&adblock=1&iv_load_policy=3&mime=true&autoplay=false&primaryColor=e50914";
+  const adParam = "&ads=0&adblock=1&iv_load_policy=3&mime=true&autoplay=false&primaryColor=14b8a6";
   const vidlinkAr = "&subs=ar&multi_lang=true&ads=0";
 
   let finalUrl = "";
@@ -52,10 +52,10 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   if (targetServer === "nebula" || targetServer === "multi") {
       const worker = WORKERS[0];
       const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-      finalUrl = `${worker}${path}?&server=nebula&token=${STREAM_TOKEN}${adParam}`;
+      finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
   else if (targetServer === "auto" || targetServer === "vidlink") {
-      finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914${adParam}`;
+      finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
   }
   else if (targetServer === "vidsrc") finalUrl = `https://vidsrc.to/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
   else if (targetServer === "vidsrcme") finalUrl = type === "movie" ? `https://vidsrc.me/embed/movie?tmdb=${id}${adParam}` : `https://vidsrc.me/embed/tv?tmdb=${id}&s=${season}&e=${episode}${adParam}`;
@@ -69,7 +69,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
 
   // Content Specialists
   else if (targetServer === "akwam") finalUrl = `https://vidsrc.rip/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
-  else if (targetServer === "fasel") finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=e50914${vidlinkAr}`;
+  else if (targetServer === "fasel") finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${vidlinkAr}`;
   else if (targetServer === "alooy") finalUrl = `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
 
   else {
