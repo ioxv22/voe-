@@ -49,7 +49,7 @@ export const fetchTMDB = async (endpoint: string, params: string = "") => {
 export const getImageUrl = (path: string, size: "w500" | "original" = "w500") => {
   if (!path) return "";
   const originalUrl = `image.tmdb.org/t/p/${size}${path}`;
-  return `https://images.weserv.nl/?url=${originalUrl}&default=https://i.ibb.co/23Bkgcrx/image.png`;
+  return `https://images.weserv.nl/?url=${originalUrl}&default=https://i.ibb.co/wrCgwgzt/Chat-GPT-Image-Apr-22-2026-09-29-48-PM.png`;
 };
 
 const BLACKLIST_KEYWORDS = [

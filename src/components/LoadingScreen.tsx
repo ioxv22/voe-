@@ -16,7 +16,7 @@ export default function LoadingScreen() {
             className="flex flex-col items-center"
         >
             <img 
-                src="https://i.ibb.co/23Bkgcrx/image.png" 
+                src="https://i.ibb.co/wrCgwgzt/Chat-GPT-Image-Apr-22-2026-09-29-48-PM.png" 
                 className="h-28 w-auto object-contain mb-6 protected-img" 
                 alt="VOZ"
                 style={{ filter: "drop-shadow(0 0 20px rgba(0, 200, 200, 0.4))" }}
@@ -39,7 +39,7 @@ export default function LoadingScreen() {
                         delay: i * 0.2,
                         ease: "easeInOut"
                     }}
-                    className="w-3 h-3 rounded-full bg-primary-600 shadow-[0_0_10px_#e50914]"
+                    className="w-3 h-3 rounded-full bg-primary-600 shadow-[0_0_10px_#14b8a6]"
                 />
             ))}
         </div>

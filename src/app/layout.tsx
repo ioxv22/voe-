@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "VOZ Stream",
     images: [
       {
-        url: "https://i.ibb.co/23Bkgcrx/image.png",
+        url: "https://i.ibb.co/wrCgwgzt/Chat-GPT-Image-Apr-22-2026-09-29-48-PM.png",
         width: 1200,
         height: 630,
         alt: "VOZ Stream - Free HD Streaming",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "VOZ Stream | Watch FREE HD Movies",
     description: "The fastest streaming discovery platform. No ads, just movies.",
-    images: ["https://i.ibb.co/23Bkgcrx/image.png"],
+    images: ["https://i.ibb.co/wrCgwgzt/Chat-GPT-Image-Apr-22-2026-09-29-48-PM.png"],
   },
   manifest: "/manifest.json",
   appleWebApp: {
@@ -90,7 +90,7 @@ export default function RootLayout({
       <head>
           <link rel="manifest" href="/manifest.json" />
           <meta name="theme-color" content="#020202" />
-          <link rel="apple-touch-icon" href="https://i.ibb.co/23Bkgcrx/image.png" />
+          <link rel="apple-touch-icon" href="https://i.ibb.co/wrCgwgzt/Chat-GPT-Image-Apr-22-2026-09-29-48-PM.png" />
           {/* Structured Data for Google (SEO) */}
           <script
             type="application/ld+json"

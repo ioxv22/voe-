@@ -34,7 +34,7 @@ export default function IOSInstallPrompt() {
                 </button>
                 
                 <div className="h-16 w-16 bg-black rounded-2xl mb-4 flex items-center justify-center p-2 border border-black/5">
-                    <img src="https://i.ibb.co/23Bkgcrx/image.png" alt="VOZ" className="w-full h-full object-contain" />
+                    <img src="https://i.ibb.co/wrCgwgzt/Chat-GPT-Image-Apr-22-2026-09-29-48-PM.png" alt="VOZ" className="w-full h-full object-contain" />
                 </div>
 
                 <h3 className="text-lg font-black uppercase tracking-tight mb-2">Install VOZ App</h3>

@@ -27,7 +27,7 @@ export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () 
              <div className="w-32 h-32 md:w-48 md:h-48 mx-auto rounded-full border-[8px] border-teal-500/20 flex items-center justify-center relative shadow-[0_0_50px_rgba(20,184,166,0.2)]">
                 <div className="absolute inset-0 rounded-full border-t-4 border-teal-400 animate-[spin_3s_linear_infinite]" />
                 <img 
-                    src="https://i.ibb.co/23Bkgcrx/image.png" 
+                    src="https://i.ibb.co/wrCgwgzt/Chat-GPT-Image-Apr-22-2026-09-29-48-PM.png" 
                     alt="VOZ" 
                     className="w-20 md:w-32 h-auto object-contain brightness-125 contrast-125 drop-shadow-[0_0_15px_rgba(20,184,166,0.5)]" 
                 />
