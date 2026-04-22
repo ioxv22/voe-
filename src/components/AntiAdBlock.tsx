@@ -60,10 +60,10 @@ export default function AntiAdBlock() {
         <motion.div 
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
-          className="relative w-full max-w-xl bg-gradient-to-br from-red-600/20 to-black border border-white/10 rounded-[3rem] p-12 text-center shadow-2xl"
+          className="relative w-full max-w-xl bg-gradient-to-br from-teal-600/20 to-black border border-white/10 rounded-[3rem] p-12 text-center shadow-2xl"
         >
           <div className="flex justify-center mb-8">
-            <div className="h-24 w-24 rounded-full bg-red-600 flex items-center justify-center shadow-2xl shadow-red-600/40 animate-pulse">
+            <div className="h-24 w-24 rounded-full bg-teal-600 flex items-center justify-center shadow-2xl shadow-teal-600/40 animate-pulse">
                 <ShieldAlert size={48} className="text-white" />
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function AntiAdBlock() {
           </div>
 
           <p className="mt-8 text-[10px] font-black text-gray-600 uppercase tracking-widest flex items-center justify-center gap-2">
-            <Heart size={10} className="text-red-600" /> Support VOZ Protocol
+            <Heart size={10} className="text-teal-600" /> Support VOZ Protocol
           </p>
         </motion.div>
       </div>

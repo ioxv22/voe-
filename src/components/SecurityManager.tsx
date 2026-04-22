@@ -45,7 +45,7 @@ export default function SecurityManager() {
     
     const cleaner = setInterval(() => {
         console.clear();
-        console.log("%cVOZ STREAM PROTECTED | BY HAMAD AL-ABDOULI", "color: #e50914; font-size: 14px; font-weight: bold;");
+        console.log("%cVOZ STREAM PROTECTED | BY HAMAD AL-ABDOULI", "color: #14b8a6; font-size: 14px; font-weight: bold;");
     }, 20000);
 
     return () => {
