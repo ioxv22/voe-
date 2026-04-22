@@ -7,7 +7,7 @@ export default function Logo({ className = "" }: { className?: string }) {
       <img 
         src="https://i.ibb.co/23Bkgcrx/image.png" 
         alt="VOZ Stream" 
-        className="h-10 w-auto object-contain transition" 
+        className="h-10 w-auto object-contain transition drop-shadow-[0_0_8px_rgba(20,184,166,0.6)] group-hover:drop-shadow-[0_0_12px_rgba(20,184,166,0.8)]" 
       />
     </Link>
   );
