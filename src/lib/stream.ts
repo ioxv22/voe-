@@ -50,9 +50,9 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
 
   // Original Nebula Proxy Engine
   if (targetServer === "nebula" || targetServer === "multi") {
-      const worker = WORKERS[Math.floor(Math.random() * (WORKERS.length - 1))]; // Rotate between workers except vidlink
+      const worker = WORKERS[0];
       const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-      finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&ads=0&primaryColor=14b8a6`;
+      finalUrl = `${worker}${path}?&server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
   else if (targetServer === "auto" || targetServer === "vidlink") {
       finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
@@ -64,7 +64,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
     const isTurbo = typeof window !== "undefined" && localStorage ? localStorage.getItem("voz_turbo_mode") === "true" : false;
     const worker = isTurbo ? WORKERS[0] : WORKERS[Math.floor(Math.random() * (WORKERS.length - 1))];
     const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&ads=0&primaryColor=14b8a6`;
+    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
 
   // Content Specialists
@@ -75,7 +75,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   else {
     const worker = WORKERS[0];
     const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&ads=0&primaryColor=14b8a6`;
+    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
 
   return obs(finalUrl);
