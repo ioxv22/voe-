@@ -34,8 +34,6 @@ export async function GET(
       });
 
       const res = await fetch(targetUrl.toString(), { 
-        // Increase timeout to 10s for slower proxies
-        signal: AbortSignal.timeout(10000),
         next: { revalidate: 3600 } 
       });
       
@@ -49,7 +47,7 @@ export async function GET(
   }
 
   return NextResponse.json(
-    { error: "UPSTREAM_TIMEOUT", details: String(lastError) }, 
-    { status: 503, headers: { 'Retry-After': '30' } }
+    { error: "FAILED_TO_FETCH", details: String(lastError) }, 
+    { status: 502 }
   );
 }
