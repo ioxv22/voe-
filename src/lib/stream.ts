@@ -56,8 +56,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   // Intelligent Source Selection
   if (targetServer === "nebula" || targetServer === "multi") {
       const worker = getRandomWorker();
-      // Force the classic stable provider for the "Old Look"
-      const provider = "vidsrc.to";
+      // Use vidsrc.me for the TRUE Classic Old Look
+      const provider = "vidsrc.me";
       
       const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
       finalUrl = `${worker}${path}?&server=${provider}&token=${STREAM_TOKEN}${adParam}`;
