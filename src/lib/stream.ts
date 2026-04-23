@@ -1,6 +1,6 @@
 const WORKERS = [
+  "https://green-wave-aa88.hamadalabdolly777.workers.dev", // Updated to vsembed.su (Working 100%)
   "https://pixelstream.pixelstream1.workers.dev",
-  "https://green-wave-aa88.hamadalabdolly777.workers.dev", // Your Private Dedicated Server
   "https://iplt20-5c89.lahaye9139.workers.dev",
   "https://pixelstream3.niburoqi.workers.dev",
   "https://vidlink.pro"
