@@ -42,15 +42,19 @@ export const decodeObs = (str: string) => {
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en", isVIP: boolean = false) => {
   const targetServer = isRoom ? "auto" : server;
+  // Smart Load Balancer for Nebula Workers
+  const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev"));
+  const getRandomWorker = () => nebulaWorkers[Math.floor(Math.random() * nebulaWorkers.length)];
+  
   // Forced Ad-Free Protocol 2026 - Maximum Aggression
   const adParam = "&ads=0&adblock=1&iv_load_policy=3&mime=true&autoplay=false&primaryColor=14b8a6";
   const vidlinkAr = "&subs=ar&multi_lang=true&ads=0";
 
   let finalUrl = "";
 
-  // Original Nebula Proxy Engine
+  // Original Nebula Proxy Engine with Smart Rotation
   if (targetServer === "nebula" || targetServer === "multi") {
-      const worker = WORKERS[0];
+      const worker = getRandomWorker();
       const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
       finalUrl = `${worker}${path}?&server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
@@ -62,7 +66,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   
   else if (targetServer === "school" || targetServer === "vpn" || targetServer === "tunnel") {
     const isTurbo = typeof window !== "undefined" && localStorage ? localStorage.getItem("voz_turbo_mode") === "true" : false;
-    const worker = isTurbo ? WORKERS[0] : WORKERS[Math.floor(Math.random() * (WORKERS.length - 1))];
+    const worker = isTurbo ? WORKERS[0] : getRandomWorker();
     const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
     finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
@@ -73,7 +77,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   else if (targetServer === "alooy") finalUrl = `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
 
   else {
-    const worker = WORKERS[0];
+    const worker = getRandomWorker();
     const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
     finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }

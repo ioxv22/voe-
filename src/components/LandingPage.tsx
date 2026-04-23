@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Send, Play } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import AdBanner from "@/components/AdBanner";
 
 export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () => void, onGuestSignIn: () => void }) {
   return (
@@ -109,6 +110,10 @@ export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () 
                 Premium Protocol
             </p>
         </motion.div>
+
+        <div className="mt-12 scale-75 opacity-50 hover:opacity-100 transition-opacity">
+            <AdBanner format="horizontal" />
+        </div>
       </div>
 
       <style jsx global>{`

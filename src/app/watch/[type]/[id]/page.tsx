@@ -19,6 +19,7 @@ import { db } from "@/lib/firebase";
 import PremiumPromo from "@/components/PremiumPromo";
 import DownloadModal from "@/components/DownloadModal";
 import { useLanguage } from "@/context/LanguageContext";
+import AdBanner from "@/components/AdBanner";
 
 // Bulletproof Error Boundary
 class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: boolean}> {
@@ -246,6 +247,8 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                     </div>
                 )}
             </div>
+
+            <AdBanner format="horizontal" />
 
             <div className={`flex flex-col lg:flex-row justify-between items-start gap-8 bg-white/[0.02] p-10 rounded-[40px] border border-white/5 ${isCinemaMode ? 'mx-4 lg:mx-12' : ''}`}>
               <div className="flex-1">
