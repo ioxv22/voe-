@@ -2,6 +2,7 @@ const WORKERS = [
   "https://pixelstream.pixelstream1.workers.dev",
   "https://iplt20-5c89.lahaye9139.workers.dev",
   "https://pixelstream3.niburoqi.workers.dev",
+  "https://nebula-v2.pixelstream.workers.dev",
   "https://vidlink.pro"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
@@ -56,7 +57,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   if (targetServer === "nebula" || targetServer === "multi") {
       const worker = getRandomWorker();
       const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-      finalUrl = `${worker}${path}?&server=nebula&token=${STREAM_TOKEN}${adParam}`;
+      finalUrl = `${worker}${path}?&server=nebula&token=${STREAM_TOKEN}${adParam}&v=2&h=1`;
   }
   else if (targetServer === "auto" || targetServer === "vidlink") {
       finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
