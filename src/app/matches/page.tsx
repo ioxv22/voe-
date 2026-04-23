@@ -10,10 +10,11 @@ import { motion } from "framer-motion";
 
 export default function MatchesPage() {
     const [matches, setMatches] = useState<any[]>([
-        { id: "m1", title: "Atletico Madrid vs Barcelona", time: "23:00", url: "https://v3.v-it.org/hls/101.m3u8", mirrorUrl: "iframe:https://v3.v-it.org/embed/101", team1: "Atlético", team2: "Barcelona" },
-        { id: "m2", title: "Liverpool vs Paris Saint-Germain", time: "23:00", url: "https://v3.v-it.org/hls/102.m3u8", mirrorUrl: "iframe:https://v3.v-it.org/embed/102", team1: "Liverpool", team2: "PSG" },
-        { id: "m3", title: "Al Nassr vs Al Khaleej", time: "21:00", url: "https://v3.v-it.org/hls/103.m3u8", mirrorUrl: "iframe:https://v3.v-it.org/embed/103", team1: "Al Nassr", team2: "Al Khaleej" },
-        { id: "m4", title: "Al Ittihad vs Zed FC", time: "22:00", url: "https://v3.v-it.org/hls/104.m3u8", mirrorUrl: "iframe:https://v3.v-it.org/embed/104", team1: "Al Ittihad", team2: "Zed FC" }
+        { id: "m1", title: "الشارقة Vs الوحدة", time: "06:00 PM", url: "https://critterspot.xyz/?p=87", mirrorUrl: "https://car.satellitezk.com/2024/01/bmw-z4-2023-prices-and-specifications.html", team1: "الشارقة", team2: "الوحدة", league: "دوري أدنوك للمحترفين" },
+        { id: "m2", title: "كلباء Vs بني ياس", time: "06:00 PM", url: "https://critterspot.xyz/?p=99", mirrorUrl: "https://ensports.imageconverte.com/2025/11/blog-post_87.html", team1: "كلباء", team2: "بني ياس", league: "دوري أدنوك للمحترفين" },
+        { id: "m3", title: "البطائح Vs العين", time: "08:45 PM", url: "https://critterspot.xyz/?p=87", mirrorUrl: "https://sport.financing.lol/2025/11/blog-post_22.html", team1: "البطائح", team2: "العين", league: "دوري أدنوك للمحترفين" },
+        { id: "m4", title: "الشباب Vs الريان", time: "07:45 PM", url: "https://sport.financing.lol/2026/04/blog-post_455.html", mirrorUrl: "https://critterspot.xyz/?p=96", team1: "الشباب", team2: "الريان", league: "دوري أبطال الخليج - النهائي" },
+        { id: "m5", title: "شتوتجارت Vs فرايبورج", time: "10:45 PM", url: "https://critterspot.xyz/?p=87", mirrorUrl: "https://ensports.imageconverte.com/2025/11/2-1.html", team1: "شتوتجارت", team2: "فرايبورج", league: "كأس المانيا - نصف النهائي" }
     ]);
     const [loading, setLoading] = useState(false);
 
@@ -68,10 +69,15 @@ export default function MatchesPage() {
                                     <div className="absolute -top-10 -right-10 h-40 w-40 bg-green-600/5 blur-[80px] rounded-full group-hover:bg-green-600/10 transition-all duration-700" />
                                     
                                     <div className="relative z-10">
-                                        <div className="flex justify-between items-center mb-8">
-                                            <div className="flex items-center gap-2 bg-red-600/20 px-3 py-1 rounded-full border border-red-600/30">
-                                                <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-ping" />
-                                                <span className="text-[9px] font-black text-red-500 uppercase">Live Now</span>
+                                        <div className="flex justify-between items-start mb-8">
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-2 bg-red-600/20 px-3 py-1 rounded-full border border-red-600/30 w-fit">
+                                                    <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-ping" />
+                                                    <span className="text-[9px] font-black text-red-500 uppercase">Live Now</span>
+                                                </div>
+                                                {match.league && (
+                                                    <span className="text-[9px] font-black text-green-500 uppercase tracking-widest mt-1 ml-1">{match.league}</span>
+                                                )}
                                             </div>
                                             <div className="flex items-center gap-2 text-gray-500">
                                                 <Timer size={14} />
