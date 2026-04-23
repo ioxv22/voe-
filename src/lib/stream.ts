@@ -49,19 +49,11 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
 
   let finalUrl = "";
 
-  // Original Nebula Proxy Engine - Multi-Origin Fallback
+  // Original Nebula Proxy Engine
   if (targetServer === "nebula" || targetServer === "multi") {
-      const isTurbo = typeof window !== "undefined" && localStorage ? localStorage.getItem("voz_turbo_mode") === "true" : false;
-      const nebulaMirrors = WORKERS.filter(w => w.includes("workers.dev"));
-      const worker = nebulaMirrors[0]; 
-      
-      // Rotate between different backends to find one that isn't blocking the worker
-      const backends = ["https://vidsrc.pm", "https://vidsrc.xyz", "https://vidsrc.cc"];
-      const targetBase = backends[Math.floor(Math.random() * backends.length)];
-      
+      const worker = WORKERS[0];
       const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-      // We pass the intended backend to the worker as a parameter
-      finalUrl = `${worker}${path}?&server=nebula&origin=${encodeURIComponent(targetBase)}&token=${STREAM_TOKEN}${adParam}`;
+      finalUrl = `${worker}${path}?&server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
   else if (targetServer === "auto" || targetServer === "vidlink") {
       finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
