@@ -1,8 +1,5 @@
 const WORKERS = [
   "https://pixelstream.pixelstream1.workers.dev",
-  "https://nebula-worker.pixelstream.workers.dev",
-  "https://pixelstream-proxy.workers.dev",
-  "https://nebula.super-stream.workers.dev",
   "https://iplt20-5c89.lahaye9139.workers.dev",
   "https://pixelstream3.niburoqi.workers.dev",
   "https://vidlink.pro"
@@ -56,7 +53,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
       const isTurbo = typeof window !== "undefined" && localStorage ? localStorage.getItem("voz_turbo_mode") === "true" : false;
       // Filter out non-worker domains like vidlink for the Nebula protocol
       const nebulaMirrors = WORKERS.filter(w => w.includes("workers.dev"));
-      const worker = isTurbo ? nebulaMirrors[0] : nebulaMirrors[Math.floor(Math.random() * nebulaMirrors.length)];
+      // Use the primary (index 0) by default as it's the "100% working" one, or random if turbo is off and we want to spread load
+      const worker = isTurbo ? nebulaMirrors[0] : nebulaMirrors[0]; // Forcing index 0 for now as requested, can add random back if needed
       const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
       finalUrl = `${worker}${path}?&server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
