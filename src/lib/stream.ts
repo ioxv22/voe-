@@ -42,7 +42,8 @@ export const decodeObs = (str: string) => {
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en", isVIP: boolean = false) => {
   const targetServer = isRoom ? "auto" : server;
-  // Smart Load Balancer for Nebula Workers
+  
+  // Smart Load Balancer & Multi-Source Engine
   const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev"));
   const getRandomWorker = () => nebulaWorkers[Math.floor(Math.random() * nebulaWorkers.length)];
   
@@ -52,11 +53,15 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
 
   let finalUrl = "";
 
-  // Original Nebula Proxy Engine with Smart Rotation
+  // Intelligent Source Selection
   if (targetServer === "nebula" || targetServer === "multi") {
       const worker = getRandomWorker();
+      // Try different providers through the worker
+      const providers = ["vidsrc.to", "vidsrc.me", "vidsrc.xyz"];
+      const provider = providers[Math.floor(Math.random() * providers.length)];
+      
       const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-      finalUrl = `${worker}${path}?&server=nebula&token=${STREAM_TOKEN}${adParam}&v=2&h=1`;
+      finalUrl = `${worker}${path}?&server=${provider}&token=${STREAM_TOKEN}${adParam}&v=2&h=1`;
   }
   else if (targetServer === "auto" || targetServer === "vidlink") {
       finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
@@ -77,9 +82,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   else if (targetServer === "alooy") finalUrl = `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
 
   else {
-    const worker = getRandomWorker();
-    const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
+    // Ultimate Fallback to Vidlink if server is unknown
+    finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
   }
 
   return obs(finalUrl);
