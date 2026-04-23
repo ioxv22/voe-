@@ -1,9 +1,8 @@
 const WORKERS = [
+  "https://green-wave-aa88.hamadalabdolly777.workers.dev",
   "https://pixelstream.pixelstream1.workers.dev",
   "https://iplt20-5c89.lahaye9139.workers.dev",
-  "https://pixelstream3.niburoqi.workers.dev",
-  "https://nebula-v2.pixelstream.workers.dev",
-  "https://vidlink.pro"
+  "https://pixelstream3.niburoqi.workers.dev"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
 
