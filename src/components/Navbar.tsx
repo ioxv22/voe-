@@ -16,7 +16,8 @@ import {
   LogOut, 
   HandHelping,
   Menu,
-  X
+  X,
+  Trophy
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useProfile } from "@/context/ProfileContext";
@@ -58,6 +59,7 @@ export default function Navbar() {
     { href: "/", label: t("home"), icon: Home },
     { href: "/browse?type=movie", label: t("movies") || "Movies", icon: PlayCircle },
     { href: "/browse?type=tv", label: t("tvShows") || "TV Shows", icon: Tv },
+    { href: "/matches", label: "Matches | مباريات", icon: Trophy },
     { href: "/browse?genre=watchlist", label: t("list") || "My List", icon: Bookmark },
     { href: "/rooms", label: t("party") || "Rooms", icon: Users },
   ];
