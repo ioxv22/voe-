@@ -56,12 +56,11 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   // Intelligent Source Selection
   if (targetServer === "nebula" || targetServer === "multi") {
       const worker = getRandomWorker();
-      // Try different providers through the worker
-      const providers = ["vidsrc.to", "vidsrc.me", "vidsrc.xyz"];
-      const provider = providers[Math.floor(Math.random() * providers.length)];
+      // Force the classic stable provider for the "Old Look"
+      const provider = "vidsrc.to";
       
       const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-      finalUrl = `${worker}${path}?&server=${provider}&token=${STREAM_TOKEN}${adParam}&v=2&h=1`;
+      finalUrl = `${worker}${path}?&server=${provider}&token=${STREAM_TOKEN}${adParam}`;
   }
   else if (targetServer === "auto" || targetServer === "vidlink") {
       finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
