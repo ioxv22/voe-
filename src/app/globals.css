@@ -2,13 +2,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #020202;
+  --background: #020404;
   --foreground: #ffffff;
-  --card: #0a0a0a;
+  --card: #0a0e0e;
   --primary: #14b8a6;
+  --primary-glow: rgba(20, 184, 166, 0.4);
   --muted: #737373;
-  --nav-bg: rgba(2, 2, 2, 0.6);
-  --border-color: rgba(255, 255, 255, 0.1);
+  --nav-bg: rgba(2, 4, 4, 0.7);
+  --border-color: rgba(255, 255, 255, 0.05);
+  --metallic-teal: linear-gradient(135deg, #14b8a6 0%, #0d9488 50%, #0f766e 100%);
 }
 
 .light-mode {
@@ -105,9 +107,24 @@
   }
 
   .hero-gradient {
-    background: linear-gradient(to top, var(--background) 0%, transparent 40%, rgba(0,0,0,0.5) 100%),
-                linear-gradient(to right, var(--background) 0%, transparent 60%);
+    background: linear-gradient(to top, var(--background) 0%, transparent 40%, rgba(0,0,0,0.6) 100%),
+                linear-gradient(to right, var(--background) 0%, transparent 70%);
   }
+
+  .premium-card {
+    @apply relative overflow-hidden rounded-3xl border border-white/5 bg-white/[0.03] backdrop-blur-3xl transition-all duration-500 hover:border-primary/30 hover:bg-white/[0.05] hover:shadow-[0_0_30px_rgba(20,184,166,0.1)];
+  }
+
+  .metallic-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-white via-white/80 to-gray-500;
+  }
+}
+
+.bg-mesh {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(20, 184, 166, 0.1) 0, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(13, 148, 136, 0.1) 0, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(15, 118, 110, 0.05) 0, transparent 50%);
 }
 
 .hide-scrollbar {

@@ -106,7 +106,7 @@ export default function Home() {
   const featured = data?.trending?.results?.[0];
 
   return (
-    <main className="min-h-screen bg-[#020202] pb-20 overflow-x-hidden selection:bg-primary-600 selection:text-white">
+    <main className="min-h-screen bg-[#020404] bg-mesh pb-20 overflow-x-hidden selection:bg-primary-600 selection:text-white">
       <SocialWelcome />
       <TelegramBanner />
       <Navbar />
@@ -245,15 +245,15 @@ export default function Home() {
         
         {/* Telegram Support Highlighting */}
         <div className="px-4 lg:px-12 pb-12">
-            <div className="rounded-[40px] bg-gradient-to-br from-white/[0.05] to-transparent backdrop-blur-3xl p-12 border border-white/5 flex flex-col items-center text-center lg:flex-row lg:text-left lg:items-center justify-between gap-10">
+            <div className="premium-card p-12 flex flex-col items-center text-center lg:flex-row lg:text-left lg:items-center justify-between gap-10">
                 <div className="space-y-3">
-                    <h3 className="text-3xl font-black text-white italic tracking-tighter uppercase">Support Protocol</h3>
+                    <h3 className="text-3xl font-black text-white italic tracking-tighter uppercase metallic-text">Support Protocol</h3>
                     <p className="text-gray-500 max-w-sm font-medium leading-relaxed">Having issues with "My List" or searching for a specific movie? Contact our team on Telegram.</p>
                 </div>
                 <a 
                     href="https://t.me/VOZSTREAM" 
                     target="_blank" 
-                    className="px-12 py-5 bg-primary-600 text-black font-black rounded-full hover:bg-primary-700 transition-all transform hover:scale-105 shadow-2xl shadow-primary-600/30 uppercase tracking-[0.2em] text-[10px]"
+                    className="px-12 py-5 bg-primary text-black font-black rounded-full hover:scale-105 transition-all shadow-2xl shadow-primary/20 uppercase tracking-[0.2em] text-[10px]"
                 >
                     Connect @VOZSTREAM
                 </a>

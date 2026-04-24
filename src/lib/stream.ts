@@ -1,4 +1,5 @@
 const WORKERS = [
+  "https://nebula-worker.stigma.workers.dev",
   "https://pixelstream.pixelstream1.workers.dev",
   "https://iplt20-5c89.lahaye9139.workers.dev",
   "https://pixelstream3.niburoqi.workers.dev",
@@ -48,9 +49,21 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
 
   let finalUrl = "";
 
+  // Dynamic Worker Selection for Nebula
+  const getNebulaWorker = () => {
+    // Priority Worker (Stigma Private)
+    const primary = WORKERS[0];
+    // Fallback rotation
+    const fallbacks = WORKERS.slice(1, 4);
+    const randomFallback = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    
+    // 70% Primary, 30% Random Fallback for load balancing
+    return Math.random() > 0.3 ? primary : randomFallback;
+  };
+
   // Original Nebula Proxy Engine
   if (targetServer === "nebula" || targetServer === "multi") {
-      const worker = WORKERS[0];
+      const worker = getNebulaWorker();
       const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
       finalUrl = `${worker}${path}?&server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
