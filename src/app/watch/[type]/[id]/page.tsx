@@ -203,96 +203,49 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                 <iframe 
                     key={playerKey}
                     src={playerUrl} 
-                    className="w-full h-full scale-[1.01]" 
+                    className="w-full h-full" 
                     allowFullScreen 
                     frameBorder="0" 
+                    // Cinematic Protection: Block popups and malicious navigation while allowing core video functions
                     sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock"
                 />
 
-                {/* PREMIUM OVERLAY (CINEMAOS STYLE) */}
-                <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/80 via-transparent to-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    {/* Top Branding */}
-                    <div className="absolute top-8 left-10 flex items-center gap-4">
-                        <div className="h-10 w-10 bg-primary/20 backdrop-blur-md rounded-xl border border-primary/20 flex items-center justify-center">
-                            <Play className="text-primary fill-primary" size={20} />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Now Playing</p>
-                            <h2 className="text-sm font-bold uppercase tracking-tighter italic">{String(item.title || item.name)}</h2>
-                        </div>
-                    </div>
-
-                    {/* Center Controls */}
-                    <div className="absolute inset-0 flex items-center justify-center gap-16 pointer-events-auto">
-                        <button onClick={() => setPlayerKey(k => k + 1)} className="p-4 bg-white/5 backdrop-blur-xl rounded-full border border-white/10 hover:bg-white/10 transition active:scale-90">
-                            <motion.div whileHover={{ rotate: -90 }}><Play className="rotate-180" size={32} /></motion.div>
-                        </button>
-                        <div className="relative">
-                            <div className="h-20 w-20 bg-primary rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(20,184,166,0.5)]">
-                                <Play className="fill-black text-black ml-1" size={32} />
-                            </div>
-                            <div className="absolute inset-0 border-4 border-white/10 rounded-full animate-ping" />
-                        </div>
-                        <button onClick={() => setPlayerKey(k => k + 1)} className="p-4 bg-white/5 backdrop-blur-xl rounded-full border border-white/10 hover:bg-white/10 transition active:scale-90">
-                            <motion.div whileHover={{ rotate: 90 }}><Play size={32} /></motion.div>
-                        </button>
-                    </div>
-
-                    {/* Bottom Info & Progress */}
-                    <div className="absolute bottom-0 left-0 right-0 p-10 pointer-events-auto">
-                        <div className="flex items-end justify-between mb-8">
-                            <div className="space-y-1">
-                                <h3 className="text-2xl font-black italic uppercase tracking-tighter">{String(item.title || item.name)}</h3>
-                                <p className="text-xs text-gray-400 font-medium opacity-60">VOZ STREAM | @IIVOZ</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1">Built by Hamad Al-Abdouli</p>
-                                <p className="text-xs font-mono text-primary">0:00 / 0:00</p>
-                            </div>
-                        </div>
-
-                        {/* Progress Bar */}
-                        <div className="relative h-1.5 w-full bg-white/10 rounded-full overflow-hidden mb-8 group/progress cursor-pointer">
-                            <div className="absolute inset-y-0 left-0 bg-primary w-[35%] shadow-[0_0_15px_rgba(20,184,166,0.8)]" />
-                            <div className="absolute top-1/2 left-[35%] -translate-y-1/2 h-4 w-4 bg-white rounded-full shadow-xl scale-0 group-hover/progress:scale-100 transition-transform" />
-                        </div>
-
-                        {/* Control Bar */}
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-8">
-                                <div className="flex items-center gap-6">
-                                    <Play className="fill-white text-white cursor-pointer hover:text-primary transition" size={24} />
-                                    <div className="flex items-center gap-3 group/vol">
-                                        <div className="h-1.5 w-24 bg-white/10 rounded-full relative overflow-hidden">
-                                            <div className="absolute inset-y-0 left-0 bg-white w-2/3" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-8 opacity-60 hover:opacity-100 transition">
-                                <Activity size={20} className="cursor-pointer hover:text-primary transition" />
-                                <Send size={20} className="cursor-pointer hover:text-primary transition" />
-                                <Search size={20} className="cursor-pointer hover:text-primary transition" />
-                                <Settings size={20} className="cursor-pointer hover:text-primary transition" />
-                                <Users size={20} className="cursor-pointer hover:text-primary transition" />
-                                <Plus size={20} className="cursor-pointer hover:text-primary transition" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Legacy Quick Actions */}
-                <div className="absolute bottom-10 left-10 right-10 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity z-[60] pointer-events-none">
-                    <div className="flex gap-4 pointer-events-auto">
+                <div className="absolute bottom-10 left-10 right-10 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                    <div className="flex gap-4">
                         <button 
                             onClick={() => setIsCinemaMode(!isCinemaMode)}
-                            className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black uppercase px-6 py-3 rounded-full border border-white/10 flex items-center gap-2 hover:bg-primary hover:text-black transition"
+                            className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black uppercase px-6 py-3 rounded-full border border-white/10 flex items-center gap-2 hover:bg-primary-600 hover:border-primary-500 transition"
                         >
                             {isCinemaMode ? "Exit Cinema" : "Cinema Mode"}
                         </button>
+                        <button 
+                            onClick={() => setPlayerKey(k => k + 1)}
+                            className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black uppercase px-6 py-3 rounded-full border border-white/10 hover:bg-white/20 transition"
+                        >
+                            🔄 RELOAD
+                        </button>
                     </div>
+
+                    {type === 'tv' && episode < episodes.length && (
+                        <button 
+                            onClick={() => setShowNextPrompt(true)}
+                            className="bg-primary-600 text-white text-[10px] font-black uppercase px-6 py-3 rounded-full shadow-lg shadow-primary-900/40 hover:scale-105 transition"
+                        >
+                            Next Episode →
+                        </button>
+                    )}
                 </div>
+
+                {showNextPrompt && (
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-xl z-[60] flex flex-col items-center justify-center text-center p-12">
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 mb-2">Next Episode Starting In</p>
+                        <h2 className="text-8xl font-black italic mb-8">{countdown}</h2>
+                        <div className="flex gap-4">
+                            <button onClick={handleNextEpisode} className="bg-primary-600 px-12 py-5 rounded-full font-black uppercase text-sm">Play Now</button>
+                            <button onClick={() => setShowNextPrompt(false)} className="bg-white/10 px-12 py-5 rounded-full font-black uppercase text-sm border border-white/10">Cancel</button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <AdBanner format="horizontal" />
