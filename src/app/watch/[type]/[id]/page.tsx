@@ -194,7 +194,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   const playerUrl = decodeObs(getStreamUrl(type, String(id), season, episode, server, false, String(item?.original_language || "ar"), isPremium)) + `&t=${Math.floor(savedTime)}`;
 
   return (
-    <main className="min-h-screen bg-[#020202] text-white">
+    <main className="min-h-screen bg-[#020404] bg-mesh text-white">
       <Navbar />
       <div className={`transition-all duration-700 ${isCinemaMode ? 'pt-0' : 'pt-28 px-4 lg:px-12'} pb-20`}>
         <div className={`grid grid-cols-1 ${isCinemaMode ? 'lg:grid-cols-1' : 'lg:grid-cols-4'} gap-12`}>
@@ -220,9 +220,10 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                         </button>
                         <button 
                             onClick={() => setPlayerKey(k => k + 1)}
-                            className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black uppercase px-6 py-3 rounded-full border border-white/10 hover:bg-white/20 transition"
+                            className="bg-primary/20 backdrop-blur-md text-primary text-[10px] font-black uppercase px-6 py-3 rounded-full border border-primary/20 hover:bg-primary hover:text-black transition flex items-center gap-2"
+                            title="Tries a different worker in the pool"
                         >
-                            🔄 RELOAD
+                            🔄 SHUFFLE & RELOAD
                         </button>
                     </div>
 

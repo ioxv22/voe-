@@ -2,6 +2,7 @@ const WORKERS = [
   "https://pixelstream.pixelstream1.workers.dev",
   "https://iplt20-5c89.lahaye9139.workers.dev",
   "https://nebula.stigma.workers.dev",
+  "https://nebula.autos",
   "https://pixelstream3.niburoqi.workers.dev"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
@@ -42,15 +43,16 @@ export const decodeObs = (str: string) => {
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en", isVIP: boolean = false) => {
   const targetServer = isRoom ? "auto" : server;
-  // Forced Ad-Free Protocol 2026 - Maximum Aggression
-  const adParam = "&ads=0&adblock=1&iv_load_policy=3&mime=true&autoplay=false&primaryColor=14b8a6";
+  
+  // Refined Parameter Set for Maximum Compatibility
+  const adParam = "&ads=0&adblock=1&autoplay=false&primaryColor=14b8a6";
   const vidlinkAr = "&subs=ar&multi_lang=true&ads=0";
 
   let finalUrl = "";
 
   // Dynamic Worker Selection for Nebula
   const getNebulaWorker = () => {
-    // Balanced Rotation Protocol
+    // Return a random worker from the pool
     return WORKERS[Math.floor(Math.random() * WORKERS.length)];
   };
 
@@ -58,7 +60,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   if (targetServer === "nebula" || targetServer === "multi") {
       const worker = getNebulaWorker();
       const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-      finalUrl = `${worker}${path}?&server=nebula&token=${STREAM_TOKEN}${adParam}`;
+      // Note: Removed &mime=true as it causes 503/403 on some workers
+      finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
   else if (targetServer === "auto" || targetServer === "vidlink") {
       finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
@@ -67,8 +70,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   else if (targetServer === "vidsrcme") finalUrl = type === "movie" ? `https://vidsrc.me/embed/movie?tmdb=${id}${adParam}` : `https://vidsrc.me/embed/tv?tmdb=${id}&s=${season}&e=${episode}${adParam}`;
   
   else if (targetServer === "school" || targetServer === "vpn" || targetServer === "tunnel") {
-    const isTurbo = typeof window !== "undefined" && localStorage ? localStorage.getItem("voz_turbo_mode") === "true" : false;
-    const worker = isTurbo ? WORKERS[0] : WORKERS[Math.floor(Math.random() * (WORKERS.length - 1))];
+    // School Bypass uses randomized pool
+    const worker = WORKERS[Math.floor(Math.random() * WORKERS.length)];
     const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
     finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
@@ -79,6 +82,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   else if (targetServer === "alooy") finalUrl = `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
 
   else {
+    // Default Fallback
     const worker = WORKERS[0];
     const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
     finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
