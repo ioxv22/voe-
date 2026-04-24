@@ -1,12 +1,14 @@
 const WORKERS = [
   "https://pixelstream.pixelstream1.workers.dev",
-  "https://iplt20-5c89.lahaye9139.workers.dev",
-  "https://nebula.stigma.workers.dev"
+  "https://nebula.stigma.workers.dev",
+  "https://iplt20-5c89.lahaye9139.workers.dev"
 ];
-const STREAM_TOKEN = "px-2C1y80YMN";
+const STREAM_TOKEN = "px-HAMAD-ULTRA-2026";
 
 export const SERVER_MAP = {
   nebula: "nebula",
+  hamad: "hamad",
+  pixel: "pixel",
   vidlink: "vidlink",
   multi: "multi",
   vidsrc: "vidsrc",
@@ -19,14 +21,21 @@ export const SERVER_MAP = {
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en", isVIP: boolean = false) => {
   const targetServer = isRoom ? "auto" : server;
+  // Clean Link Protocol - No unnecessary params
   const adParam = "&ads=0&adblock=1";
 
   let finalUrl = "";
 
-  if (targetServer === "nebula" || targetServer === "multi") {
-      const worker = WORKERS[0];
+  if (targetServer === "hamad" || targetServer === "nebula" || targetServer === "multi") {
+      // Prioritize Hamad Ultra Private Worker
+      const worker = WORKERS[0]; 
       const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
       finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
+  }
+  else if (targetServer === "pixel") {
+      const worker = "https://pixelstream.pixelstream1.workers.dev";
+      const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
+      finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&ads=0`;
   }
   else if (targetServer === "auto" || targetServer === "vidlink") {
       finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
@@ -47,5 +56,5 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   return finalUrl;
 };
 
-export const decodeObs = (str: string) => str; // No longer needed but kept for compatibility
+export const decodeObs = (str: string) => str;
 
