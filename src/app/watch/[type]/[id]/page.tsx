@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense, Component, useState, useEffect, use } from "react";
-import { Download, ThumbsUp, ThumbsDown, Check, Plus, Share2, CheckCircle2, Play, Users, Send } from "lucide-react";
+import { Download, ThumbsUp, ThumbsDown, Check, Plus, Share2, CheckCircle2, Play, Users, Send, Activity, Search, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import MovieRow from "@/components/MovieRow";
