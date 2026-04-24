@@ -1,7 +1,8 @@
 const WORKERS = [
+  "https://vidlink.pro",
   "https://pixelstream.pixelstream1.workers.dev",
   "https://iplt20-5c89.lahaye9139.workers.dev",
-  "https://pixelstream3.niburoqi.workers.dev"
+  "https://vidsrc.pm"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
 
@@ -19,14 +20,20 @@ export const SERVER_MAP = {
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en", isVIP: boolean = false) => {
   const targetServer = isRoom ? "auto" : server;
-  const adParam = "&ads=0&adblock=1&iv_load_policy=3";
+  const adParam = "&ads=0&adblock=1";
 
   let finalUrl = "";
 
   if (targetServer === "nebula" || targetServer === "multi") {
-      const worker = WORKERS[0];
-      const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
-      finalUrl = `${worker}${path}?&server=nebula&token=${STREAM_TOKEN}${adParam}`;
+      const worker = WORKERS[0]; // Using VidLink as the stable primary for Nebula
+      const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
+      
+      // Fixed syntax: removed extra '&' after '?'
+      if (worker.includes("workers.dev")) {
+        finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
+      } else {
+        finalUrl = `${worker}${path}?primaryColor=14b8a6${adParam}`;
+      }
   }
   else if (targetServer === "auto" || targetServer === "vidlink") {
       finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
@@ -39,8 +46,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   else if (targetServer === "alooy") finalUrl = `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
 
   else {
-    const worker = WORKERS[0];
-    const path = type === "movie" ? `/embed/movie/${id}` : `/embed/tv/${id}/${season}/${episode}`;
+    const worker = WORKERS[1];
+    const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
     finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
 
