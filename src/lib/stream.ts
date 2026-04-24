@@ -1,9 +1,8 @@
 const WORKERS = [
-  "https://nebula-worker.stigma.workers.dev",
   "https://pixelstream.pixelstream1.workers.dev",
   "https://iplt20-5c89.lahaye9139.workers.dev",
-  "https://pixelstream3.niburoqi.workers.dev",
-  "https://vidlink.pro"
+  "https://nebula.stigma.workers.dev",
+  "https://pixelstream3.niburoqi.workers.dev"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
 
@@ -51,14 +50,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
 
   // Dynamic Worker Selection for Nebula
   const getNebulaWorker = () => {
-    // Priority Worker (Stigma Private)
-    const primary = WORKERS[0];
-    // Fallback rotation
-    const fallbacks = WORKERS.slice(1, 4);
-    const randomFallback = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-    
-    // 70% Primary, 30% Random Fallback for load balancing
-    return Math.random() > 0.3 ? primary : randomFallback;
+    // Balanced Rotation Protocol
+    return WORKERS[Math.floor(Math.random() * WORKERS.length)];
   };
 
   // Original Nebula Proxy Engine
