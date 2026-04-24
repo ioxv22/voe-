@@ -191,7 +191,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
     );
   }
 
-  const playerUrl = decodeObs(getStreamUrl(type, String(id), season, episode, server, false, String(item?.original_language || "ar"), isPremium)) + `&t=${Math.floor(savedTime)}`;
+  const playerUrl = getStreamUrl(type, String(id), season, episode, server, false, String(item?.original_language || "ar"), isPremium) + `&t=${Math.floor(savedTime)}`;
 
   return (
     <main className="min-h-screen bg-[#020404] bg-mesh text-white">
@@ -220,10 +220,9 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                         </button>
                         <button 
                             onClick={() => setPlayerKey(k => k + 1)}
-                            className="bg-primary/20 backdrop-blur-md text-primary text-[10px] font-black uppercase px-6 py-3 rounded-full border border-primary/20 hover:bg-primary hover:text-black transition flex items-center gap-2"
-                            title="Tries a different worker in the pool"
+                            className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black uppercase px-6 py-3 rounded-full border border-white/10 hover:bg-white/20 transition"
                         >
-                            🔄 SHUFFLE & RELOAD
+                            🔄 RELOAD
                         </button>
                     </div>
 
@@ -362,31 +361,31 @@ function WatchContent({ type, id }: { type: string, id: string }) {
 
           <div className="space-y-10">
             <PremiumPromo />
-            <div className="premium-card p-8 bg-gradient-to-br from-blue-600/10 to-purple-600/10">
-                <h3 className="text-xs font-black uppercase tracking-widest text-blue-500 mb-4 animate-pulse">⚡ SCHOOL_VPN_BYPASS</h3>
+            <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5 bg-gradient-to-br from-blue-600/10 to-purple-600/10">
+                <h3 className="text-xs font-black uppercase tracking-widest text-blue-500 mb-4 animate-pulse">⚡ ENGINE_TUNNEL</h3>
                 <button 
-                  onClick={() => setServer("school")} 
-                  className={`w-full p-6 rounded-3xl text-[12px] font-black uppercase transition border shadow-lg ${server === "school" ? 'bg-blue-600 border-blue-500 text-white shadow-blue-500/20' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-blue-600/20'}`}
+                  onClick={() => setServer("vidlink")} 
+                  className={`w-full p-6 rounded-3xl text-[12px] font-black uppercase transition border shadow-lg ${server === "vidlink" ? 'bg-blue-600 border-blue-500 text-white' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-blue-600/20'}`}
                 >
-                  🚀 Connect Tunnel (Alef)
+                  🚀 Use VidLink Proxy
                 </button>
             </div>
 
-            <div className="premium-card p-8 bg-gradient-to-br from-red-600/10 to-green-600/10">
+            <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5 bg-gradient-to-br from-red-600/10 to-green-600/10">
               <h3 className="text-xs font-black uppercase tracking-widest text-green-500 mb-6 flex items-center gap-2">
                 <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                {t("arabicServers")}
+                SERVER_PROTOCOL
               </h3>
               <div className="grid grid-cols-2 gap-3">
                 <button 
                     onClick={() => setServer("alooy")} 
                     className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === "alooy" ? 'bg-green-600 border-green-500 text-white shadow-lg shadow-green-600/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-green-600/20'}`}
                 >
-                    🚀 Alooy Server (علاوي)
+                    🚀 Alooy Server
                 </button>
                 <button 
                     onClick={() => setServer("nebula")} 
-                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === "nebula" ? 'bg-primary border-primary/50 text-black shadow-lg shadow-primary/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-primary/20'}`}
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === "nebula" ? 'bg-blue-600 border-blue-500 text-white' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-blue-600/20'}`}
                 >
                     🪐 Nebula Server
                 </button>
