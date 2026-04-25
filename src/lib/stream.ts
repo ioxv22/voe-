@@ -26,10 +26,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   let finalUrl = "";
 
   if (targetServer === "nebula" || targetServer === "multi") {
-    // LOAD BALANCER: Automatically pick a worker for Nebula to ensure stability
-    const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev"));
-    const workerIndex = (parseInt(id) || 0) % nebulaWorkers.length;
-    const worker = nebulaWorkers[workerIndex];
+    // FORCED: Using your custom worker exclusively to verify it's working
+    const worker = "https://green-wave-aa88.hamadalabdolly777.workers.dev";
     
     // CLASSIC STABLE PATH: /embed/type/id
     const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
