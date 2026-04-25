@@ -179,6 +179,8 @@ function WatchContent({ type, id }: { type: string, id: string }) {
         }, 15000);
         return () => clearInterval(interval);
     }
+  }, [savedTime, item, type, season, episode, duration]);
+
   const handleServerChange = (newServer: string) => {
       setIsScanning(true);
       setServer(newServer);
