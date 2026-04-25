@@ -263,7 +263,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                     sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock"
                 />
 
-                <div className="absolute bottom-10 left-10 right-10 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                <div className="absolute top-10 left-10 right-10 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity z-50">
                     <div className="flex gap-4">
                         <button 
                             onClick={() => setIsCinemaMode(!isCinemaMode)}
