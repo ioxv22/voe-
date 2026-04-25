@@ -35,9 +35,9 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
     const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
     
     if (worker.includes("workers.dev")) {
-      finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
+      finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&lang=ar${adParam}`;
     } else {
-      finalUrl = `${worker}/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
+      finalUrl = `${worker}/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6&lang=ar${adParam}`;
     }
   }
 
@@ -56,7 +56,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
     const workerIndex = (parseInt(id) || 0) % nebulaWorkers.length;
     const worker = nebulaWorkers[workerIndex];
     const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
-    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
+    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&lang=ar${adParam}`;
   }
 
   return finalUrl;
