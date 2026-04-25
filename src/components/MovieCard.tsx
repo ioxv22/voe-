@@ -115,4 +115,3 @@ export default function MovieCard({ movie, rank }: MovieCardProps) {
     </Link>
   );
 }
-}
