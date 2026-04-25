@@ -458,18 +458,15 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                 </button>
               </div>
             </div>
-                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === "akwam" ? 'bg-white/10 border-white/20 text-white' : 'bg-white/5 border-white/5 text-gray-500 hover:text-white hover:bg-white/10'}`}
-                >
-                    Akwam
-                </button>
-              </div>
-            </div>
 
-            <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5">
-              <h3 className="text-xs font-black uppercase tracking-widest text-primary-500 mb-6">GLOBAL_SPEED_MIRRORS</h3>
-              <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white/5 backdrop-blur-xl p-8 rounded-[40px] border border-white/10 shadow-2xl relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-red-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-6 flex items-center gap-2">
+                GLOBAL_SPEED_MIRRORS
+              </h3>
+              <div className="grid grid-cols-2 gap-3 relative z-10">
                 {["auto", "vidsrc", "xyz", "vip", "net", "direct"].map(srv => (
-                    <button key={srv} onClick={() => setServer(srv)} className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === srv ? 'bg-red-600 border-red-500 text-white' : 'bg-white/5 border-white/5 text-gray-500 hover:text-white'}`}>
+                    <button key={srv} onClick={() => handleServerChange(srv)} className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === srv ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}>
                         {srv}
                     </button>
                 ))}
