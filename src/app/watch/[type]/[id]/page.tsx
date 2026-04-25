@@ -61,6 +61,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   const [showNextPrompt, setShowNextPrompt] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [countdown, setCountdown] = useState(10);
+  const [isScanning, setIsScanning] = useState(false);
   const router = useRouter();
 
   // Auto-Next Logic for TV Shows
@@ -178,7 +179,12 @@ function WatchContent({ type, id }: { type: string, id: string }) {
         }, 15000);
         return () => clearInterval(interval);
     }
-  }, [savedTime, item, type, season, episode, duration]);
+  const handleServerChange = (newServer: string) => {
+      setIsScanning(true);
+      setServer(newServer);
+      setPlayerKey(k => k + 1);
+      setTimeout(() => setIsScanning(false), 2000);
+  };
 
   if (!item) {
     return (
@@ -194,19 +200,64 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   const playerUrl = getStreamUrl(type, String(id), season, episode, server, false, String(item?.original_language || "ar"), isPremium) + `&t=${Math.floor(savedTime)}`;
 
   return (
-    <main className="min-h-screen bg-[#020404] bg-mesh text-white">
+    <main className="min-h-screen bg-[#050505] text-white relative overflow-hidden">
+      {/* CINEMAOS DYNAMIC BACKDROP */}
+      <div className="fixed inset-0 z-0">
+          <div 
+              className="absolute inset-0 bg-cover bg-center opacity-20 blur-[120px] transition-all duration-1000"
+              style={{ backgroundImage: `url(${getImageUrl(item.backdrop_path || item.poster_path, 'original')})` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black" />
+      </div>
+
       <Navbar />
-      <div className={`transition-all duration-700 ${isCinemaMode ? 'pt-0' : 'pt-28 px-4 lg:px-12'} pb-20`}>
+      
+      <div className={`relative z-10 transition-all duration-700 ${isCinemaMode ? 'pt-0' : 'pt-28 px-4 lg:px-12'} pb-20`}>
         <div className={`grid grid-cols-1 ${isCinemaMode ? 'lg:grid-cols-1' : 'lg:grid-cols-4'} gap-12`}>
           <div className={`${isCinemaMode ? 'lg:col-span-1' : 'lg:col-span-3'} space-y-10`}>
             <div className={`relative group transition-all duration-700 overflow-hidden bg-black border border-white/5 shadow-2xl ${isCinemaMode ? 'h-[85vh] w-full rounded-none' : 'aspect-video w-full rounded-[40px]'}`}>
+                
+                <AnimatePresence>
+                    {isScanning && (
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 z-[70] bg-black/90 backdrop-blur-3xl flex flex-col items-center justify-center"
+                        >
+                            <div className="w-80 space-y-6">
+                                <div className="flex justify-between items-end">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Scanning Sources</p>
+                                        <h3 className="text-xl font-black italic">VOZ_ENGINE_V2</h3>
+                                    </div>
+                                    <p className="text-xs font-mono text-primary animate-pulse">SEARCHING...</p>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                                        <motion.div 
+                                            initial={{ width: 0 }}
+                                            animate={{ width: "100%" }}
+                                            transition={{ duration: 1.5, ease: "easeInOut" }}
+                                            className="h-full bg-primary shadow-[0_0_15px_rgba(20,184,166,0.5)]" 
+                                        />
+                                    </div>
+                                    <div className="flex justify-between text-[8px] font-bold text-white/30 uppercase tracking-widest">
+                                        <span>Nebula_Worker_01</span>
+                                        <span>Status: Optimal</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 <iframe 
                     key={playerKey}
                     src={playerUrl} 
                     className="w-full h-full" 
                     allowFullScreen 
                     frameBorder="0" 
-                    // Cinematic Protection: Block popups and malicious navigation while allowing core video functions
                     sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock"
                 />
 
@@ -361,42 +412,52 @@ function WatchContent({ type, id }: { type: string, id: string }) {
 
           <div className="space-y-10">
             <PremiumPromo />
-            <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5 bg-gradient-to-br from-blue-600/10 to-purple-600/10">
-                <h3 className="text-xs font-black uppercase tracking-widest text-blue-500 mb-4 animate-pulse">⚡ ENGINE_TUNNEL</h3>
+            <div className="bg-white/5 backdrop-blur-xl p-8 rounded-[40px] border border-white/10 shadow-2xl overflow-hidden relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-4 flex items-center gap-2">
+                    <Activity size={14} className="animate-pulse" /> ENGINE_TUNNEL
+                </h3>
                 <button 
-                  onClick={() => setServer("vidlink")} 
-                  className={`w-full p-6 rounded-3xl text-[12px] font-black uppercase transition border shadow-lg ${server === "vidlink" ? 'bg-blue-600 border-blue-500 text-white' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-blue-600/20'}`}
+                  onClick={() => handleServerChange("vidlink")} 
+                  className={`relative z-10 w-full p-6 rounded-3xl text-[12px] font-black uppercase transition border shadow-lg ${server === "vidlink" ? 'bg-primary text-black border-primary' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                 >
                   🚀 Use VidLink Proxy
                 </button>
             </div>
 
-            <div className="bg-white/[0.02] p-8 rounded-[40px] border border-white/5 bg-gradient-to-br from-red-600/10 to-green-600/10">
-              <h3 className="text-xs font-black uppercase tracking-widest text-green-500 mb-6 flex items-center gap-2">
+            <div className="bg-white/5 backdrop-blur-xl p-8 rounded-[40px] border border-white/10 shadow-2xl relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-green-500 mb-6 flex items-center gap-2">
                 <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                 SERVER_PROTOCOL
               </h3>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 relative z-10">
                 <button 
-                    onClick={() => setServer("pixel")} 
-                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === "pixel" ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-primary/10'}`}
+                    onClick={() => handleServerChange("nebula")} 
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex items-center justify-center gap-2 ${server === "nebula" ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                 >
-                    🚀 Pixel Server
+                    🪐 NEBULA SERVER
                 </button>
                 <button 
-                    onClick={() => setServer("alooy")} 
-                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === "alooy" ? 'bg-green-600 border-green-500 text-white shadow-lg shadow-green-600/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-green-600/20'}`}
+                    onClick={() => handleServerChange("pixel")} 
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex items-center justify-center gap-2 ${server === "pixel" ? 'bg-white/10 text-white border-white/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                 >
-                    🚀 Alooy Server
+                    🚀 PIXEL SERVER
                 </button>
                 <button 
-                    onClick={() => setServer("nebula")} 
-                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === "nebula" ? 'bg-blue-600 border-blue-500 text-white' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-blue-600/20'}`}
+                    onClick={() => handleServerChange("alooy")} 
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex items-center justify-center gap-2 ${server === "alooy" ? 'bg-white/10 text-white border-white/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                 >
-                    🪐 Nebula Server
+                    🚀 ALOOY SERVER
                 </button>
                 <button 
-                    onClick={() => setServer("akwam")} 
+                    onClick={() => handleServerChange("akwam")} 
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex items-center justify-center gap-2 ${server === "akwam" ? 'bg-white/10 text-white border-white/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                >
+                    🚀 AKWAM
+                </button>
+              </div>
+            </div>
                     className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border ${server === "akwam" ? 'bg-white/10 border-white/20 text-white' : 'bg-white/5 border-white/5 text-gray-500 hover:text-white hover:bg-white/10'}`}
                 >
                     Akwam
