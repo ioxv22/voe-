@@ -26,8 +26,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
 
   if (targetServer === "nebula" || targetServer === "multi") {
       const worker = WORKERS[0];
-      // Updated path structure to match working mirror: [worker]/[type]/[id]
-      const path = type === "movie" ? `/${type}/${id}` : `/${type}/${id}/${season}/${episode}`;
+      // CLASSIC STABLE PATH: /embed/type/id
+      const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
       
       if (worker.includes("workers.dev")) {
         finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
@@ -47,7 +47,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
 
   else {
     const worker = WORKERS[0];
-    const path = type === "movie" ? `/${type}/${id}` : `/${type}/${id}/${season}/${episode}`;
+    const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
     finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
 

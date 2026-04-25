@@ -42,14 +42,12 @@ export default function Home() {
             setLoadingContent(true);
             try {
                 const isKids = currentProfile?.isKids;
-                const kidsParams = isKids ? "with_genres=16,35,10751" : ""; // Animation, Comedy, Family for Kids
+                const kidsParams = isKids ? "with_genres=16,35,10751" : ""; 
 
-                // Fetch essential data for Hero
                 const trending = await fetchTMDB(endpoints.trending, isKids ? "with_genres=16" : "");
                 setData((prev: any) => ({ ...prev, trending: { ...trending, results: filterSafeContent(trending.results) } }));
                 setLoadingContent(false);
 
-                // Fetch Dedicated Rows
                 const [latest, series, arabicSeries, anime, action, horror, topRated, turkish, khaleeji, ramadan] = await Promise.all([
                     fetchTMDB(endpoints.movies, `${kidsParams}&sort_by=primary_release_date.desc`),
                     fetchTMDB(endpoints.series, kidsParams),
@@ -58,9 +56,9 @@ export default function Home() {
                     fetchTMDB("/discover/movie", "with_genres=28&sort_by=popularity.desc"), 
                     fetchTMDB("/discover/movie", "with_genres=27&sort_by=popularity.desc"), 
                     fetchTMDB(endpoints.topRated, kidsParams),
-                    fetchTMDB("/discover/tv", "with_original_language=tr&sort_by=popularity.desc"), // Turkish
-                    fetchTMDB("/discover/tv", "with_original_language=ar&with_origin_country=AE|SA|KW|QA|BH|OM&sort_by=popularity.desc"), // Khaleeji
-                    fetchTMDB("/discover/tv", `with_original_language=ar&first_air_date_year=2026&sort_by=popularity.desc`), // Ramadan 2026
+                    fetchTMDB("/discover/tv", "with_original_language=tr&sort_by=popularity.desc"), 
+                    fetchTMDB("/discover/tv", "with_original_language=ar&with_origin_country=AE|SA|KW|QA|BH|OM&sort_by=popularity.desc"), 
+                    fetchTMDB("/discover/tv", `with_original_language=ar&first_air_date_year=2026&sort_by=popularity.desc`), 
                 ]);
                 
                 setData((prev: any) => ({ 
@@ -116,31 +114,38 @@ export default function Home() {
 
       <div className="relative z-30 -mt-16 lg:-mt-24 space-y-16">
         {/* QUICK ACCESS BUTTONS (COMPACT) */}
-        <div className="flex flex-wrap items-center gap-3 justify-center lg:justify-start">
+        <div className="flex flex-wrap items-center gap-3 justify-center lg:justify-start px-4 lg:px-12">
             <Link href="/search/ai">
-                <div className="group flex items-center gap-2 bg-primary-600 px-4 py-2.5 rounded-full shadow-lg hover:bg-primary-500 transition active:scale-95">
-                    <Sparkles size={14} className="animate-spin" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white">Search AI</span>
+                <div className="group flex items-center gap-2 bg-primary px-4 py-2.5 rounded-full shadow-lg hover:scale-105 transition active:scale-95">
+                    <Sparkles size={14} className="text-black" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-black">Search AI</span>
                 </div>
             </Link>
         </div>
 
-        
-        {/* MY LIST - PERSISTENT COLLECTION */}
-        {currentProfile?.myList && currentProfile.myList.length > 0 && (
+        {/* CONTINUE WATCHING - Netflix Protocol 01 */}
+        {(history && history.length > 0) && (
             <MovieRow 
-                title="My List" 
-                movies={currentProfile.myList} 
-                isHighlighted 
+                title="Continue Watching | أكمل المشاهدة" 
+                movies={history}
+                isHighlighted
             />
         )}
 
-        {/* TRENDING ROW (TOP 10 STYLE) */}
+        {/* TOP 10 ROW - Netflix Protocol 02 */}
         {data?.top10 && (
             <MovieRow 
                 title="Top 10 in VOZ Today | توب 10 اليوم" 
                 movies={data.top10} 
                 isTop10
+            />
+        )}
+
+        {/* MY LIST - PERSISTENT COLLECTION */}
+        {currentProfile?.myList && currentProfile.myList.length > 0 && (
+            <MovieRow 
+                title="My List | قائمتي" 
+                movies={currentProfile.myList} 
             />
         )}
 
@@ -150,6 +155,22 @@ export default function Home() {
                 title="RAMADAN 2026 | مسلسلات رمضان" 
                 movies={data.ramadan} 
                 isHighlighted
+            />
+        )}
+
+        {/* NEW RELEASES */}
+        {data?.latest && (
+            <MovieRow 
+                title={currentProfile?.isKids ? "New for Kids" : "Latest Movies | أحدث الأفلام"} 
+                movies={data.latest} 
+            />
+        )}
+
+        {/* ARABIC SERIES */}
+        {data?.arabicSeries && data.arabicSeries.length > 0 && (
+            <MovieRow 
+                title="Arabic TV Hits | مسلسلات عربية" 
+                movies={data.arabicSeries} 
             />
         )}
 
@@ -164,34 +185,9 @@ export default function Home() {
         {/* KHALEEJI CONTENT */}
         {data?.khaleeji && data.khaleeji.length > 0 && (
             <MovieRow 
-                title={`${t("khaleeji")} | مسلسلات خليجية`} 
+                title="Khaleeji Stars | مسلسلات خليجية" 
                 movies={data.khaleeji} 
                 isHighlighted
-            />
-        )}
-
-        {/* CONTINUE WATCHING */}
-        {(history && history.length > 0) && (
-            <MovieRow 
-                title="Continue Watching" 
-                movies={history}
-                isHighlighted
-            />
-        )}
-        
-        {/* NEW RELEASES */}
-        {data?.latest && (
-            <MovieRow 
-                title={currentProfile?.isKids ? "New for Kids" : "Latest Movies"} 
-                movies={data.latest} 
-            />
-        )}
-
-        {/* ARABIC SERIES */}
-        {data?.arabicSeries && data.arabicSeries.length > 0 && (
-            <MovieRow 
-                title="Arabic TV Hits | مسلسلات عربية" 
-                movies={data.arabicSeries} 
             />
         )}
 
@@ -235,20 +231,12 @@ export default function Home() {
             />
         )}
 
-        {/* K-DRAMA */}
-        {data?.kDrama && (
-            <MovieRow 
-                title="Korean Dramas | مسلسلات كورية" 
-                movies={data.kDrama} 
-            />
-        )}
-        
         {/* Telegram Support Highlighting */}
         <div className="px-4 lg:px-12 pb-12">
-            <div className="premium-card p-12 flex flex-col items-center text-center lg:flex-row lg:text-left lg:items-center justify-between gap-10">
+            <div className="bg-white/5 backdrop-blur-xl p-12 rounded-[40px] border border-white/10 flex flex-col items-center text-center lg:flex-row lg:text-left lg:items-center justify-between gap-10">
                 <div className="space-y-3">
                     <h3 className="text-3xl font-black text-white italic tracking-tighter uppercase metallic-text">Support Protocol</h3>
-                    <p className="text-gray-500 max-w-sm font-medium leading-relaxed">Having issues with "My List" or searching for a specific movie? Contact our team on Telegram.</p>
+                    <p className="text-gray-500 max-w-sm font-medium leading-relaxed">Having issues or searching for a specific movie? Contact our team on Telegram.</p>
                 </div>
                 <a 
                     href="https://t.me/VOZSTREAM" 
