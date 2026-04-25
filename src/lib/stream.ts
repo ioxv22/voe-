@@ -1,4 +1,5 @@
 const WORKERS = [
+  "https://green-wave-aa88.hamadalabdolly777.workers.dev",
   "https://pixelstream.pixelstream1.workers.dev",
   "https://iplt20-5c89.lahaye9139.workers.dev",
   "https://pixelstream3.niburoqi.workers.dev",
@@ -25,16 +26,21 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   let finalUrl = "";
 
   if (targetServer === "nebula" || targetServer === "multi") {
-      const worker = WORKERS[0];
-      // CLASSIC STABLE PATH: /embed/type/id
-      const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
-      
-      if (worker.includes("workers.dev")) {
-        finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
-      } else {
-        finalUrl = `${worker}/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
-      }
+    // LOAD BALANCER: Automatically pick a worker for Nebula to ensure stability
+    const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev"));
+    const workerIndex = (parseInt(id) || 0) % nebulaWorkers.length;
+    const worker = nebulaWorkers[workerIndex];
+    
+    // CLASSIC STABLE PATH: /embed/type/id
+    const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
+    
+    if (worker.includes("workers.dev")) {
+      finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
+    } else {
+      finalUrl = `${worker}/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
+    }
   }
+
   else if (targetServer === "auto" || targetServer === "vidlink") {
       finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
   }
@@ -46,7 +52,9 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   else if (targetServer === "alooy") finalUrl = `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
 
   else {
-    const worker = WORKERS[0];
+    const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev"));
+    const workerIndex = (parseInt(id) || 0) % nebulaWorkers.length;
+    const worker = nebulaWorkers[workerIndex];
     const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
     finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
   }
