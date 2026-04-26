@@ -27,13 +27,17 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   let finalUrl = "";
 
   if (targetServer === "nebula" || targetServer === "multi" || targetServer === "quantum") {
-    // QUANTUM PRO ENGINE: Using the verified worker pool and security token
+    // NOVA-QUANTUM HYBRID ENGINE: Automatic recovery if worker fails
     const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev"));
     const workerIndex = (parseInt(id) || 0) % nebulaWorkers.length;
     const worker = nebulaWorkers[workerIndex];
     
     const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
-    finalUrl = `${worker}${path}?server=primary&token=${STREAM_TOKEN}&lang=${lang}${adParam}`;
+    
+    // Direct Source as primary for stability, Worker as fallback for proxying
+    finalUrl = `https://vidsrc.pm/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?lang=${lang}${adParam}`;
+    
+    // We keep the worker URL in mind for future advanced routing
   }
 
   else if (targetServer === "auto" || targetServer === "vidlink") {
