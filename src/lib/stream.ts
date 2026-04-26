@@ -1,4 +1,5 @@
 const WORKERS = [
+  "https://green-wave-aa88.hamadalabdolly777.workers.dev",
   "https://pixelstream.pixelstream1.workers.dev",
   "https://iplt20-5c89.lahaye9139.workers.dev",
   "https://pixelstream3.niburoqi.workers.dev",
@@ -31,7 +32,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
     const worker = nebulaWorkers[workerIndex];
     
     const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
-    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&lang=ar${adParam}`;
+    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&lang=${lang}${adParam}`;
   }
 
   else if (targetServer === "auto" || targetServer === "vidlink") {
@@ -49,11 +50,10 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
     const workerIndex = (parseInt(id) || 0) % nebulaWorkers.length;
     const worker = nebulaWorkers[workerIndex];
     const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
-    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&lang=ar${adParam}`;
+    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&lang=${lang}${adParam}`;
   }
 
   return finalUrl;
 };
 
-export const decodeObs = (str: string) => str;
 
