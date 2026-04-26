@@ -45,7 +45,7 @@ function WatchContent({ type, id }: { type: string, id: string }) {
   const { t } = useLanguage();
   const { saveProgress } = useContinueWatching();
   const searchParams = useSearchParams();
-  const initialServer = searchParams.get("server") || "quantum";
+  const initialServer = searchParams.get("server") || "nebula";
   
   const [data, setData] = useState<{item: any, similar: any} | null>(null);
   const [cast, setCast] = useState<any[]>([]);
