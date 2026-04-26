@@ -22,7 +22,7 @@ export const SERVER_MAP = {
 
 export const getStreamUrl = (type: string, id: string, season: number = 1, episode: number = 1, server: string = "nebula", isRoom: boolean = false, lang: string = "en", isVIP: boolean = false) => {
   const targetServer = isRoom ? "auto" : server;
-   const adParam = "&ads=0&adblock=1&hls=1&subtitles=1&all_subs=1";
+   const adParam = "&ads=0&adblock=1&hls=1&subtitles=1&all_subs=1&clean_subs=1";
 
   let finalUrl = "";
 
