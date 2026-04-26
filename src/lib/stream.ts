@@ -40,7 +40,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   else if (targetServer === "akwam") finalUrl = `https://vidsrc.rip/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
   else if (targetServer === "fasel") finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6`;
   else if (targetServer === "alooy") finalUrl = `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
-  else if (targetServer === "quantum") finalUrl = `https://pixel-stream.pages.dev/watch?type=${type}&id=${id}${type === 'tv' ? `&s=${season}&e=${episode}` : ''}`;
+  else if (targetServer === "quantum") finalUrl = `https://pixel-stream.pages.dev/watch?id=${id}&type=${type}${type === 'tv' ? `&s=${season}&e=${episode}` : ''}`;
 
   else {
     finalUrl = `https://vidsrc.pm/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?lang=${lang}${adParam}`;
