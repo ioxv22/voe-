@@ -1,5 +1,4 @@
 const WORKERS = [
-  "https://cinemaos.tech",
   "https://green-wave-aa88.hamadalabdolly777.workers.dev",
   "https://pixelstream.pixelstream1.workers.dev",
   "https://iplt20-5c89.lahaye9139.workers.dev",
@@ -26,8 +25,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   let finalUrl = "";
 
   if (targetServer === "nebula" || targetServer === "multi") {
-    // RESTORED: Nebula Load Balancer (Including Custom Domain)
-    const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev") || w.includes("cinemaos.tech"));
+    // RESTORED: Nebula Load Balancer (Classic Stability)
+    const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev"));
     const workerIndex = (parseInt(id) || 0) % nebulaWorkers.length;
     const worker = nebulaWorkers[workerIndex];
     
@@ -52,7 +51,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   else if (targetServer === "alooy") finalUrl = `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
 
   else {
-    const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev") || w.includes("cinemaos.tech"));
+    const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev"));
     const workerIndex = (parseInt(id) || 0) % nebulaWorkers.length;
     const worker = nebulaWorkers[workerIndex];
     const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
