@@ -458,6 +458,12 @@ function WatchContent({ type, id }: { type: string, id: string }) {
                 >
                     🚀 AKWAM
                 </button>
+                <button 
+                    onClick={() => handleServerChange("quantum")} 
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex items-center justify-center gap-2 ${server === "quantum" ? 'bg-purple-600 text-white border-purple-500 shadow-lg shadow-purple-600/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                >
+                    ⚛️ QUANTUM
+                </button>
               </div>
             </div>
 
