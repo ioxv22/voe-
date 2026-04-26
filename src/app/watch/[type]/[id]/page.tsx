@@ -436,9 +436,17 @@ function WatchContent({ type, id }: { type: string, id: string }) {
               <div className="grid grid-cols-2 gap-3 relative z-10">
                 <button 
                     onClick={() => handleServerChange("nebula")} 
-                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex items-center justify-center gap-2 ${server === "nebula" ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex flex-col items-center justify-center gap-1 ${server === "nebula" ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                 >
-                    🪐 NEBULA SERVER
+                    <span>🪐 NEBULA PRO</span>
+                    <span className="text-[7px] opacity-70">STABLE 4K</span>
+                </button>
+                <button 
+                    onClick={() => handleServerChange("nebula_classic")} 
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex flex-col items-center justify-center gap-1 ${server === "nebula_classic" ? 'bg-amber-500 text-black border-amber-400 shadow-lg shadow-amber-500/20' : 'bg-amber-500/10 border-amber-500/20 text-amber-500 hover:bg-amber-500/20'}`}
+                >
+                    <span>🪐 NEBULA CLASSIC</span>
+                    <span className="text-[7px] opacity-70">WORKER v1</span>
                 </button>
                 <button 
                     onClick={() => handleServerChange("pixel")} 
