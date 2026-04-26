@@ -1,8 +1,8 @@
 const WORKERS = [
-  "https://green-wave-aa88.hamadalabdolly777.workers.dev",
   "https://pixelstream.pixelstream1.workers.dev",
   "https://iplt20-5c89.lahaye9139.workers.dev",
   "https://pixelstream3.niburoqi.workers.dev",
+  "https://green-wave-aa88.hamadalabdolly777.workers.dev",
   "https://vidlink.pro"
 ];
 const STREAM_TOKEN = "px-2C1y80YMN";
@@ -26,21 +26,25 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
 
   let finalUrl = "";
 
-  if (targetServer === "nebula" || targetServer === "multi") {
-    // VOZ PRO ENGINE: Direct, Stable, and High-Speed 4K Source
-    finalUrl = `https://vidsrc.pm/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?lang=${lang}${adParam}`;
+  if (targetServer === "nebula" || targetServer === "multi" || targetServer === "quantum") {
+    // QUANTUM PRO ENGINE: Using the verified worker pool and security token
+    const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev"));
+    const workerIndex = (parseInt(id) || 0) % nebulaWorkers.length;
+    const worker = nebulaWorkers[workerIndex];
+    
+    const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
+    finalUrl = `${worker}${path}?server=primary&token=${STREAM_TOKEN}&lang=${lang}${adParam}`;
   }
 
   else if (targetServer === "auto" || targetServer === "vidlink") {
-      finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
+      finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6&lang=${lang}${adParam}`;
   }
-  else if (targetServer === "vidsrc") finalUrl = `https://vidsrc.pm/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
-  else if (targetServer === "vidsrcme") finalUrl = type === "movie" ? `https://vidsrc.me/embed/movie?tmdb=${id}${adParam}` : `https://vidsrc.me/embed/tv?tmdb=${id}&s=${season}&e=${episode}${adParam}`;
+  else if (targetServer === "vidsrc") finalUrl = `https://vidsrc.pm/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?lang=${lang}&ads=0`;
+  else if (targetServer === "vidsrcme") finalUrl = type === "movie" ? `https://vidsrc.me/embed/movie?tmdb=${id}&lang=${lang}${adParam}` : `https://vidsrc.me/embed/tv?tmdb=${id}&s=${season}&e=${episode}&lang=${lang}${adParam}`;
   
-  else if (targetServer === "akwam") finalUrl = `https://vidsrc.rip/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
-  else if (targetServer === "fasel") finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6`;
-  else if (targetServer === "alooy") finalUrl = `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
-  else if (targetServer === "quantum") finalUrl = `https://pixel-stream.pages.dev/watch?id=${id}&type=${type}${type === 'tv' ? `&s=${season}&e=${episode}` : ''}`;
+  else if (targetServer === "akwam") finalUrl = `https://vidsrc.rip/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?lang=${lang}&ads=0`;
+  else if (targetServer === "fasel") finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6&lang=${lang}`;
+  else if (targetServer === "alooy") finalUrl = `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?lang=${lang}&ads=0`;
 
   else {
     finalUrl = `https://vidsrc.pm/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?lang=${lang}${adParam}`;
