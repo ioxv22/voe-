@@ -25,15 +25,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   let finalUrl = "";
 
   if (targetServer === "nebula" || targetServer === "multi") {
-      const worker = WORKERS[0];
-      // CLASSIC STABLE PATH: /embed/type/id
-      const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
-      
-      if (worker.includes("workers.dev")) {
-        finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
-      } else {
-        finalUrl = `${worker}/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6${adParam}`;
-      }
+      // HYBRID ENGINE: Using VidLink Pro for maximum stability and speed
+      finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6&lang=ar${adParam}`;
   }
 
   else if (targetServer === "auto" || targetServer === "vidlink") {
@@ -47,9 +40,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   else if (targetServer === "alooy") finalUrl = `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
 
   else {
-    const worker = WORKERS[0];
-    const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
-    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}${adParam}`;
+    finalUrl = `https://vidlink.pro/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?primaryColor=14b8a6&lang=ar${adParam}`;
   }
 
   return finalUrl;
