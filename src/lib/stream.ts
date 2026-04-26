@@ -55,4 +55,5 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
 
   return finalUrl;
 };
+
 export const decodeObs = (str: string) => str;
