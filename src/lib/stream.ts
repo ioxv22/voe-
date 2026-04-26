@@ -26,13 +26,8 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   let finalUrl = "";
 
   if (targetServer === "nebula" || targetServer === "multi") {
-    // PIXEL-CINEMANA ENGINE: Professional worker-based streaming
-    const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev"));
-    const workerIndex = (parseInt(id) || 0) % nebulaWorkers.length;
-    const worker = nebulaWorkers[workerIndex];
-    
-    const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
-    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&lang=${lang}${adParam}`;
+    // VOZ PRO ENGINE: Direct, Stable, and High-Speed 4K Source
+    finalUrl = `https://vidsrc.pm/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?lang=${lang}${adParam}`;
   }
 
   else if (targetServer === "auto" || targetServer === "vidlink") {
@@ -46,11 +41,7 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
   else if (targetServer === "alooy") finalUrl = `https://vidsrc.cc/v2/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?ads=0`;
 
   else {
-    const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev"));
-    const workerIndex = (parseInt(id) || 0) % nebulaWorkers.length;
-    const worker = nebulaWorkers[workerIndex];
-    const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
-    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&lang=${lang}${adParam}`;
+    finalUrl = `https://vidsrc.pm/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?lang=${lang}${adParam}`;
   }
 
   return finalUrl;
