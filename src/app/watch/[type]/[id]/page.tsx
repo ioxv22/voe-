@@ -436,31 +436,27 @@ function WatchContent({ type, id }: { type: string, id: string }) {
               <div className="grid grid-cols-2 gap-3 relative z-10">
                 <button 
                     onClick={() => handleServerChange("nebula")} 
-                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex flex-col items-center justify-center gap-1 ${server === "nebula" ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex items-center justify-center gap-2 ${server === "nebula" ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                 >
-                    <span className="flex items-center gap-2">🪐 NOVA SERVER</span>
-                    <span className="text-[7px] opacity-60">4K ULTRA HD</span>
+                    🪐 NEBULA SERVER
                 </button>
                 <button 
                     onClick={() => handleServerChange("pixel")} 
-                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex flex-col items-center justify-center gap-1 ${server === "pixel" ? 'bg-white/10 text-white border-white/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex items-center justify-center gap-2 ${server === "pixel" ? 'bg-white/10 text-white border-white/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                 >
-                    <span className="flex items-center gap-2">🚀 ATLAS SERVER</span>
-                    <span className="text-[7px] opacity-60">HD STABLE</span>
+                    🚀 PIXEL SERVER
                 </button>
                 <button 
                     onClick={() => handleServerChange("alooy")} 
-                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex flex-col items-center justify-center gap-1 ${server === "alooy" ? 'bg-white/10 text-white border-white/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex items-center justify-center gap-2 ${server === "alooy" ? 'bg-white/10 text-white border-white/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                 >
-                    <span className="flex items-center gap-2">🌊 AQUA SERVER</span>
-                    <span className="text-[7px] opacity-60">MULTI-AUDIO</span>
+                    🌊 ALOOY SERVER
                 </button>
                 <button 
                     onClick={() => handleServerChange("akwam")} 
-                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex flex-col items-center justify-center gap-1 ${server === "akwam" ? 'bg-white/10 text-white border-white/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                    className={`p-4 rounded-2xl text-[10px] font-black uppercase transition border flex items-center justify-center gap-2 ${server === "akwam" ? 'bg-white/10 text-white border-white/20' : 'bg-white/5 border-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                 >
-                    <span className="flex items-center gap-2">💎 ONYX SERVER</span>
-                    <span className="text-[7px] opacity-60">FAST AD-FREE</span>
+                    💎 AKWAM
                 </button>
                 <button 
                     onClick={() => handleServerChange("quantum")} 
