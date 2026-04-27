@@ -27,17 +27,19 @@ export const getStreamUrl = (type: string, id: string, season: number = 1, episo
 
   let finalUrl = "";
 
-  if (targetServer === "nebula_classic") {
-    // CLASSIC NEBULA ENGINE: Worker-based proxying (Loved by users)
+  if (targetServer === "nebula_classic" || targetServer === "quantum") {
+    // QUANTUM/NEBULA ENGINE: Worker-based proxying (Exact replica of pixel-stream)
     const nebulaWorkers = WORKERS.filter(w => w.includes("workers.dev"));
     const workerIndex = (parseInt(id) || 0) % nebulaWorkers.length;
     const worker = nebulaWorkers[workerIndex];
     
+    const serverParam = targetServer === "quantum" ? "primary" : "nebula";
     const path = type === "movie" ? `/embed/${type}/${id}` : `/embed/${type}/${id}/${season}/${episode}`;
-    finalUrl = `${worker}${path}?server=nebula&token=${STREAM_TOKEN}&lang=${lang}${adParam}`;
+    
+    finalUrl = `${worker}${path}?server=${serverParam}&token=${STREAM_TOKEN}&lang=${lang}${adParam}`;
   }
 
-  else if (targetServer === "nebula" || targetServer === "multi" || targetServer === "quantum") {
+  else if (targetServer === "nebula" || targetServer === "multi") {
     // VOZ PRO ENGINE: Direct, Stable, and High-Speed 4K Source
     finalUrl = `https://vidsrc.pm/embed/${type}/${id}${type === 'tv' ? `/${season}/${episode}` : ''}?lang=${lang}${adParam}`;
   }
