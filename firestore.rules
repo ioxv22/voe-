@@ -1,0 +1,75 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && 
+             (
+               (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true) ||
+               request.auth.token.email.matches(".*hamadalabdolly.*") ||
+               request.auth.token.email == "admin@voz.stream"
+             );
+    }
+
+    // 1. System Config & Stats: Publicly readable for launch
+    match /system/{docId} {
+      allow read: if true;
+      allow list: if isAdmin();
+      allow write: if isAdmin() || !exists(/databases/$(database)/documents/system/config);
+    }
+
+    match /users {
+      allow list: if isAdmin();
+    }
+
+    match /system/stats {
+      allow read: if true;
+      allow write: if true; 
+    }
+
+    // 2. Notifications: Publicly readable for global alerts
+    match /notifications/{notifId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 3. User Specific Data: Private and secure
+    match /users/{userId} {
+      allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+
+    match /user_notifications/{notifId} {
+      allow read, write: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
+      // Allow creation if userId matches
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+    }
+
+    // 4. Requests & VIP: Public create, Admin view
+    match /requests/{requestId} {
+      allow create: if true;
+      allow read, write: if isAdmin();
+    }
+
+    match /vip_requests/{userId} {
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if (request.auth != null && request.auth.uid == userId) || isAdmin();
+    }
+
+    // 5. Matches & Rooms: Shared access
+    match /matches/{matchId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /rooms/{roomId} {
+      allow read, write: if true; // Rooms are public for everyone to join
+    }
+
+    // 6. Generic Fallback: Deny by default for security
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
