@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Send, Play, Shield, Sparkles, Crown } from "lucide-react";
+import { Send, Play } from "lucide-react";
 import { useState } from "react";
 import SupportModal from "@/components/SupportModal";
 import Logo from "@/components/Logo";
@@ -10,20 +10,20 @@ export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () 
   const [showVIP, setShowVIP] = useState(false);
   
   return (
-    <div className="relative min-h-screen w-full flex flex-col items-center justify-center bg-[#0B0B0B] text-white overflow-hidden selection:bg-[#E50914]/30" dir="rtl">
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-center bg-[#050505] text-white overflow-hidden selection:bg-[#E50924]/30" dir="rtl">
       
       {/* Background Banner Backdrop */}
-      <div className="absolute inset-0 z-0 opacity-25">
+      <div className="absolute inset-0 z-0 opacity-30">
         <img 
           src="https://i.ibb.co/TqWqYkK1/image.png" 
           alt="VistaFlix Banner" 
-          className="w-full h-full object-cover protected-img blur-[2px] scale-105"
+          className="w-full h-full object-cover protected-img blur-[1px] scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0B] via-[#0B0B0B]/80 to-[#0B0B0B]/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/85 to-[#050505]/65" />
       </div>
 
       {/* Red Ambient Radial Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-[#E50914]/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#E50924]/15 rounded-full blur-[150px] pointer-events-none" />
 
       {/* Main Container */}
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-4xl py-16">
@@ -39,14 +39,14 @@ export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () 
           
           <h1 className="text-5xl md:text-7xl font-black font-['Montserrat'] tracking-tight">
             <span className="text-white">VISTA</span>
-            <span className="text-[#E50914]">FLIX</span>
+            <span className="text-[#E50924]">FLIX</span>
           </h1>
           
           <div className="space-y-1">
-            <h2 className="text-xl md:text-3xl font-black text-white tracking-wide">
-              عالمك... حيث تبدأ المتعة.
+            <h2 className="text-xl md:text-3xl font-black text-white tracking-wide font-['Tajawal']">
+              عالمك، أفلامك.
             </h2>
-            <p className="text-xs md:text-sm font-bold text-[#B3B3B3] uppercase tracking-[0.25em]">
+            <p className="text-xs md:text-sm font-bold text-[#B6B6BD] uppercase tracking-[0.25em]">
               YOUR WORLD. YOUR MOVIES.
             </p>
           </div>
@@ -60,14 +60,14 @@ export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () 
           className="grid grid-cols-2 md:grid-cols-4 gap-3 my-8 w-full max-w-2xl"
         >
           {[
-            { title: "أفلام حصرية", desc: "أحدث الإصدارات HD" },
-            { title: "مسلسلات عربية", desc: "رمضان والخليج" },
-            { title: "مباريات مباشر", desc: "بث مباشر 24/7" },
-            { title: "بدون إعلانات", desc: "مشاهدة ناصعة" },
+            { title: "أفلام حصرية", desc: "أحدث الإصدارات HD/4K" },
+            { title: "مسلسلات عربية", desc: "أعمال أصلية وحصرية" },
+            { title: "مباريات مباشر", desc: "بث مباشر بدون تقطيع" },
+            { title: "بدون إعلانات", desc: "تجربة مشاهدة سينمائية" },
           ].map((item, idx) => (
-            <div key={idx} className="bg-[#171717]/80 backdrop-blur-md border border-[#333333] rounded-2xl p-3 text-center">
-              <p className="text-xs font-bold text-[#E50914]">{item.title}</p>
-              <p className="text-[10px] text-[#B3B3B3] font-medium mt-0.5">{item.desc}</p>
+            <div key={idx} className="bg-[#111114]/90 backdrop-blur-md border border-[#25252B] rounded-[14px] p-3.5 text-center">
+              <p className="text-xs font-bold text-[#E50924]">{item.title}</p>
+              <p className="text-[10px] text-[#B6B6BD] font-medium mt-0.5">{item.desc}</p>
             </div>
           ))}
         </motion.div>
@@ -81,7 +81,7 @@ export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () 
         >
           <button 
             onClick={onSignIn}
-            className="btn-primary w-full py-4 rounded-2xl text-sm font-bold shadow-xl shadow-[#E50914]/30"
+            className="btn-primary w-full py-4 rounded-[10px] text-sm font-bold shadow-xl shadow-[#E50924]/30"
           >
             <Play size={18} fill="white" />
             <span>ابدأ المشاهدة الآن</span>
@@ -89,7 +89,7 @@ export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () 
 
           <button 
             onClick={onGuestSignIn}
-            className="btn-secondary w-full py-3.5 rounded-2xl text-sm font-bold"
+            className="btn-secondary w-full py-3.5 rounded-[10px] text-sm font-bold"
           >
             <span>دخول كزائر</span>
           </button>
@@ -98,7 +98,7 @@ export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () 
             href="https://t.me/VOZSTREAM"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 text-xs font-bold text-[#B3B3B3] hover:text-white transition mt-2"
+            className="flex items-center justify-center gap-2 text-xs font-bold text-[#B6B6BD] hover:text-white transition mt-2"
           >
             <Send size={15} className="text-[#229ED9]" />
             <span>انضم لقناة تلغرام الرسمية</span>
@@ -112,8 +112,8 @@ export default function LandingPage({ onSignIn, onGuestSignIn }: { onSignIn: () 
           transition={{ delay: 0.8, duration: 0.6 }}
           className="mt-16 flex flex-col items-center gap-2"
         >
-            <p className="text-[11px] text-[#B3B3B3] font-bold tracking-widest uppercase">
-              VISTAFLIX PREMIUM STREAMING EXPERIENCE
+            <p className="text-[11px] text-[#B6B6BD] font-bold tracking-widest uppercase">
+              VISTAFLIX — YOUR WORLD. YOUR MOVIES.
             </p>
         </motion.div>
 

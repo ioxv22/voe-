@@ -34,23 +34,23 @@ export default function Logo({
       className={`group inline-flex items-center gap-3 transition-transform duration-300 hover:scale-[1.02] active:scale-95 ${className}`}
       aria-label="VistaFlix Home"
     >
-      {/* VistaFlix Brand Icon (SVG + Image Fallback) */}
+      {/* VistaFlix Brand Icon */}
       <div className={`relative flex items-center justify-center ${iconSizes[size]}`}>
         <img
           src="https://i.ibb.co/bjsvpftX/image.png"
           alt="VistaFlix Icon"
-          className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(229,9,20,0.5)] group-hover:drop-shadow-[0_0_20px_rgba(255,45,61,0.7)] transition-all duration-300"
+          className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(229,9,36,0.5)] group-hover:drop-shadow-[0_0_20px_rgba(229,9,36,0.8)] transition-all duration-300"
         />
       </div>
 
       {variant !== "icon" && (
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center text-right">
           <div className={`font-black tracking-tight font-['Montserrat'] leading-none ${sizeClasses[size]}`}>
             <span className={variant === "white" ? "text-white" : "text-white"}>VISTA</span>
-            <span className={variant === "white" ? "text-white/90" : "text-[#E50914]"}>FLIX</span>
+            <span className={variant === "white" ? "text-white/90" : "text-[#E50924]"}>FLIX</span>
           </div>
           {showTagline && (
-            <span className="text-[9px] font-bold tracking-[0.25em] text-[#B3B3B3] uppercase mt-1">
+            <span className="text-[9px] font-bold tracking-[0.2em] text-[#B6B6BD] uppercase mt-1">
               Your World. Your Movies.
             </span>
           )}

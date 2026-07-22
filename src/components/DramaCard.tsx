@@ -42,7 +42,7 @@ export default function DramaCard({ series }: DramaCardProps) {
       <motion.div
         whileHover={{ scale: 1.05, y: -4 }}
         whileTap={{ scale: 0.96 }}
-        className="relative aspect-[2/3] w-[140px] sm:w-[165px] md:w-[190px] lg:w-[210px] flex-shrink-0 cursor-pointer overflow-hidden rounded-[16px] bg-[#171717] group border border-[#333333] hover:border-[#E50914]/50 shadow-lg hover:shadow-xl hover:shadow-[#E50914]/15 transition-all duration-300"
+        className="relative aspect-[2/3] w-[140px] sm:w-[165px] md:w-[190px] lg:w-[210px] flex-shrink-0 cursor-pointer overflow-hidden rounded-[12px] bg-[#111114] group border border-[#25252B] hover:border-[#E50924]/50 shadow-lg hover:shadow-xl hover:shadow-[#E50924]/15 transition-all duration-300"
       >
         {imageUrl ? (
             <Image
@@ -54,34 +54,34 @@ export default function DramaCard({ series }: DramaCardProps) {
               loading="lazy"
             />
         ) : (
-            <div className="h-full w-full flex items-center justify-center bg-[#171717] text-[#B3B3B3] text-xs font-bold text-center p-3">
+            <div className="h-full w-full flex items-center justify-center bg-[#111114] text-[#B6B6BD] text-xs font-bold text-center p-3">
                 {series.title_ar}
             </div>
         )}
 
         {/* Year Badge */}
-        <div className="absolute top-2.5 right-2.5 z-10 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md border border-[#333333] text-[9px] font-bold text-white">
+        <div className="absolute top-2.5 right-2.5 z-10 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md border border-[#25252B] text-[9px] font-bold text-white">
             {series.release_year || "2026"}
         </div>
 
         {/* Badge */}
         <div className="absolute top-2.5 left-2.5 z-10 flex flex-col gap-1 items-start pointer-events-none">
-            <div className="px-2 py-0.5 rounded-md bg-[#E50914]/20 border border-[#E50914]/40 text-[8px] font-bold text-[#E50914]">
+            <div className="px-2 py-0.5 rounded-md bg-[#E50924]/20 border border-[#E50924]/40 text-[8px] font-bold text-[#E50924]">
                 مسلسلات حصرية
             </div>
         </div>
 
         {/* Hover Overlay */}
-        <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[#0B0B0B] via-[#0B0B0B]/60 to-transparent p-4 opacity-0 transition-all duration-300 group-hover:opacity-100 backdrop-blur-[2px]">
+        <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[#050505] via-[#050505]/65 to-transparent p-4 opacity-0 transition-all duration-300 group-hover:opacity-100 backdrop-blur-[2px]">
           <div className="flex gap-2 transform translate-y-3 transition-transform duration-300 group-hover:translate-y-0">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E50914] text-white transition hover:scale-110 shadow-lg shadow-[#E50914]/40">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E50924] text-white transition hover:scale-110 shadow-lg shadow-[#E50924]/40">
                   <Play fill="currentColor" size={16} />
               </div>
               <button 
                   onClick={handleFavorite}
                   className={`flex h-10 w-10 items-center justify-center rounded-full border transition backdrop-blur-md hover:scale-110 ${
                       isFavorited 
-                      ? 'bg-[#E50914] border-[#E50914] text-white' 
+                      ? 'bg-[#E50924] border-[#E50924] text-white' 
                       : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
                   }`}
               >
@@ -90,12 +90,12 @@ export default function DramaCard({ series }: DramaCardProps) {
           </div>
           
           <div className="mt-3 transform translate-y-3 transition-all duration-300 delay-75 group-hover:translate-y-0 text-right">
-              <p className="text-xs font-bold text-white line-clamp-1">
+              <p className="text-xs font-bold text-white line-clamp-1 font-['Tajawal']">
                   {series.title_ar}
               </p>
-              <div className="flex items-center gap-2 text-[10px] text-[#B3B3B3] font-bold mt-1">
-                  <span className="text-yellow-400">⭐ {series.rating || "8.5"}</span>
-                  <span className="bg-[#333333] text-white px-1.5 py-0.2 rounded text-[8px] font-bold">HD</span>
+              <div className="flex items-center gap-2 text-[10px] text-[#B6B6BD] font-bold mt-1">
+                  <span className="text-[#FFD84D]">⭐ {series.rating || "8.5"}</span>
+                  <span className="bg-[#25252B] text-white px-1.5 py-0.2 rounded text-[8px] font-bold">HD</span>
               </div>
           </div>
         </div>

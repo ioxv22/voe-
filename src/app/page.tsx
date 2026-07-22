@@ -114,7 +114,7 @@ export default function Home() {
   
   if (loadingContent) {
     return (
-      <main className="min-h-screen bg-[#0B0B0B]">
+      <main className="min-h-screen bg-[#050505]">
         <HeroSkeleton />
         <div className="relative z-30 -mt-16 lg:-mt-24 space-y-4">
           <MovieRowSkeleton />
@@ -128,7 +128,7 @@ export default function Home() {
   const featured = data?.trending?.results?.[0];
 
   return (
-    <main className="min-h-screen bg-[#0B0B0B] bg-mesh pb-20 overflow-x-hidden text-white select-none" dir="rtl">
+    <main className="min-h-screen bg-[#050505] bg-mesh pb-20 overflow-x-hidden text-white select-none" dir="rtl">
 
       {featured && <Hero movie={featured} />}
 
@@ -137,8 +137,8 @@ export default function Home() {
         {/* QUICK AI SEARCH BUTTON */}
         <div className="flex flex-wrap items-center gap-3 justify-center lg:justify-start px-6 lg:px-16">
             <Link href="/search">
-                <div className="group flex items-center gap-2 bg-[#171717] border border-[#333333] hover:border-[#E50914]/60 px-5 py-2.5 rounded-full shadow-lg hover:scale-105 transition active:scale-95">
-                    <Sparkles size={15} className="text-[#E50914]" />
+                <div className="group flex items-center gap-2 bg-[#111114] border border-[#25252B] hover:border-[#E50924]/60 px-5 py-2.5 rounded-full shadow-lg hover:scale-105 transition active:scale-95">
+                    <Sparkles size={15} className="text-[#E50924]" />
                     <span className="text-xs font-bold text-white">البحث الذكي في VistaFlix</span>
                 </div>
             </Link>

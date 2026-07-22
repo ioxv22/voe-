@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 
 export default function LoadingScreen() {
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0B0B0B] text-white overflow-hidden select-none">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050505] text-white overflow-hidden select-none">
       {/* Background Poster Collage Effect */}
-      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-black/0 via-black/60 to-[#0B0B0B]">
+      <div className="absolute inset-0 opacity-15 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-black/0 via-black/60 to-[#050505]">
         <div className="grid grid-cols-3 md:grid-cols-6 gap-3 scale-110 blur-[1px] opacity-40">
           {[
             "https://image.tmdb.org/t/p/w500/1E5baW272Cm2erAq2RXZvMoJ2x2.jpg",
@@ -16,15 +16,15 @@ export default function LoadingScreen() {
             "https://image.tmdb.org/t/p/w500/v9L1aC6fH3zU1d9iF9fWb4w8cZz.jpg",
             "https://image.tmdb.org/t/p/w500/fiVW06jE7z9YnO4trTXMGlLhXES.jpg",
           ].map((url, idx) => (
-            <div key={idx} className="aspect-[2/3] rounded-xl overflow-hidden bg-[#171717]">
+            <div key={idx} className="aspect-[2/3] rounded-xl overflow-hidden bg-[#111114]">
               <img src={url} alt="" className="w-full h-full object-cover protected-img" />
             </div>
           ))}
         </div>
       </div>
 
-      {/* Red Radial Ambient Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#E50914]/20 rounded-full blur-[140px] pointer-events-none" />
+      {/* Red Radial Ambient Glow — #E50924 */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-[#E50924]/15 rounded-full blur-[140px] pointer-events-none" />
 
       {/* Main Content */}
       <div className="relative z-10 flex flex-col items-center text-center px-6">
@@ -39,9 +39,9 @@ export default function LoadingScreen() {
             <motion.div
               animate={{
                 filter: [
-                  "drop-shadow(0 0 20px rgba(229,9,20,0.5))",
-                  "drop-shadow(0 0 35px rgba(255,45,61,0.8))",
-                  "drop-shadow(0 0 20px rgba(229,9,20,0.5))",
+                  "drop-shadow(0 0 20px rgba(229,9,36,0.5))",
+                  "drop-shadow(0 0 35px rgba(229,9,36,0.85))",
+                  "drop-shadow(0 0 20px rgba(229,9,36,0.5))",
                 ],
               }}
               transition={{ repeat: Infinity, duration: 2.5 }}
@@ -62,28 +62,28 @@ export default function LoadingScreen() {
           >
             <h1 className="text-3xl md:text-5xl font-black tracking-tight font-['Montserrat']">
               <span className="text-white">VISTA</span>
-              <span className="text-[#E50914]">FLIX</span>
+              <span className="text-[#E50924]">FLIX</span>
             </h1>
-            <p className="text-xs md:text-sm font-bold tracking-[0.3em] text-[#B3B3B3] uppercase">
+            <p className="text-xs md:text-sm font-bold tracking-[0.3em] text-[#B6B6BD] uppercase">
               YOUR WORLD. YOUR MOVIES.
             </p>
-            <p className="text-xs text-[#E50914] font-semibold tracking-widest mt-1">
-              عالمك... حيث تبدأ المتعة.
+            <p className="text-xs text-[#E50924] font-semibold tracking-widest mt-1">
+              عالمك، أفلامك.
             </p>
           </motion.div>
         </motion.div>
 
-        {/* Animated Red Ring Loader (Matching Mobile Splash Screen Asset) */}
+        {/* Animated Red Ring Loader */}
         <div className="mt-12 flex flex-col items-center gap-4">
           <div className="relative w-10 h-10 flex items-center justify-center">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-              className="w-full h-full rounded-full border-3 border-[#E50914]/20 border-t-[#E50914] border-r-[#FF2D3D]"
+              className="w-full h-full rounded-full border-3 border-[#E50924]/20 border-t-[#E50924] border-r-[#9D071B]"
             />
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#B3B3B3] animate-pulse">
-            LOADING...
+          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#B6B6BD] animate-pulse">
+            جاري التحميل...
           </span>
         </div>
       </div>
