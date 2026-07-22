@@ -3,21 +3,21 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "VistaFlix - عالمك... حيث تبدأ المتعة | Your World. Your Movies",
-  description: "منصة VistaFlix الأولى لمشاهدة أحدث الأفلام والمسلسلات والأنمي والدراما العربية والبث المباشر بجودة عالية. تجربة سينمائية فريدة وبدون إعلانات مزعجة.",
-  keywords: ["VistaFlix", "فيستا فليكس", "مشاهدة أفلام", "مسلسلات", "دراما خليجية", "رمضان 2026", "أفلام HD", "أنمي", "مباريات مباشر"],
-  authors: [{ name: "VistaFlix Team" }],
+  title: "VistaFlix — Your World. Your Movies. | عالمك، أفلامك",
+  description: "VistaFlix — منصة البث السينمائية الأولى. شاهد أحدث الأفلام والمسلسلات والأنمي والدراما بجودة HD/4K. Your World. Your Movies.",
+  keywords: ["VistaFlix", "فيستا فليكس", "مشاهدة أفلام", "مسلسلات", "أفلام HD", "أنمي", "دراما", "بث مباشر", "Your World Your Movies"],
+  authors: [{ name: "VistaFlix" }],
   openGraph: {
-    title: "VistaFlix | عالمك... حيث تبدأ المتعة",
-    description: "Your World. Your Movies. شاهد أفضل الأعمال السينمائية والمسلسلات الحصرية بجودة فائقة HD/4K.",
-    url: "https://vistaflix.com",
+    title: "VistaFlix — Your World. Your Movies.",
+    description: "عالمك، أفلامك. شاهد أفضل الأعمال السينمائية والمسلسلات الحصرية بجودة فائقة HD/4K.",
+    url: "https://vistaflix.netlify.app",
     siteName: "VistaFlix",
     images: [
       {
         url: "https://i.ibb.co/TqWqYkK1/image.png",
         width: 1200,
         height: 630,
-        alt: "VistaFlix - Your World. Your Movies.",
+        alt: "VistaFlix — Your World. Your Movies.",
       },
     ],
     locale: "ar_SA",
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "VistaFlix | عالمك... حيث تبدأ المتعة",
-    description: "Your World. Your Movies. أفضل منصة مشاهدة سينمائية.",
+    title: "VistaFlix — Your World. Your Movies.",
+    description: "عالمك، أفلامك. منصة البث السينمائية الأولى.",
     images: ["https://i.ibb.co/TqWqYkK1/image.png"],
   },
   manifest: "/manifest.json",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: "#0B0B0B",
+  themeColor: "#050505",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -77,8 +77,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=IBM+Plex+Sans+Arabic:wght@300;400;600;700&family=Montserrat:wght@400;600;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#0B0B0B" />
+        <meta name="theme-color" content="#050505" />
         <link rel="icon" href="https://i.ibb.co/bjsvpftX/image.png" />
         <link rel="apple-touch-icon" href="https://i.ibb.co/bjsvpftX/image.png" />
         
@@ -101,7 +104,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-[#0B0B0B] text-white select-none pb-20 lg:pb-0 font-premium" suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-[#050505] text-white select-none pb-20 lg:pb-0 font-premium" suppressHydrationWarning>
         <ThemeProvider>
           <OfflineIndicator />
           <LanguageProvider>
